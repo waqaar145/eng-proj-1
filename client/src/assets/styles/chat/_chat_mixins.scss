@@ -1,0 +1,171 @@
+@mixin chatProfileUser ($titleColor, $descColor) {
+  padding: 8px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  height: 70px;
+
+  .profilePicture {
+    padding: 5px 0;
+    img {
+      height: 50px;
+      width: 50px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-right: 10px;
+      box-shadow: $box-shadow-1
+    }
+  }
+
+  .loggedinUserDetails {
+    .loggedinUserName {
+      font-size: 0.9rem;
+      color: $titleColor;
+    }
+
+    .loggedinUserDesig {
+      font-size: 0.8rem;
+      color: $descColor;
+    }
+  }
+}
+
+@mixin chat_sidebar {
+  .loggedinUser {
+    border-bottom: 1px solid $victoria;
+    @include chatProfileUser($font-color-2, $font-color-3);
+  }
+
+  .groupuserContainer {
+    // padding: 8px;
+    overflow-y: scroll;
+    height: calc(100vh - 40px - 40px - 50px);
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+
+    &::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
+  }
+
+  .usersWrapper {
+    margin: 10px 0;
+
+    .loadMoreText {
+      width: 120px;
+      margin-left: 20px;
+      margin-top: -15px;
+    }
+    .groupHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-right: 10px;
+
+      .groupHeaderName {
+        overflow: visible;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        cursor: pointer;
+
+        .icon {
+          margin-right: 5px;
+          transform: rotate(90deg);
+
+          &.active {
+            transform: none;
+          }
+        }
+      }
+
+      .groupHeaderName {
+        overflow: visible;
+        padding-left: 2px;
+        color: $font-color-2;
+        font-size: 0.9rem;
+        background-color: none;
+      }
+      .groupHeaderIcon {
+        cursor: pointer;
+        color: $font-color-2;
+        font-size: 0.6rem;
+        padding: 3px;
+        background-color: none;
+
+        &:hover {
+          border-radius: 2px;
+          padding: 3px;
+          background-color: $royal-blue;
+          animation: 0.3 ease-in;
+        }
+      }
+    }
+    .groupBody {
+      margin: 5px 0;
+      
+      ul {
+        margin-left: -32px;
+
+        li {
+          
+          list-style: none;
+
+          a {
+            background-color: none;
+            padding: 3px 0;
+            padding-left: 20px;
+            display: block;
+            text-decoration: none;
+            color: $font-color-3;
+            font-size: 0.9rem;
+
+            &.dmActive {
+              // margin-top: 5px;
+              color: $font-color-2;
+              background-color: $royal-blue;
+            }
+
+            img {
+              height: 20px;
+              width: 20px;
+              object-fit: cover;
+              border-radius: 50%;
+              margin-right: 10px;
+              box-shadow: $box-shadow-1
+            }
+
+            .name {
+              margin-left: 10px;
+            }
+
+            &:hover {
+              // border-radius: 2px;
+              color: $font-color-2;
+              background-color: $royal-blue;
+            }
+          }
+
+        }
+      }
+
+      .noData {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        .message {
+          margin-top: 10px;
+          font-size: 0.8rem;
+          color: $c-gray-60;
+        }
+
+        .action {
+          // width: 10px;
+        }
+      }
+    }
+  }
+}

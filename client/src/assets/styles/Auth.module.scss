@@ -1,0 +1,121 @@
+@import './variable';
+@import './media_mixins';
+
+.wrapper {
+  height: 100vh;
+  background-color: $bg-color-1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  @include respond-to(small) {
+    grid-template-columns: 1fr;
+  }
+
+  .signup {
+    background-color: $bg-color-1;
+    padding: 10px 100px 10px;
+
+    @include respond-to(small) {
+      padding: 10px 10px 10px;
+    }
+
+    .smallText {
+      font-size: 0.8rem;
+      color: $font-color-2;
+    }
+
+    .link {
+      font-size: 0.8rem;
+      color: $persian-blue;
+      text-decoration: none;
+    }
+    
+    .signupFormWrapper {
+      margin-top: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 90%;
+
+      .signupArea {
+        .formWrapper {
+          margin-top: 30px;
+
+          .socialLoginWrapper {
+            margin-top: 30px;
+          }
+
+          .socialDiv {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            .socialGroup {
+              border: 1px solid $athens-gray;
+              padding: 7px 30px;
+              margin: 0 10px;
+
+              img {
+                height: auto;
+                width: 30px;
+              }
+            }
+          }
+
+          .socialLogin {
+            text-align: center; 
+            border-bottom: 1px solid $athens-gray; 
+            line-height: 0.1em;
+            margin: 10px 0 20px; 
+            color: $athens-gray-darker-1;
+          }
+
+          span {
+            background-color: $bg-color-1;
+            padding: 0 10px;
+          }
+        }
+
+        .signupTitleText {
+          font-size: 2.5rem;
+          color: $font-color-1;
+          font-weight: 500;
+        }
+
+        .signupDescText {
+          font-size: 0.8rem;
+          color: $font-color-2;
+        }
+      }
+    }
+  }
+
+  .banner {
+    @include respond-to(small) {
+      display: none;
+    }
+
+    padding: 10px 100px 10px;
+    background-color: $persian-blue;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .signupArea {
+      .signupTitleText {
+        font-size: 3.5rem;
+        color: $font-color-4;
+        font-weight: 500;
+        line-height: 1;
+      }
+
+      .signupDescText {
+        margin-top: 20px;
+        font-size: 0.8rem;
+        color: $font-color-2;
+      }
+    }
+  }
+}
+

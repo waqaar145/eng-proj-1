@@ -1,0 +1,117 @@
+@import './../../variable';
+
+.inputWrapper {
+  
+  .inputBox {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    font-size: 0.9rem;
+    padding-top: 5px;
+    margin-bottom: 5px;
+    min-height: 70px;
+    max-height: 200px;
+
+    .label {
+      position: absolute;
+      left: 12px;
+      top: calc(50% + 10px);
+      transform: translateY(-50%);
+      color: $athens-gray-darker-1;
+      transition: top 0.3s ease, font-size 0.3s ease, color 0.3s ease;
+    }
+
+    textarea {
+      border: 1px solid $c-gray-70;
+      appearance: none;
+      -ms-appearance: none;
+      -moz-appearance: none;
+      -webkit-appearance: none;
+      background: none;
+      padding: 12px;
+      border-radius: 3px;
+      width: 100%;
+      transition: border-color 0.3s ease;
+
+      &:focus{
+        border: 1px solid $c-gray-30;
+        outline: none;
+        -webkit-outline: none;
+        -moz-outline: none;
+        -ms-outline: none;
+        -o-outline: none;
+        transition-delay: 0.1s;
+      }
+
+      &::placeholder {
+        color: $font-color-2;
+        font-size: 0.8rem;
+      }
+    }
+  }
+}
+
+.error {
+  .inputBox {
+    width: 100%;
+    position: relative;
+    font-size: 0.9rem;
+    padding-top: 20px;
+    margin-bottom: 5px;
+
+    .label {
+      position: absolute;
+      left: 12px;
+      top: calc(50% + 10px);
+      transform: translateY(-50%);
+      color: $error-danger;
+      transition: top 0.3s ease, font-size 0.3s ease, color 0.3s ease;
+    }
+
+    textarea {
+      border: 2px solid $error-danger;
+      appearance: none;
+      -ms-appearance: none;
+      -moz-appearance: none;
+      -webkit-appearance: none;
+      background: none;
+      padding: 12px;
+      border-radius: 3px;
+      width: 100%;
+      transition: border-color 0.3s ease;
+
+      &:focus{
+        border: 2px solid $error-danger;
+        outline: none;
+        -webkit-outline: none;
+        -moz-outline: none;
+        -ms-outline: none;
+        -o-outline: none;
+        transition-delay: 0.1s;
+      }
+
+      &::placeholder {
+        color: $font-color-2;
+        font-size: 0.8rem;
+      }
+
+      & + .label {
+        padding: 0 5px;
+      }
+
+      &:valid ~ .label,
+      &:focus ~ .label {
+        top: 20px;
+        background: $bg-color-1;
+      }
+
+      &:focus ~ .label {
+        color: $error-danger;
+      }
+    }
+  }
+  .errorMessage {
+    color: $error-danger;
+    font-size: 0.8rem;
+  }
+}

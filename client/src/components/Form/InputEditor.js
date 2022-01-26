@@ -1,0 +1,20 @@
+import styles from './../../assets/styles/components/Form/InputEditor.module.scss'
+
+const InputBox = ({type, name, label, placeholder, value, onChange, onKeyPress, ...restProps}) => {
+
+  const moveCaretAtEnd = (e) => {
+    var temp_value = e.target.value
+    e.target.value = ''
+    e.target.value = value
+  }
+
+  return (
+    <div className={`${styles.inputWrapper}`}>
+      <label className={styles.inputBox}>
+        <textarea autoFocus onFocus={moveCaretAtEnd} name={name} type={type} placeholder={placeholder} value={value} onChange={onChange} onKeyPress={onKeyPress} {...restProps}/>
+      </label>
+    </div>
+  )
+}
+
+export default InputBox;

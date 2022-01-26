@@ -1,0 +1,133 @@
+@import './../variable';
+
+.messageBoxWrapper {
+  padding-bottom: 5px;
+  border-bottom: 1px solid $athens-gray;
+
+  &:first-child {
+    border-top: 1px solid $athens-gray; 
+  }
+
+  .profileWrapper {
+    padding-top: 2px;
+
+    .profileImage {
+      width: 70px;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      img {
+        margin-top: 4px;
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: 50%;
+        box-shadow: $box-shadow-1
+      }
+    }
+
+    .profileDetailWrapper {
+
+      width: 100%;
+      .profileDetail {
+        
+  
+        .name {
+          font-weight: 500;
+          font-size: 0.95rem;
+          color: $c-gray-20;
+        }
+  
+        .messagedOn {
+          font-weight: 300;
+          font-size: 0.75rem;
+          margin-left: 10px;
+        }
+      }
+    }
+  }
+
+  .groupMessageWrapper {
+    display: flex;
+    justify-content: flex-start;
+
+    .emptyArea {
+      width: 70px;
+    }
+  }
+
+  // Quick Actions CSS
+  position: relative;
+}
+
+.actionsContainer {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background-color: $bg-color-1;
+  border: 1px solid $c-gray-80;
+  border-radius: 5px ;
+  padding: 2px 5px;
+  box-shadow: $box-shadow-1;
+}
+
+.messageOnInHHMM {
+  display: none;
+  font-size: 0.8rem;
+}
+
+@mixin messagePosAction {
+  position: relative;
+
+  &:hover {
+    background-color: $c-gray-98;
+  }
+
+  &:hover .actionsContainer {
+    display: flex;
+    align-items: center;
+  }
+
+  &:hover .messageOnInHHMM {
+    display: block;
+    align-items: center;
+  }
+  
+  .quickActions {
+    position: absolute;
+    right: 10px;
+    top: -20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .actionsContainer {
+      .icon {
+        margin-top: -4px;
+        margin-left: 5px;
+        margin-right: 5px;
+        font-size: 1.1rem;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.messagePos {
+  display: flex;
+  align-items: flex-start;
+  @include messagePosAction;
+}
+
+.messagePosChild {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  @include messagePosAction;
+}
+
+.messageTextWrapper {
+  padding: 0.8px 0;
+}

@@ -1,0 +1,79 @@
+@import './../../variable';
+@import './../../media_mixins';
+
+
+@mixin chatProfileUser ($titleColor, $descColor) {
+  padding: 8px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  height: 70px;
+
+  .profilePicture {
+    padding: 5px 0;
+    img {
+      height: 50px;
+      width: 50px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-right: 10px;
+      box-shadow: $box-shadow-1
+    }
+  }
+
+  .loggedinUserDetails {
+    .loggedinUserName {
+      font-size: 0.9rem;
+      color: $titleColor;
+    }
+
+    .loggedinUserDesig {
+      font-size: 0.8rem;
+      color: $descColor;
+    }
+  }
+}
+
+.eng-nav {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.eng-nav-pop {
+  background: $persian-blue;
+  z-index: 999;
+  width: 70%;
+  height: 100%;
+  margin: auto;
+  position: fixed;
+  overflow-y: scroll;
+  left: 0;
+  top: 0;
+  opacity: 1;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  padding: 3px 3px;
+}
+.eng-nav-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 99;
+  background-color: #000;
+  opacity: 0.60;
+}
+
+@keyframes show {
+  from {
+    transform: scale(0);
+    opacity: 0;
+    z-index: -1;
+  }
+  to {
+    opacity: 1;
+    z-index: 999;
+  }
+}

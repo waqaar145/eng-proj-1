@@ -1,0 +1,32 @@
+@import './../variable';
+
+.viewReplyModalWrapper {
+  .header {
+    max-height: 200px;
+    overflow-y: scroll;
+
+    .heading {
+      padding: 10px 10px;
+      color: $c-gray-40;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border-bottom: 1px solid $c-gray-90;
+      
+    }
+
+    
+  }
+
+  .body {
+
+    display: flex;
+    flex-direction: column-reverse;
+
+    max-height: 450px;
+    overflow-y: scroll;
+  }
+
+  .footer {
+    padding: 0 5px;
+  }
+}

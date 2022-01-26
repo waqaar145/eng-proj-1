@@ -1,0 +1,119 @@
+@import './../../variable';
+
+.inputWrapper {
+
+  margin-top: 10px;
+  margin-bottom: 10px;
+
+  .inputBoxLabel {
+    margin-bottom: 3px;
+    font-size: 0.9rem;
+    color: $c-gray-50;
+    font-weight: 400;
+  }
+
+  .inputBox {
+    width: 100%;
+  }
+
+  input {
+    border: 2px solid $athens-gray;
+    appearance: none;
+    -ms-appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background: none;
+    padding: 12px;
+    border-radius: 3px;
+    width: 100%;
+    transition: border-color 0.3s ease;
+
+    &:focus{
+      border: 2px solid $persian-blue;
+      outline: none;
+      -webkit-outline: none;
+      -moz-outline: none;
+      -ms-outline: none;
+      -o-outline: none;
+      transition-delay: 0.1s;
+    }
+
+    &::placeholder {
+      color: $font-color-2;
+      font-size: 0.8rem;
+    }
+
+    & + .label {
+      padding: 0 5px;
+    }
+
+    &:valid ~ .label,
+    &:focus ~ .label {
+      top: 20px;
+      background: $bg-color-1;
+    }
+
+    &:focus ~ .label {
+      color: $persian-blue;
+    }
+  }
+}
+
+.error {
+  .inputBoxLabel {
+    font-size: 0.9rem;
+    color: $c-gray-75;
+    font-weight: 400;
+  }
+
+  .inputBox {
+    width: 100%;
+  }
+
+  input {
+    border: 2px solid $error-danger;
+    appearance: none;
+    -ms-appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background: none;
+    padding: 12px;
+    border-radius: 3px;
+    width: 100%;
+    transition: border-color 0.3s ease;
+
+    &:focus{
+      border: 2px solid $error-danger;
+      outline: none;
+      -webkit-outline: none;
+      -moz-outline: none;
+      -ms-outline: none;
+      -o-outline: none;
+      transition-delay: 0.1s;
+    }
+
+    &::placeholder {
+      color: $font-color-2;
+      font-size: 0.8rem;
+    }
+
+    & + .label {
+      padding: 0 5px;
+    }
+
+    &:valid ~ .label,
+    &:focus ~ .label {
+      top: 20px;
+      background: $bg-color-1;
+    }
+
+    &:focus ~ .label {
+      color: $error-danger;
+    }
+  }
+
+  .errorMessage {
+    color: $error-danger;
+    font-size: 0.8rem;
+  }
+}

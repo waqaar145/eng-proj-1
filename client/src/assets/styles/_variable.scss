@@ -1,0 +1,46 @@
+$athens-gray: #eaebf3;
+$athens-gray-darker-1: #cacce0;
+$persian-blue: #00008b;
+$bastille: #241c2b;
+$havelock-blue: #6279e3;
+$jordy-blue: #7db3eb;
+$royal-blue: #4c55ec;
+$victoria: #4a4c95;
+$pharlap: #9c7c74;
+
+$error-danger: #F84F25;
+$error-warning: #E9BCA0;
+$error-info: #F48A5A;
+$error-common: #A28AB4;
+
+$bg-color-1: #fff;
+
+$font-color-1: #110f24;
+$font-color-2: #d6d5d9;
+$font-color-3: #919df1;
+$font-color-4: #eaebfe;
+
+$c-gray-98: #f3f3f3;
+$c-gray-95: #EDEDED;
+$c-gray-90: #E3E3E3;
+$c-gray-85: #D9D9D9;
+$c-gray-80: #CCCCCC;
+$c-gray-75: #C0C0C0;
+$c-gray-70: #B0B0B0;
+$c-gray-60: #999999;
+$c-gray-50: #808080;
+$c-gray-45: #727272;
+$c-gray-40: #696969;
+$c-gray-30: #4D4D4D;
+$c-gray-20: #363636;
+$c-gray-15: #222222;
+$c-gray-10: #171717;
+$c-black: #000000;
+
+$box-shadow-1: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+
+$breakpoints: (
+  'small':  ( max-width:  768px ),
+  'medium': ( max-width:  992px ),
+  'large':  ( max-width: 1200px )
+) !default;

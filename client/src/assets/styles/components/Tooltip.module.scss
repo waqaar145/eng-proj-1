@@ -1,0 +1,43 @@
+@import './../variable';
+
+.engTooltip {
+  position: relative;
+  display: inline-block;
+
+  .engTooltiptext {
+    overflow: visible;
+    visibility: hidden;
+    background-color: $c-black;
+    color: $c-gray-98 !important;
+    text-align: center;
+    padding: 5px 8px;
+    border-radius: 3px;
+    position: absolute;
+    z-index: 100;
+    bottom: 115%;
+    opacity: 0;
+    transition: opacity 0.2s;
+    font-size: 0.845rem !important;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: $c-black transparent transparent transparent;
+    }
+  }
+
+  &:hover {
+    .engTooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+  }
+}

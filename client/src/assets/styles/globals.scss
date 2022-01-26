@@ -1,0 +1,49 @@
+@import './variable';
+@import './media_mixins';
+
+body {
+  background-color: $athens-gray;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@include respond-to('small') {
+  .mob-hide {
+    display: none;
+  }
+}
+
+.Toastify__toast-theme--colored.Toastify__toast--default, .Toastify__toast-theme--light {
+  font-size: 0.9rem;
+  background: $persian-blue !important;
+  color: $c-gray-75 !important;
+}
+
+.Toastify__toast--success {
+  font-size: 0.9rem;
+  background: $persian-blue !important;
+  color: $c-gray-75 !important;
+}
+
+.Toastify__toast--error {
+  font-size: 0.9rem;
+  background: $error-info !important;
+  color: $c-gray-98 !important;
+}
+
+.Toastify__close-button--light {
+  font-size: 0.9rem;
+  color: $c-gray-90 !important;
+  opacity: .8 !important;
+}
+
+.spinner-main-color {
+  color: $persian-blue;
+}
+
+.spinner-secondary-color {
+  color: $c-gray-75;
+}

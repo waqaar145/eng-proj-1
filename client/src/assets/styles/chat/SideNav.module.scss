@@ -1,0 +1,18 @@
+@import './../variable';
+@import './../media_mixins';
+@import './chat_mixins';
+
+.chatSidebar {
+  
+  // border-top: 1px solid $victoria;
+  // background-color: $persian-blue;
+
+  // @include respond-to('small') {
+  //   grid-template-columns: 1fr;
+  //   display: none;
+  // }
+
+  z-index: 1;
+
+  @include chat_sidebar;
+}

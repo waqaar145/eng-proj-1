@@ -1,0 +1,28 @@
+@import './../variable';
+.header {
+  padding: 10px 0;
+}
+
+.body {
+  padding: 20px 0;
+  font-size: 0.95rem;
+  color: $c-gray-50;
+}
+
+.footer {
+  padding: 10px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 200px;
+
+    button {
+      margin-left: 10px;
+    }
+  }
+}

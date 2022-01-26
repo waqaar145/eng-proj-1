@@ -1,0 +1,14 @@
+@import './../variable';
+
+.loadingMore {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: $c-gray-60;
+  font-size: 0.85rem;
+}
+
+.padddingLoader {
+  padding: 50px 0;
+}

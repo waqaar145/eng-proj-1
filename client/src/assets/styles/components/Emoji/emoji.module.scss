@@ -1,0 +1,36 @@
+@import './../../variable';
+
+.emojiContainer {
+  margin-top: 2px;
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.emojiWrapper {
+  border: 1px solid $c-gray-85;
+  border-radius: 5px;
+  padding: 1px 5px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+
+  &.reacted {
+    border: 1px solid $havelock-blue;
+    box-shadow: 0px 0px 5px $persian-blue;
+  }
+
+  .emoji {
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .count {
+    font-size: 0.85rem;
+  }
+}

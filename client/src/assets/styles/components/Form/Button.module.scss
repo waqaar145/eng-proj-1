@@ -1,0 +1,75 @@
+@import './../../variable';
+
+@mixin buttonStyle ($bgColor, $textColor, $hoverColor) {
+  margin: 10px 0;
+  border: none;
+  outline: none;
+  background-color: $bgColor;
+  border-radius: 3px;
+  color: $textColor;
+  transition: all 0.2s ease-out;
+  width: 100%;
+
+  &:hover {
+    cursor: pointer;
+    background-color: $hoverColor;
+    transition-delay: 0.1s;
+  }
+
+  &:disabled {
+    background-color: $hoverColor;
+    cursor: default;
+  }
+
+  &:active {
+    outline: none;
+    border: none;
+  }
+
+  .buttonIcon {
+    margin-left: 5px;
+  }
+}
+
+button.primeButton {
+  @include buttonStyle($persian-blue, $font-color-4, $royal-blue)
+}
+
+button.primeLigthButton {
+  @include buttonStyle($royal-blue, $font-color-4, $royal-blue)
+}
+
+button.dangerButton {
+  @include buttonStyle($error-danger, $font-color-4, $error-info)
+}
+
+button.defaultButton {
+  @include buttonStyle($c-gray-70, $bg-color-1, $c-gray-80)
+}
+
+.lg {
+  font-size: 0.9rem;
+  padding: 15px 15px;
+
+  .buttonIcon {
+    font-size: 1rem;
+  }
+}
+
+.sm {
+  font-size: 0.8rem;
+  padding: 10px 10px;
+
+  .buttonIcon {
+    font-size: 0.8rem;
+  }
+}
+
+.xs {
+  font-size: 0.7rem;
+  padding: 5px 5px;
+
+  .buttonIcon {
+    font-size: 0.7rem;
+  }
+}

@@ -1,12 +1,11 @@
 const Router = require("express");
 const routes = new Router();
-const passport = require("passport");
-const { authentication, optionalAuthentication } = require('./../../helpers/auth')
-const { createGroupValidation, addUserToGroupValidation, groupUserValidation, groupIDValidation, usersListValidation, chatValidation, messageIDValidation, updateChatValidation, getRepliesChatValidation, addReactionValidation } = require('./chat.validations')
+const { authentication } = require('./../../helpers/auth')
+const { createGroupValidation, addUserToGroupValidation, groupUserValidation, groupIDValidation, usersListValidation, chatValidation, messageIDValidation, updateChatValidation, getRepliesChatValidation, addEmojiReactionValidation } = require('./chat.validations')
 
 const { createGroup, searchUsers, addUserToGroup, getGroupsOfLoggedinUser, getUsersOfGroup, deleteGroup } = require("./chat.controllers");
 const { getUsersToChat } = require("./chatSidebar.controllers");
-const { getGroupChats, addChat, updateChat, deleteChat, getReplies, addReaction } = require("./chatContent.controllers");
+const { getGroupChats, addChat, updateChat, deleteChat, getReplies, addEmojiReaction } = require("./chatContent.controllers");
 
 
 routes.post("/chat/create-group", [authentication, createGroupValidation], createGroup);
@@ -24,6 +23,8 @@ routes.get("/chat/:groupId", [authentication, groupIDValidation], getGroupChats)
 routes.put("/chat/:messageId", [authentication, updateChatValidation], updateChat);
 routes.delete("/chat/:messageId", [authentication, messageIDValidation], deleteChat);
 routes.get("/chat/replies/:groupId/:messageId", [authentication, messageIDValidation], getReplies);
-routes.put("/chat/message/reaction", [authentication, addReactionValidation], addReaction);
+
+// Emoji reactions
+routes.put("/chat/message/reaction/:messageId", [authentication, addEmojiReactionValidation], addEmojiReaction);
 
 module.exports = routes;

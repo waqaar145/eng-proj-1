@@ -11,7 +11,8 @@ const getChats = async (userId, groupRes, parentId, offset, limit) => {
         "messages.m_id as id",
         "messages.m_message as message",
         "messages.m_parent_id as parentId",
-        
+
+        "messages.m_reactions as reactions",
         "messages.m_total_replies as totalReplies",
         "messages.m_created_at as createdAt",
         "messages.m_updated_at as updatedAt",
@@ -30,7 +31,35 @@ const getChats = async (userId, groupRes, parentId, offset, limit) => {
       .orderBy("messages.m_id", "desc")
       .offset(offset)
       .limit(limit);
-    return result;
+
+    let resultWithReactions = []
+    for (let message of result) {
+      if (message.reactions) {
+        let reactionsArray = []
+        for (const [key, value] of Object.entries(message.reactions)) { 
+          let emojiObj = key.split('-'); // This is not proper, id also can have dashes in it
+          let reactionObj = {
+            emoji: {
+              id: emojiObj[0],
+              skin: +emojiObj[1] === 0 ? null : +emojiObj[1]
+            },
+            me: value[userId] ? true : false,
+            count: value.count || 0
+          }
+          reactionsArray.push(reactionObj)
+        }
+        resultWithReactions.push({
+          ...message,
+          reactions: reactionsArray
+        })
+      } else {
+        resultWithReactions.push({
+          ...message,
+          reactions: null
+        })
+      }
+    }
+    return resultWithReactions;
   } catch (error) {
     console.log(error);
     return [];
@@ -169,7 +198,7 @@ const addChat = async (req, res) => {
         .send(errorResponse({}, "Something went wrong while saving message!"));
     }
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res
       .status(422)
       .send(errorResponse({}, "Something went wrong while saving message!"));
@@ -312,7 +341,13 @@ const getReplies = async (req, res) => {
         .andWhere({ m_is_active: true });
     }
 
-    let chatRes = await getChats(req.user.id, groupRes, messageId, offset, limit);
+    let chatRes = await getChats(
+      req.user.id,
+      groupRes,
+      messageId,
+      offset,
+      limit
+    );
     return res.status(200).send(
       okResponse(
         {
@@ -328,7 +363,7 @@ const getReplies = async (req, res) => {
   }
 };
 
-const addReaction = async (req, res) => {
+const addEmojiReaction = async (req, res) => {
   // Form Validation *******
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -338,91 +373,66 @@ const addReaction = async (req, res) => {
     });
   }
 
-  const { messageId, value } = req.body;
+  const { messageId } = req.params;
+  const { emojiId, skin } = req.body;
 
   try {
-    let checkMessage = await knex("messages")
-      .where({
-        m_id: messageId,
-        m_is_active: true,
-      })
-      .first();
-
-    const checkEntry = await knex("messages_likes")
-      .where({
-        ml_message_id: +messageId,
-        ml_user_id: req.user.id,
-      })
+    let result = await knex("messages")
+      .select("m_reactions as reactions")
+      .where({ m_id: messageId })
       .returning("*");
 
-    let totalLikes = checkMessage.m_total_likes
-    if (checkEntry.length > 0) {
-      const checkEntryObj = checkEntry[0];
-      let deleted = false;
-      let updated = false;
-      let deleteEntry;
-      let updateEntry;
-      
-      if (checkEntryObj.ml_value === +value) {
-        deleteEntry = await knex("messages_likes")
-          .where({
-            ml_id: checkEntryObj.ml_id,
-          })
-          .del();
-        deleted = true;
-        await knex("messages").where({ m_id: messageId }).decrement({
-          m_total_likes: 1,
-        });
-        totalLikes = totalLikes - 1
+    let { reactions } = result[0];
+
+    let skinTone = skin ? String(skin) : "0"; 
+    let emojiIdToneString = emojiId + "-" + skinTone;
+    let parsedReactions = reactions;
+    if (reactions) {
+      if (parsedReactions[emojiIdToneString]) {
+        if (parsedReactions[emojiIdToneString][req.user.id]) {
+          parsedReactions[emojiIdToneString].count = parsedReactions[emojiIdToneString].count - 1;
+          if (parsedReactions[emojiIdToneString].count === 0) {
+            delete parsedReactions[emojiIdToneString]
+          } else {
+            delete parsedReactions[emojiIdToneString][req.user.id];  
+          }
+        } else {
+          parsedReactions[emojiIdToneString].count = parsedReactions[emojiIdToneString].count + 1;
+          parsedReactions[emojiIdToneString][req.user.id] = new Date();
+        }
       } else {
-        updateEntry = await knex("messages_likes")
-          .where({
-            ml_id: checkEntryObj.ml_id,
-          })
-          .update({
-            ml_value: value,
-          })
-          .returning("*");
-        updated = true;
+        parsedReactions = {
+          ...parsedReactions,
+          [emojiIdToneString]: {
+            count: 1,
+            [req.user.id]: new Date(),
+          },
+        };
       }
-
-      const resEntryObject = {
-        id: checkEntryObj.ml_id,
-        messageId: checkEntryObj.ml_message_id,
-        liked: deleted ? null : updated ? updateEntry[0].ml_value : null,
-        parentId: checkMessage.m_parent_id,
-        totalLikes
+    } else {
+      parsedReactions = {
+        [emojiIdToneString]: {
+          count: 1,
+          [req.user.id]: new Date(),
+        },
       };
-
-      return res.status(200).send(okResponse(resEntryObject, "OK"));
     }
-    const reactionObj = {
-      ml_user_id: req.user.id,
-      ml_message_id: +messageId,
-      ml_value: 1,
-    };
 
-    const result = await knex("messages_likes")
-      .insert(reactionObj)
+    let stringifiedParsedReactions =
+      Object.keys(parsedReactions).length === 0
+        ? null
+        : JSON.stringify(parsedReactions);
+
+    let updatedRow = await knex("messages")
+      .where({ m_id: messageId })
+      .update({
+        m_reactions: stringifiedParsedReactions,
+      })
       .returning("*");
-    const resultObj = result[0];
 
-    await knex("messages").where({ m_id: messageId }).increment({
-      m_total_likes: 1,
-    }).returning('*');
-
-    totalLikes = totalLikes + 1
-
-    const resObj = {
-      id: resultObj.ml_id,
-      messageId: resultObj.ml_message_id,
-      liked: resultObj.ml_value,
-      parentId: checkMessage.m_parent_id,
-      totalLikes
-    };
-    return res.status(200).send(okResponse(resObj, "OK"));
+    return res.send("ok");
   } catch (error) {
-    console.log("ERROR - ADDING REACTION", error);
+    console.log(error);
     return res.status(500).send(errorResponse({}, "Something went wrong!"));
   }
 };
@@ -433,5 +443,5 @@ module.exports = {
   updateChat,
   deleteChat,
   getReplies,
-  addReaction,
+  addEmojiReaction,
 };

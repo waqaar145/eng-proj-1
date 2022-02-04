@@ -49,10 +49,8 @@ exports.up = function (knex, Promise) {
         table.integer("m_group_id").references('g_id').inTable('groups');
         table.integer('m_parent_id').default(null);
         table.string("m_message", 5000).notNullable();
-        // table.integer('m_total_likes').defaultTo(0);
-        // table.integer('m_total_dislikes').defaultTo(0);
-        table.jsonb('m_reactions');
-        table.jsonb('m_profile_replies');
+        table.json('m_reactions');
+        table.json('m_profile_replies');
         table.integer('m_total_replies').defaultTo(0);
         table.boolean('m_read').defaultTo(false);
         table.boolean("m_is_active").defaultTo(true);
@@ -71,20 +69,11 @@ exports.up = function (knex, Promise) {
         table.timestamp("mf_updated_at").defaultTo(knex.fn.now());
       });
     })
-    .then(function () {
-      return knex.schema.createTable('messages_likes', function(table) {
-        table.increments('ml_id').unsigned().primary();
-        table.integer('ml_user_id').references('u_id').inTable('users');
-        table.integer('ml_message_id').references('m_id').inTable('messages');
-        table.integer('ml_value').notNullable();
-      });
-    });
 };
 
 exports.down = function (knex, Promise) {
   return knex
             .schema
-            .dropTable("messages_likes")
             .dropTable("messages_files")
             .dropTable("messages")
             .dropTable("participants")

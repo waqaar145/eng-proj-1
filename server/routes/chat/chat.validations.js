@@ -40,9 +40,16 @@ const getRepliesChatValidation = [
   check('messageId').isNumeric().withMessage('Message id is required').escape(),
 ];
 
-const addReactionValidation = [
+const addEmojiReactionValidation = [
   check('messageId').isNumeric().withMessage('Message id is required').escape(),
-  check('value').isNumeric().withMessage('Value is required').escape(),
+  check('emojiId').isLength({ min: 1}).withMessage('Emoji is required').escape(),
+  check('skin').custom(value => {
+    let allowedVals = [null, 1, 2, 3, 4, 5];
+    if (!(allowedVals.indexOf(value) > -1)) {
+      return Promise.reject('Skin code is not correct')
+    }
+    return true;
+  })
 ];
 
-module.exports = { createGroupValidation, addUserToGroupValidation, groupIDValidation, groupUserValidation, usersListValidation, chatValidation, messageIDValidation, updateChatValidation, getRepliesChatValidation, addReactionValidation };
+module.exports = { createGroupValidation, addUserToGroupValidation, groupIDValidation, groupUserValidation, usersListValidation, chatValidation, messageIDValidation, updateChatValidation, getRepliesChatValidation, addEmojiReactionValidation };

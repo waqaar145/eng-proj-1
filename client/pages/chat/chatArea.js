@@ -1,23 +1,16 @@
 import dynamic from "next/dynamic";
 import CurrentUserChattingTo from "./components/CurrentUserChattingTo";
 import Editor from "./../../src/components/Form/InputEditor";
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import MessageBox from "./components/MessageBox1";
 import { useRouter } from "next/router";
 import { chatService } from "../../src/services";
 import {shallowEqual, useDispatch, useSelector} from 'react-redux'
 import { chatActionTypes } from "../../src/store/chat/chat.actiontype";
 import usePagination from "./../../src/hooks/usePagination";
-import useModal from "./../../src/hooks/useModal";
-import ConfirmModal from './components/ConfirmModal'
-import useReply from "./hooks/useReply";
 import { DateWihtoutTime } from './../../src/utils/date'
 import useDropdown from "../../src/hooks/useDropdown";
 
-const ReplyModal = dynamic(
-  () => import("./components/replyModal"),
-  { ssr: false }
-);
 const EmojiDropdown = dynamic(
   () => import("./components/EmojiDropdown"),
   { ssr: false }
@@ -31,19 +24,13 @@ const ChatArea = ({handleProfileDetailModal, isTabletOrMobile, styles}) => {
 
   const [allMessagesLoaded, setAllMessagesLoaded] = useState(false)
   const currentSelectedGroup = useSelector(state => state.Chat.currentSelectedGroup);
-  const {loggedInUser, loggedInStatus} = useSelector(state => state.Auth, shallowEqual);
+  const {loggedInUser} = useSelector(state => state.Auth, shallowEqual);
   const {chats: messages, currentPage, totalEnteries} = useSelector(state => state.Chat, shallowEqual);
 
   const router = useRouter();
   const {
     groupId
   } = router.query;
-
-  const { getReplies, editingAMessage, replyingToAMessage } = useReply(groupId)
-
-  const [currentViewReplyCommentObj, setCurrentViewReplyCommentObj] = useState(
-    {}
-  );
 
   const chatContentBodyRef = useRef(null)
   const loadMoreChatRef = useRef(null)
@@ -53,6 +40,7 @@ const ChatArea = ({handleProfileDetailModal, isTabletOrMobile, styles}) => {
     if (groupId) {
       getChats(groupId, {pageNo: 1});
     }
+    document.body.style.overflow = 'hidden';
   }, [groupId]);
 
   useEffect(() => {
@@ -132,47 +120,6 @@ const ChatArea = ({handleProfileDetailModal, isTabletOrMobile, styles}) => {
     }
   }
 
-  const { toggle: handleReplyToggle, show: showReplyModal } = useModal();
-  const { toggle: handleConfirmToggle, show: showConfirmModal } = useModal();
-  const [deleteMessageLoader, setDeleteMessageLoader] = useState(false);
-  const [messageToDelete, setMessageToDelete] = useState(false);
-
-  const handleReply = (data) => {
-    dispatch({type: chatActionTypes.CURRENT_MESSAGE_ID_ACTIVE_FOR_REPLIES_IN_MOBILE, data: data.id})
-    setCurrentViewReplyCommentObj(data);
-    handleReplyToggle();
-  };
-
-  const handleDeleteMessage = (data) => {
-    setMessageToDelete(data)
-    handleConfirmToggle()
-  }
-
-  const handleDelete = async (id) => {
-    try {
-      setDeleteMessageLoader(true)
-      let {data: {data}} = await chatService.deleteChat(id);
-      dispatch({type: chatActionTypes.DELETE_MESSAGE, data})
-      setDeleteMessageLoader(false)
-      handleConfirmToggle()
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const handleReaction = async (message) => {
-    const messageObj = {
-      messageId: message.id,
-      value: 1
-    }
-    try {
-      let {data: {data}} = await chatService.addReaction(messageObj);
-      dispatch({type: chatActionTypes.UPDATE_REACTION, data})
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
   // CONVERTING MESSAGES OBJECT TO DATE WISE MESSAGES OBJECT
   let updatedMessages = {};
   let prevMessage = null;
@@ -201,12 +148,12 @@ const ChatArea = ({handleProfileDetailModal, isTabletOrMobile, styles}) => {
   }
 
   // HANDLING EMOJI RELATED EVENTS
-
   const { toggle: toggleEmojiDropdown, show: showEmojiDropdown } = useDropdown();
+  const [currentEmojiMessageId, setCurrentEmojiMessageId] = useState(null);
 
-  const handleEmojiPicker = (id) => {
-    console.log(id)
-    toggleEmojiDropdown(id)
+  const handleEmojiPicker = (messageElId, id) => {
+    toggleEmojiDropdown(messageElId)
+    setCurrentEmojiMessageId(id)
   }
 
   return (
@@ -241,16 +188,8 @@ const ChatArea = ({handleProfileDetailModal, isTabletOrMobile, styles}) => {
                     handleProfileDetailModal={handleProfileDetailModal}
                     key={messageId}
                     message={updatedMessages[messageId]}
-                    handleReply={handleReply}
                     isTabletOrMobile={isTabletOrMobile}
-                    handleDeleteMessage={handleDeleteMessage}
                     loggedInUser={loggedInUser}
-                    editingAMessage={editingAMessage}
-                    replyingToAMessage={replyingToAMessage}
-                    getReplies={getReplies}
-                    handleReaction={handleReaction}
-
-
                     handleEmojiPicker={handleEmojiPicker}
                   />
                 );
@@ -270,36 +209,11 @@ const ChatArea = ({handleProfileDetailModal, isTabletOrMobile, styles}) => {
           onKeyPress={handleKeypress}
         />
       </div>
-      {showReplyModal && (
-        <ReplyModal
-          show={showReplyModal}
-          toggle={handleReplyToggle}
-          stylesMessageBox={styles}
-          isTabletOrMobile={isTabletOrMobile}
-          loggedInUser={loggedInUser}
-          handleProfileDetailModal={handleProfileDetailModal}
-          editingAMessage={editingAMessage}
-          replyingToAMessage={replyingToAMessage}
-          handleDeleteMessage={handleDeleteMessage}
-          getReplies={getReplies}
-        />
-      )}
-      {showConfirmModal && (
-        <ConfirmModal
-          id={messageToDelete.id}
-          titleText="Delete message"
-          bodyText="Are you sure? This can't be undone"
-          handleDelete={handleDelete}
-          toggle={handleConfirmToggle}
-          show={showConfirmModal}
-          loading={deleteMessageLoader}
-          handleToggle={() => handleConfirmToggle()}
-        />
-      )}
       {/* {showEmojiDropdown && ( */}
         <EmojiDropdown
           show={showEmojiDropdown}
           toggle={toggleEmojiDropdown}
+          messageId={currentEmojiMessageId}
         />
       {/* )} */}
     </>

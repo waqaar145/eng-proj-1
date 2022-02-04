@@ -99,12 +99,13 @@ export const chatService = {
       throw error
     }
   },
-  async addReaction (obj) {
+  // Reacting with Emoji
+  async addEmojiReaction (messageId, obj) {
     try {
-      const result = await HTTPClient.put('/api/v1/chat/message/reaction', obj);
+      const result = await HTTPClient.put(`/api/v1/chat/message/reaction/${messageId}`, obj);
       return result;
     } catch(error) {
       throw error
     }
-  }
+  },
 }

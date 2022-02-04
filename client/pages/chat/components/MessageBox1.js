@@ -28,17 +28,18 @@ const ShowMessage = ({ message, handleEmojiPicker }) => {
       {message.message}
       <div className={emojiStyles.emojiContainer}>
         {
-          Math.floor(Math.random() * (10) + 1) % 2 === 0
+          message.reactions
           &&
-          Array.from(Array(Math.floor(Math.random() * (10) + 1)), (i, e) => {
+          message.reactions.map((reaction, index) => {
             return (
-              <div className={`${emojiStyles.emojiWrapper} ${Math.floor(Math.random() * (10) + 1) % 2 === 0 ? emojiStyles.reacted : ''}`} key={i+''+Math.floor(Math.random() * (10) + 1)}>
+              <div className={`${emojiStyles.emojiWrapper} ${reaction.me ? emojiStyles.reacted : ""}`}  key={reaction.emoji.id + '-' + index}>
                 <div className={emojiStyles.emoji}>
-                  <Emoji emoji={testEmojiObj[Math.floor(Math.random() * (10) + 1)]} size={16} />
+                  <Emoji emoji={{id: reaction.emoji.id, skin: reaction.emoji.skin}} size={16} />
                 </div>
                 <div className={emojiStyles.count}>
-                  {Math.floor(Math.random() * (53) + 1)}
+                  {reaction.count}
                 </div>
+                <pre>{JSON.stringify(reaction)}</pre>
               </div>
             )
           })
@@ -46,7 +47,7 @@ const ShowMessage = ({ message, handleEmojiPicker }) => {
       </div>
       <div className={styles.quickActions} id={`message-id-${message.id}`}>
         <div className={styles.actionsContainer}>
-          <div className={styles.icon} onClick={() => handleEmojiPicker(`message-id-${message.id}`)}>
+          <div className={styles.icon} onClick={() => handleEmojiPicker(`message-id-${message.id}`, message.id)}>
             <MdOutlineEmojiEmotions />
           </div>
           <div className={styles.icon}>

@@ -1,7 +1,7 @@
 import React from "react";
 import BasicDropdown from "./../../../src/components/Dropdown/basicDropdown";
 import { Picker } from "emoji-mart";
-import useReactionChage from "../hook/useReactionChange";
+import useReactionChage from "../hooks/useReactionChange";
 
 import "emoji-mart/css/emoji-mart.css";
 

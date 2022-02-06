@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux'
-import { chatService } from './../../../src/services';
+import { chatService } from '../../../src/services';
 import { chatActionTypes } from "../../../src/store/chat/chat.actiontype";
 
 const useReactionChage = () => {

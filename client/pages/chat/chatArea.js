@@ -9,7 +9,7 @@ import { chatActionTypes } from "../../src/store/chat/chat.actiontype";
 import usePagination from "./../../src/hooks/usePagination";
 import { DateWihtoutTime } from './../../src/utils/date'
 import useDropdown from "../../src/hooks/useDropdown";
-import useReactionChage from "./hook/useReactionChange";
+import useReactionChage from "./hooks/useReactionChange";
 import EditorArea from "./components/EditorArea";
 
 const EmojiDropdown = dynamic(

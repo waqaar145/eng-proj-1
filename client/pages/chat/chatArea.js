@@ -1,8 +1,7 @@
 import dynamic from "next/dynamic";
 import CurrentUserChattingTo from "./components/CurrentUserChattingTo";
-import Editor from "./../../src/components/Form/InputEditor";
 import { useState, useEffect, useRef } from "react";
-import MessageBox from "./components/MessageBox1";
+import SinlgeMessage from "./components/Message";
 import { useRouter } from "next/router";
 import { chatService } from "../../src/services";
 import {shallowEqual, useDispatch, useSelector} from 'react-redux'
@@ -11,13 +10,14 @@ import usePagination from "./../../src/hooks/usePagination";
 import { DateWihtoutTime } from './../../src/utils/date'
 import useDropdown from "../../src/hooks/useDropdown";
 import useReactionChage from "./hook/useReactionChange";
+import EditorArea from "./components/EditorArea";
 
 const EmojiDropdown = dynamic(
   () => import("./components/EmojiDropdown"),
   { ssr: false }
 );
 
-const ChatArea = ({handleProfileDetailModal, isTabletOrMobile, styles}) => {
+const ChatArea = ({isTabletOrMobile, styles}) => {
 
   const dispatch = useDispatch()
 
@@ -35,7 +35,6 @@ const ChatArea = ({handleProfileDetailModal, isTabletOrMobile, styles}) => {
 
   const chatContentBodyRef = useRef(null)
   const loadMoreChatRef = useRef(null)
-  const [value, setValue] = useState("")
 
   useEffect(() => {
     if (groupId) {
@@ -43,6 +42,8 @@ const ChatArea = ({handleProfileDetailModal, isTabletOrMobile, styles}) => {
     }
     document.body.style.overflow = 'hidden';
   }, [groupId]);
+
+  const handleProfileDetailModal = () => {}
 
   useEffect(() => {
     if (Object.keys(messages).length > 0) {
@@ -91,33 +92,6 @@ const ChatArea = ({handleProfileDetailModal, isTabletOrMobile, styles}) => {
       }
     } catch (error) {
       console.log(error)
-    }
-  }
-
-  const handleOnChange = (e) => {
-    const {
-      name, value
-    } = e.target;
-    setValue(value)
-  }
-
-  const handleKeypress = async (e) => { 
-    if(e.key === 'Enter' && !e.shiftKey){
-      if (value.trim()) {
-        e.preventDefault();
-        try {
-          let chatObj = {
-            groupId,
-            message: value,
-            parentId: null
-          }
-          let {data: {data}} = await chatService.addChat(chatObj);
-          dispatch({type: chatActionTypes.ADD_NEW_MESSAGE, data: {[data.id]: data}})
-        } catch (error) {
-          console.log(error)
-        }
-      }
-      setValue("")
     }
   }
 
@@ -192,7 +166,7 @@ const ChatArea = ({handleProfileDetailModal, isTabletOrMobile, styles}) => {
             <>
               {Object.keys(updatedMessages).map((messageId) => {
                 return (
-                  <MessageBox
+                  <SinlgeMessage
                     styles={styles}
                     handleProfileDetailModal={handleProfileDetailModal}
                     key={messageId}
@@ -213,19 +187,13 @@ const ChatArea = ({handleProfileDetailModal, isTabletOrMobile, styles}) => {
         </div>
       </div>
       <div className={styles.chatContentTextArea}>
-        <Editor 
-          value={value}
-          onChange={handleOnChange} 
-          onKeyPress={handleKeypress}
-        />
+        <EditorArea groupId={groupId}/>
       </div>
-      {/* {showEmojiDropdown && ( */}
-        <EmojiDropdown
-          show={showEmojiDropdown}
-          toggle={toggleEmojiDropdown}
-          messageId={currentEmojiMessageId}
-        />
-      {/* )} */}
+      <EmojiDropdown
+        show={showEmojiDropdown}
+        toggle={toggleEmojiDropdown}
+        messageId={currentEmojiMessageId}
+      />
     </>
   );
 };

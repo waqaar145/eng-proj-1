@@ -14,19 +14,10 @@ import usePagination from "./../../src/hooks/usePagination";
 import { chatActionTypes } from "../../src/store/chat/chat.actiontype";
 import ChatArea from "./chatArea";
 import { useRouter } from "next/router";
-import CreateGroupModal from "./components/CreateGroupModal";
 
 const SideNavbar = dynamic(() => import("./components/SideNavbar"), {
   ssr: false,
 });
-const AddDMOrGroupUsersModal = dynamic(
-  () => import("./components/AddDMOrGroupUsersModal"),
-  { ssr: false }
-);
-const UserProfileDetailModal = dynamic(
-  () => import("./components/UserProfileDetailModal"),
-  { ssr: false }
-);
 
 const SidenavUsers = ({
   styles,
@@ -77,34 +68,7 @@ const Chat = () => {
 
   const isTabletOrMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
-  const [activeModal, setActiveModal] = useState("");
-
-
-  const { toggle: handleAddUserGroupToggle, show: showAddUserOrGroupModal } =
-    useModal();
-  const { toggle: handleProfileDetailsToggle, show: showProfileDetailModal } =
-    useModal();
-  const { toggle: handleCreateGroupToggle, show: showCreateGroupModal } =
-    useModal();
   const { toggle: handleNavToggle, show: showSideNav } = useNav();
-
-  const handleAddUserOrGroupModal = ({ group, dm }) => {
-    if (group) {
-      setActiveModal("group");
-      handleCreateGroupToggle();
-      if (isTabletOrMobile) {
-        handleNavToggle();
-      }
-    }
-
-    if (dm) {
-      setActiveModal("dm");
-      handleAddUserGroupToggle();
-      if (isTabletOrMobile) {
-        handleNavToggle();
-      }
-    }
-  };
 
   const { currentState } = usePagination();
   const {
@@ -113,9 +77,10 @@ const Chat = () => {
 
   const getPubGroups = async (pageNoObj) => {
     let type = "public"
+    let params = {...currentState, ...pageNoObj}
     try {
       if (pageNoObj.pageNo === 1) dispatch({type: chatActionTypes.REQUEST_PUBLIC_DATA, data: true})
-      let {data: {data}} = await chatService.getChatUsers({...currentState, type: type});
+      let {data: {data}} = await chatService.getChatUsers({...params, type: type});
       dispatch({type: chatActionTypes.ADD_PUBLIC_GROUPS, data: {...data, currentPage: pageNoObj.pageNo}})
     } catch (error) {
       console.log(error)
@@ -124,9 +89,10 @@ const Chat = () => {
 
   const getGroups = async (pageNoObj) => {
     let type = "gp"
+    let params = {...currentState, ...pageNoObj}
     try {
       if (pageNoObj.pageNo === 1) dispatch({type: chatActionTypes.REQUEST_GROUP_DATA, data: true})
-      let {data: {data}} = await chatService.getChatUsers({...currentState, type: type});
+      let {data: {data}} = await chatService.getChatUsers({...params, type: type});
       dispatch({type: chatActionTypes.ADD_GROUPS, data: {...data, currentPage: pageNoObj.pageNo}})
     } catch (error) {
       console.log(error)
@@ -155,10 +121,6 @@ const Chat = () => {
     handleNavToggle();
   };
 
-  const handleProfileDetailModal = (userId) => {
-    handleProfileDetailsToggle();
-  };
-
   const handlePagination = ({dm, group, currentPage}) => {
     if (group) {
       getGroups({pageNo: currentPage + 1})
@@ -171,6 +133,9 @@ const Chat = () => {
       getPubGroups({pageNo: currentPage + 1})
     }
   }
+
+  const handleAddUserOrGroupModal = () => {}
+
 
   return (
     <div className={styles.chatWrapper}>
@@ -196,32 +161,10 @@ const Chat = () => {
         </div>
         <div className={styles.chatContent}>
           <ChatArea 
-            handleProfileDetailModal={handleProfileDetailModal}
             isTabletOrMobile={isTabletOrMobile}
             styles={styles}/>
         </div>
       </div>
-      {/* {showAddUserOrGroupModal && (
-        <AddDMOrGroupUsersModal
-          activeModal={activeModal}
-          show={showAddUserOrGroupModal}
-          toggle={handleAddUserGroupToggle}
-        />
-      )} */}
-      {
-        showCreateGroupModal && (
-          <CreateGroupModal
-            show={showCreateGroupModal}
-            toggle={handleCreateGroupToggle}
-            />
-        )
-      }
-      {showProfileDetailModal && (
-        <UserProfileDetailModal
-          show={showProfileDetailModal}
-          toggle={handleProfileDetailsToggle}
-        />
-      )}
       {showSideNav && (
         <SideNavbar show={showSideNav} toggle={handleNav}>
           <div className={SideNavStyles.chatSidebar}>

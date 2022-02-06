@@ -9,45 +9,48 @@ import {
 } from "react-icons/md";
 import { Emoji } from 'emoji-mart'
 
-let testEmojiObj = {
-  1: ':santa::skin-tone-3:',
-  2: ':grinning:',
-  3: ':sweat_smile:',
-  4: ':innocent:',
-  5: ':triumph:',
-  6: ':man-man-girl-boy:',
-  7: ':man-man-girl-boy:',
-  8: ':tangerine:',
-  9: ':spades:',
-  10: ':flag-in:',
+const convertToCode = (key) => {
+  let emojiObj = key.split('-');
+  let emoji = {
+    id: emojiObj.slice(0, emojiObj.length - 1).join('-'),
+    skin: +emojiObj[emojiObj.length - 1] === 0 ? null : +emojiObj[emojiObj.length - 1] 
+  }
+  const {id, skin} = emoji;
+  if (skin) {
+    return `:${id}::skin-tone-${skin}:`
+  } else {
+    return `:${id}:`
+  }
 }
 
-const ShowMessage = ({ message, handleEmojiPicker }) => {
+let messageIdKey = "message-id-";
+let messageActionIdKey = "message-action-id-";
+
+const ShowMessage = ({ message, handleEmojiPicker, handleChangeReaction }) => {
   return (
     <div className={styles.messageTextWrapper}>
-      {message.message}
+      <div dangerouslySetInnerHTML={{__html: message.message}} />
       <div className={emojiStyles.emojiContainer}>
         {
-          message.reactions
+          message.reactions && Object.keys(message.reactions).length > 0
           &&
-          message.reactions.map((reaction, index) => {
+          Object.keys(message.reactions).map((reaction, index) => {
             return (
-              <div className={`${emojiStyles.emojiWrapper} ${reaction.me ? emojiStyles.reacted : ""}`}  key={reaction.emoji.id + '-' + index}>
+              <div className={`${emojiStyles.emojiWrapper} ${message.reactions[reaction].me ? emojiStyles.reacted : ""}`}  key={message.id +'-' + reaction + '-' + index}>
                 <div className={emojiStyles.emoji}>
-                  <Emoji emoji={{id: reaction.emoji.id, skin: reaction.emoji.skin}} size={16} />
+                  <Emoji emoji={convertToCode(reaction)} size={18} onClick={(data) => handleChangeReaction(message.id, data)}/>
                 </div>
                 <div className={emojiStyles.count}>
-                  {reaction.count}
+                  {message.reactions[reaction].count}
                 </div>
-                <pre>{JSON.stringify(reaction)}</pre>
               </div>
             )
           })
         }
       </div>
-      <div className={styles.quickActions} id={`message-id-${message.id}`}>
+      <div className={styles.quickActions} id={`${messageActionIdKey}${message.id}`}>
         <div className={styles.actionsContainer}>
-          <div className={styles.icon} onClick={() => handleEmojiPicker(`message-id-${message.id}`, message.id)}>
+          <div className={styles.icon} onClick={() => handleEmojiPicker(`${messageActionIdKey}${message.id}`, message.id)}>
             <MdOutlineEmojiEmotions />
           </div>
           <div className={styles.icon}>
@@ -65,10 +68,10 @@ const ShowMessage = ({ message, handleEmojiPicker }) => {
   );
 };
 
-const MessageBox = ({ message, handleEmojiPicker }) => {
+const MessageBox = ({ message, handleEmojiPicker, handleChangeReaction }) => {
   return (
     <div className={`${styles.messageBoxWrapper}`}>
-      <div className={`${styles.profileWrapper} ${styles.messagePos}`}>
+      <div className={`${styles.profileWrapper} ${styles.messagePos}`} id={`${messageIdKey}${message.id}`}>
         <div className={styles.profileImage}>
           <img src={message.dp} />
         </div>
@@ -86,6 +89,7 @@ const MessageBox = ({ message, handleEmojiPicker }) => {
               message={message} 
               firstMessageInGroup={true} 
               handleEmojiPicker={handleEmojiPicker}
+              handleChangeReaction={handleChangeReaction}
             />
           </div>
         </div>
@@ -93,7 +97,7 @@ const MessageBox = ({ message, handleEmojiPicker }) => {
       {"groupedMessages" in message &&
         Object.keys(message.groupedMessages).map((messageId) => {
           return (
-            <div className={`${styles.profileWrapper} ${styles.messagePosChild}`} key={messageId}>
+            <div className={`${styles.profileWrapper} ${styles.messagePosChild}`} key={messageId} id={`${messageIdKey}${messageId}`}>
               <div className={`${styles.profileImage} ${styles.profileImageWrapper}`}>
                 <div className={styles.messageOnInHHMM}>
                   <Moment format="h:mm A">{message.groupedMessages[messageId].updatedAt}</Moment>
@@ -106,6 +110,7 @@ const MessageBox = ({ message, handleEmojiPicker }) => {
                     key={messageId}
                     firstMessageInGroup={false}
                     handleEmojiPicker={handleEmojiPicker}
+                    handleChangeReaction={handleChangeReaction}
                   />
                 </div>
               </div>

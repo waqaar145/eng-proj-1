@@ -44,7 +44,7 @@ const addEmojiReactionValidation = [
   check('messageId').isNumeric().withMessage('Message id is required').escape(),
   check('emojiId').isLength({ min: 1}).withMessage('Emoji is required').escape(),
   check('skin').custom(value => {
-    let allowedVals = [null, 1, 2, 3, 4, 5];
+    let allowedVals = [null, 1, 2, 3, 4, 5, 6];
     if (!(allowedVals.indexOf(value) > -1)) {
       return Promise.reject('Skin code is not correct')
     }

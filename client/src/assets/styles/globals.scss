@@ -47,3 +47,8 @@ body {
 .spinner-secondary-color {
   color: $c-gray-75;
 }
+
+// when user open the emoji editor, showing backeground and quick actions
+.activeMessage {
+  background-color: $c-gray-98;
+}

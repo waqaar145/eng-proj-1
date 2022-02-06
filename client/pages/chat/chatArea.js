@@ -10,6 +10,7 @@ import { chatActionTypes } from "../../src/store/chat/chat.actiontype";
 import usePagination from "./../../src/hooks/usePagination";
 import { DateWihtoutTime } from './../../src/utils/date'
 import useDropdown from "../../src/hooks/useDropdown";
+import useReactionChage from "./hook/useReactionChange";
 
 const EmojiDropdown = dynamic(
   () => import("./components/EmojiDropdown"),
@@ -156,6 +157,14 @@ const ChatArea = ({handleProfileDetailModal, isTabletOrMobile, styles}) => {
     setCurrentEmojiMessageId(id)
   }
 
+  const {
+    updateReaction
+  } = useReactionChage();
+
+  const handleChangeReaction = (messageId, emoji) => {
+    updateReaction(messageId, emoji)
+  }
+
   return (
     <>
       <div className={styles.chatContentHeader}>
@@ -191,6 +200,7 @@ const ChatArea = ({handleProfileDetailModal, isTabletOrMobile, styles}) => {
                     isTabletOrMobile={isTabletOrMobile}
                     loggedInUser={loggedInUser}
                     handleEmojiPicker={handleEmojiPicker}
+                    handleChangeReaction={handleChangeReaction}
                   />
                 );
               })}

@@ -35,18 +35,16 @@ const getChats = async (userId, groupRes, parentId, offset, limit) => {
     let resultWithReactions = []
     for (let message of result) {
       if (message.reactions) {
-        let reactionsArray = []
+        let reactionsArray = {}
         for (const [key, value] of Object.entries(message.reactions)) { 
-          let emojiObj = key.split('-'); // This is not proper, id also can have dashes in it
           let reactionObj = {
-            emoji: {
-              id: emojiObj[0],
-              skin: +emojiObj[1] === 0 ? null : +emojiObj[1]
-            },
             me: value[userId] ? true : false,
             count: value.count || 0
           }
-          reactionsArray.push(reactionObj)
+          reactionsArray = {
+            ...reactionsArray,
+            [key]: reactionObj
+          }
         }
         resultWithReactions.push({
           ...message,
@@ -387,10 +385,14 @@ const addEmojiReaction = async (req, res) => {
     let skinTone = skin ? String(skin) : "0"; 
     let emojiIdToneString = emojiId + "-" + skinTone;
     let parsedReactions = reactions;
+    let added = false;
+    let count = 0;
     if (reactions) {
       if (parsedReactions[emojiIdToneString]) {
         if (parsedReactions[emojiIdToneString][req.user.id]) {
           parsedReactions[emojiIdToneString].count = parsedReactions[emojiIdToneString].count - 1;
+          added = false;
+          count = parsedReactions[emojiIdToneString].count;
           if (parsedReactions[emojiIdToneString].count === 0) {
             delete parsedReactions[emojiIdToneString]
           } else {
@@ -398,6 +400,8 @@ const addEmojiReaction = async (req, res) => {
           }
         } else {
           parsedReactions[emojiIdToneString].count = parsedReactions[emojiIdToneString].count + 1;
+          added = true;
+          count = parsedReactions[emojiIdToneString].count;
           parsedReactions[emojiIdToneString][req.user.id] = new Date();
         }
       } else {
@@ -408,6 +412,8 @@ const addEmojiReaction = async (req, res) => {
             [req.user.id]: new Date(),
           },
         };
+        added = true;
+        count = 1;
       }
     } else {
       parsedReactions = {
@@ -416,6 +422,8 @@ const addEmojiReaction = async (req, res) => {
           [req.user.id]: new Date(),
         },
       };
+      added = true;
+      count = 1
     }
 
     let stringifiedParsedReactions =
@@ -423,14 +431,24 @@ const addEmojiReaction = async (req, res) => {
         ? null
         : JSON.stringify(parsedReactions);
 
-    let updatedRow = await knex("messages")
+    await knex("messages")
       .where({ m_id: messageId })
       .update({
         m_reactions: stringifiedParsedReactions,
       })
       .returning("*");
 
-    return res.send("ok");
+    let reactionResObj = {
+      messageId: +messageId,
+      emoji: {
+        id: emojiId,
+        skin: skin
+      },
+      me: added,
+      count: count
+    }
+
+    return res.status(200).send(okResponse(reactionResObj, "OK"));
   } catch (error) {
     console.log(error);
     return res.status(500).send(errorResponse({}, "Something went wrong!"));

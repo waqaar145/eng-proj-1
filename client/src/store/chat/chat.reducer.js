@@ -238,6 +238,54 @@ export const Chat = (state = initalState, action = {}) => {
         chats: state.chats
       }
 
+    case chatActionTypes.UPDATE_EMOJI_IN_MESSAGES:
+      let skinTone = action.data.emoji.skin ? String(action.data.emoji.skin) : "0"; 
+      let emojiIdToneString = action.data.emoji.id + "-" + skinTone;
+
+      let messageReactionsObject = state.chats[action.data.messageId].reactions
+      if (!messageReactionsObject) {
+        messageReactionsObject = {
+          [emojiIdToneString]: {
+            count: action.data.count,
+            me: action.data.me
+          }
+        }
+      } else {
+        if (action.data.count === 0 && !action.data.me && messageReactionsObject[emojiIdToneString]) {
+          delete messageReactionsObject[emojiIdToneString]; // removing selected emoji object from reactions object
+        } else {
+          if (messageReactionsObject[emojiIdToneString]) {
+            if (action.data.count > 0 && !action.data.me) {
+              messageReactionsObject[emojiIdToneString].count = action.data.count;
+              messageReactionsObject[emojiIdToneString].me = false
+            } else {
+              messageReactionsObject[emojiIdToneString].count = action.data.count;
+              messageReactionsObject[emojiIdToneString].me = true
+            }
+          } else {
+            messageReactionsObject = {
+              ...messageReactionsObject,
+              [emojiIdToneString]: {
+                count: action.data.count,
+                me: action.data.me
+              }
+            }
+          }
+        }
+      }
+      
+
+      return {
+        ...state,
+        chats: {
+          ...state.chats,
+          [action.data.messageId]: {
+            ...state.chats[action.data.messageId],
+            reactions: messageReactionsObject
+          }
+        }
+      }
+
     default:
       return state;
   }

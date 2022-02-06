@@ -52,6 +52,69 @@
   }
 }
 
+@mixin chat_container {
+  display: grid;
+
+  @include respond-to('small') {
+    grid-template-columns: 1fr;
+  }
+
+  .chatSidebar {
+    height: 100%;
+    z-index: 1;
+    border-top: 1px solid $victoria;
+    background-color: $persian-blue;
+
+    @include respond-to('small') {
+      grid-template-columns: 1fr;
+      display: none;
+    }
+
+    @include chat_sidebar;
+  }
+
+  .chatContent {
+    z-index: 1;
+    background-color: $bg-color-1;
+    position: relative;
+    height: calc(100vh - 40px);
+
+    .chatContentHeader {
+      height: 70px;
+      border-bottom: 1px solid $c-gray-80;
+      font-weight: 500;
+      @include chatProfileUser($c-gray-20, $c-gray-30);
+    }
+
+    .chatContentBody {
+      overflow-y: scroll;
+      display: flex;
+      flex-direction: column-reverse;
+      height: calc(100vh - 50px - 40px - 105px);
+
+      .messageWrapperContainer {
+        justify-content: flex-end;
+
+        .childMessages {
+          order: -1;
+          position: relative;
+          border-top: 1px solid $athens-gray;
+        }
+      }
+    }
+
+    .chatContentTextArea {
+      background-color: $bg-color-1;
+      padding: 0px 5px;
+      position: absolute;
+      // bottom: 0;
+      width: 100%;
+      min-height: 50px;
+      box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+    }
+  }
+}
+
 .chatWrapper {
   
   .header {
@@ -90,67 +153,21 @@
 
   .chatContainer {
     height: calc(100vh - 40px);
-    display: grid;
     grid-template-columns: 2fr 8fr;
 
-    @include respond-to('small') {
-      grid-template-columns: 1fr;
+    @include chat_container;
+  }
+
+  .chatContainerWithThread {
+    height: calc(100vh - 40px);
+    grid-template-columns: 2fr 5fr 3fr;
+    animation: 0.3s ease-in;
+
+    .threadWrapper {
+      background-color: red;
     }
 
-    .chatSidebar {
-      height: 100%;
-      z-index: 1;
-      border-top: 1px solid $victoria;
-      background-color: $persian-blue;
-
-      @include respond-to('small') {
-        grid-template-columns: 1fr;
-        display: none;
-      }
-
-      @include chat_sidebar;
-    }
-
-    .chatContent {
-      z-index: 1;
-      background-color: $bg-color-1;
-      position: relative;
-      height: calc(100vh - 40px);
-
-      .chatContentHeader {
-        height: 70px;
-        border-bottom: 1px solid $c-gray-80;
-        font-weight: 500;
-        @include chatProfileUser($c-gray-20, $c-gray-30);
-      }
-
-      .chatContentBody {
-        overflow-y: scroll;
-        display: flex;
-        flex-direction: column-reverse;
-        height: calc(100vh - 50px - 40px - 105px);
-
-        .messageWrapperContainer {
-          justify-content: flex-end;
-  
-          .childMessages {
-            order: -1;
-            position: relative;
-            border-top: 1px solid $athens-gray;
-          }
-        }
-      }
-
-      .chatContentTextArea {
-        background-color: $bg-color-1;
-        padding: 0px 5px;
-        position: absolute;
-        // bottom: 0;
-        width: 100%;
-        min-height: 50px;
-        box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
-      }
-    }
+    @include chat_container;
   }
 }
 

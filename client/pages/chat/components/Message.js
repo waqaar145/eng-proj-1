@@ -1,4 +1,4 @@
-import styles from "./../../../src/assets/styles/chat/MessageBox1.module.scss";
+import styles from "./../../../src/assets/styles/chat/Message.module.scss";
 import emojiStyles from "./../../../src/assets/styles/components/Emoji/emoji.module.scss"
 import Moment from "react-moment";
 import {
@@ -26,7 +26,7 @@ const convertToCode = (key) => {
 let messageIdKey = "message-id-";
 let messageActionIdKey = "message-action-id-";
 
-const ShowMessage = ({ message, handleEmojiPicker, handleChangeReaction }) => {
+const ShowMessage = ({ message, handleEmojiPicker, handleChangeReaction, handleCurrentActiveThread }) => {
   return (
     <div className={styles.messageTextWrapper}>
       <div dangerouslySetInnerHTML={{__html: message.message}} />
@@ -53,7 +53,7 @@ const ShowMessage = ({ message, handleEmojiPicker, handleChangeReaction }) => {
           <div className={styles.icon} onClick={() => handleEmojiPicker(`${messageActionIdKey}${message.id}`, message.id)}>
             <MdOutlineEmojiEmotions />
           </div>
-          <div className={styles.icon}>
+          <div className={styles.icon} onClick={() => handleCurrentActiveThread(message.id)}>
             <MdReply />
           </div>
           <div className={styles.icon}>
@@ -68,7 +68,7 @@ const ShowMessage = ({ message, handleEmojiPicker, handleChangeReaction }) => {
   );
 };
 
-const MessageBox = ({ message, handleEmojiPicker, handleChangeReaction }) => {
+const MessageBox = ({ message, handleEmojiPicker, handleChangeReaction, handleCurrentActiveThread }) => {
   return (
     <div className={`${styles.messageBoxWrapper}`}>
       <div className={`${styles.profileWrapper} ${styles.messagePos}`} id={`${messageIdKey}${message.id}`}>
@@ -90,6 +90,7 @@ const MessageBox = ({ message, handleEmojiPicker, handleChangeReaction }) => {
               firstMessageInGroup={true} 
               handleEmojiPicker={handleEmojiPicker}
               handleChangeReaction={handleChangeReaction}
+              handleCurrentActiveThread={handleCurrentActiveThread}
             />
           </div>
         </div>
@@ -111,6 +112,7 @@ const MessageBox = ({ message, handleEmojiPicker, handleChangeReaction }) => {
                     firstMessageInGroup={false}
                     handleEmojiPicker={handleEmojiPicker}
                     handleChangeReaction={handleChangeReaction}
+                    handleCurrentActiveThread={handleCurrentActiveThread}
                   />
                 </div>
               </div>

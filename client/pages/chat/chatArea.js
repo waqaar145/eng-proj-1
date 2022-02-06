@@ -17,7 +17,7 @@ const EmojiDropdown = dynamic(
   { ssr: false }
 );
 
-const ChatArea = ({isTabletOrMobile, styles}) => {
+const ChatArea = ({isTabletOrMobile, styles, handleCurrentActiveThread}) => {
 
   const dispatch = useDispatch()
 
@@ -175,6 +175,7 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
                     loggedInUser={loggedInUser}
                     handleEmojiPicker={handleEmojiPicker}
                     handleChangeReaction={handleChangeReaction}
+                    handleCurrentActiveThread={handleCurrentActiveThread}
                   />
                 );
               })}

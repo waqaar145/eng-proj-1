@@ -80,8 +80,8 @@ const UsersList = ({
             ) : (
               <div className={styles.noData}>
                 <div className={styles.message}>
-                  {`You haven't ${dm ? "added" : "created"} any ${
-                    dm ? "DMs" : "groups"
+                  {`You haven't ${dm ? "added" : "created/part of"} any ${
+                    dm ? "DMs" : "group"
                   }`}
                 </div>
                 <div className={styles.action}>

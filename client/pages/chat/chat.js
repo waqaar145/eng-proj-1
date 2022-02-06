@@ -3,17 +3,18 @@ import dynamic from "next/dynamic";
 import LoggedinUserProfile from "./components/loggedInUserProfile";
 import UsersList from "./components/usersList";
 import styles from "./../../src/assets/styles/chat/Chat.module.scss";
-import useModal from "./../../src/hooks/useModal";
-import useNav from "./../../src/hooks/useNav";
+import useModal from "../../src/hooks/useModal";
+import useNav from "../../src/hooks/useNav";
 import { useState, useEffect, useMemo, memo } from "react";
 import { useMediaQuery } from "react-responsive";
 import SideNavStyles from "./../../src/assets/styles/chat/SideNav.module.scss";
 import { useSelector, useDispatch } from "react-redux";
 import { chatService } from "../../src/services";
-import usePagination from "./../../src/hooks/usePagination";
+import usePagination from "../../src/hooks/usePagination";
 import { chatActionTypes } from "../../src/store/chat/chat.actiontype";
 import ChatArea from "./chatArea";
 import { useRouter } from "next/router";
+import ActiveThread from './components/Thread/ActiveThread.js'
 
 const SideNavbar = dynamic(() => import("./components/SideNavbar"), {
   ssr: false,
@@ -128,7 +129,6 @@ const Chat = () => {
     if (dm) {
       getDMs({pageNo: currentPage + 1})
     }
-
     if (!group && !dm) {
       getPubGroups({pageNo: currentPage + 1})
     }
@@ -136,11 +136,18 @@ const Chat = () => {
 
   const handleAddUserOrGroupModal = () => {}
 
+  // Active Thread
+  const [currentActiveThread, setCurrentActiveThread] = useState(null);
+
+  const handleCurrentActiveThread = (id) => {
+    setCurrentActiveThread(id)
+    console.log(id)
+  }
 
   return (
     <div className={styles.chatWrapper}>
       <Header styles={styles} handleNav={handleNav} />
-      <div className={styles.chatContainer}>
+      <div className={`${currentActiveThread ? styles.chatContainerWithThread : styles.chatContainer}`}>
         <div className={styles.chatSidebar}>
           <div className={styles.loggedinUser}>
             {loggedInUser && (
@@ -162,8 +169,18 @@ const Chat = () => {
         <div className={styles.chatContent}>
           <ChatArea 
             isTabletOrMobile={isTabletOrMobile}
-            styles={styles}/>
+            styles={styles}
+            handleCurrentActiveThread={handleCurrentActiveThread}/>
         </div>
+        {
+          currentActiveThread
+          &&
+          <div className={styles.threadWrapper}>
+            <ActiveThread
+
+             />
+          </div>
+        }
       </div>
       {showSideNav && (
         <SideNavbar show={showSideNav} toggle={handleNav}>

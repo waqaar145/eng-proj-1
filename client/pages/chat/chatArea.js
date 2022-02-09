@@ -7,17 +7,17 @@ import { chatService } from "../../src/services";
 import {shallowEqual, useDispatch, useSelector} from 'react-redux'
 import { chatActionTypes } from "../../src/store/chat/chat.actiontype";
 import usePagination from "./../../src/hooks/usePagination";
-import { DateWihtoutTime } from './../../src/utils/date'
 import useDropdown from "../../src/hooks/useDropdown";
 import useReactionChage from "./hooks/useReactionChange";
 import EditorArea from "./components/EditorArea";
+import {convertMessagesArrayToObjectForm} from './utils/messageFormatter'
 
 const EmojiDropdown = dynamic(
   () => import("./components/EmojiDropdown"),
   { ssr: false }
 );
 
-const ChatArea = ({isTabletOrMobile, styles, handleCurrentActiveThread}) => {
+const ChatArea = ({isTabletOrMobile, styles}) => {
 
   const dispatch = useDispatch()
 
@@ -96,31 +96,7 @@ const ChatArea = ({isTabletOrMobile, styles, handleCurrentActiveThread}) => {
   }
 
   // CONVERTING MESSAGES OBJECT TO DATE WISE MESSAGES OBJECT
-  let updatedMessages = {};
-  let prevMessage = null;
-  for (const [key, value] of Object.entries(messages)) {
-    if (!prevMessage) {
-      updatedMessages = {...updatedMessages, [key]: value};
-      prevMessage = value;
-    } else {
-      if (
-        prevMessage.userId === value.userId 
-        &&
-        DateWihtoutTime(prevMessage.createdAt) === DateWihtoutTime(value.createdAt)
-      ) {
-        updatedMessages = {
-          ...updatedMessages, 
-          [prevMessage.id]: {
-            ...updatedMessages[prevMessage.id],
-            groupedMessages: 'groupedMessages' in updatedMessages[prevMessage.id] ? {...updatedMessages[prevMessage.id].groupedMessages, [value.id]: value} : {[value.id]: value}
-          }
-        }
-      } else {
-        updatedMessages = {...updatedMessages, [key]: value};
-        prevMessage = value
-      }
-    }
-  }
+  let updatedMessages = convertMessagesArrayToObjectForm(messages);
 
   // HANDLING EMOJI RELATED EVENTS
   const { toggle: toggleEmojiDropdown, show: showEmojiDropdown } = useDropdown();
@@ -138,6 +114,12 @@ const ChatArea = ({isTabletOrMobile, styles, handleCurrentActiveThread}) => {
   const handleChangeReaction = (messageId, emoji) => {
     updateReaction(messageId, emoji)
   }
+
+  // Handle Current Thread
+  const handleCurrentActiveThread = (id) => {
+    dispatch({type: chatActionTypes.THREAD_MESSAGE_ID, data: id || null})
+  }
+
 
   return (
     <>
@@ -168,10 +150,8 @@ const ChatArea = ({isTabletOrMobile, styles, handleCurrentActiveThread}) => {
                 return (
                   <SinlgeMessage
                     styles={styles}
-                    handleProfileDetailModal={handleProfileDetailModal}
                     key={messageId}
                     message={updatedMessages[messageId]}
-                    isTabletOrMobile={isTabletOrMobile}
                     loggedInUser={loggedInUser}
                     handleEmojiPicker={handleEmojiPicker}
                     handleChangeReaction={handleChangeReaction}

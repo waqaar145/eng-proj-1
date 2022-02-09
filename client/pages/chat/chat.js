@@ -5,7 +5,7 @@ import UsersList from "./components/usersList";
 import styles from "./../../src/assets/styles/chat/Chat.module.scss";
 import useModal from "../../src/hooks/useModal";
 import useNav from "../../src/hooks/useNav";
-import { useState, useEffect, useMemo, memo } from "react";
+import { useEffect } from "react";
 import { useMediaQuery } from "react-responsive";
 import SideNavStyles from "./../../src/assets/styles/chat/SideNav.module.scss";
 import { useSelector, useDispatch } from "react-redux";
@@ -66,6 +66,7 @@ const Chat = () => {
   const dispatch = useDispatch();
 
   const loggedInUser = useSelector((state) => state.Auth.loggedInUser);
+  const currentActiveThread = useSelector(state => state.Chat.currenThreadMessageId);
 
   const isTabletOrMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
@@ -136,14 +137,6 @@ const Chat = () => {
 
   const handleAddUserOrGroupModal = () => {}
 
-  // Active Thread
-  const [currentActiveThread, setCurrentActiveThread] = useState(null);
-
-  const handleCurrentActiveThread = (id) => {
-    setCurrentActiveThread(id)
-    console.log(id)
-  }
-
   return (
     <div className={styles.chatWrapper}>
       <Header styles={styles} handleNav={handleNav} />
@@ -170,14 +163,14 @@ const Chat = () => {
           <ChatArea 
             isTabletOrMobile={isTabletOrMobile}
             styles={styles}
-            handleCurrentActiveThread={handleCurrentActiveThread}/>
+          />
         </div>
         {
           currentActiveThread
           &&
-          <div className={styles.threadWrapper}>
+          <div>
             <ActiveThread
-
+              currentActiveThread={currentActiveThread}
              />
           </div>
         }

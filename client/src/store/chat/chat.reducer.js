@@ -23,6 +23,7 @@ const initalState = {
     totalEnteries: 0
   },
   currentSelectedGroup: {},
+  currenThreadMessageId: null,
   messageIdForRepliesActive: null,
   chats: {},
   currentPage: 1,
@@ -126,6 +127,12 @@ export const Chat = (state = initalState, action = {}) => {
       return {
         ...state,
         currentSelectedGroup: action.data.group
+      }
+
+    case chatActionTypes.THREAD_MESSAGE_ID:
+      return {
+        ...state,
+        currenThreadMessageId: action.data
       }
 
     case chatActionTypes.CURRENT_CHAT_DATA:

@@ -1,0 +1,36 @@
+@import './../variable';
+
+.threadWrapper {
+  background-color: $bg-color-1;
+  height: 100vh;
+  overflow-y: scroll;
+  position: relative;
+  border-left: 1px solid $c-gray-80;
+
+  .header {
+    padding: 5px 5px;
+    height: 70px;
+    top: 0;
+    position: sticky;
+    background-color: $bg-color-1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid $c-gray-80;
+
+    .title {
+      .heading {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-right: 10px;
+      }
+      .group {
+        font-size: 0.9rem;
+      }
+    }
+  }
+
+  .container {
+    // padding: 5px 5px;
+  }
+}

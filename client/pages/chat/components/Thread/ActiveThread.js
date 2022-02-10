@@ -2,6 +2,7 @@ import {useSelector} from 'react-redux'
 import styles from "./../../../../src/assets/styles/chat/Thread.module.scss";
 import { convertMessagesArrayToObjectForm } from '../../utils/messageFormatter';
 import SinlgeMessage from '../Message';
+import EditorArea from './../EditorArea'
 
 const ActiveThread = ({ currentActiveThread }) => {
 
@@ -34,6 +35,18 @@ const ActiveThread = ({ currentActiveThread }) => {
             />
           );
         })}
+        {
+          Array.from(Array(5), (e, i) => {
+            return (
+              <div key={i}>
+                This is test {i+1}
+              </div>
+            )
+          })
+        }
+        <div className={styles.threadTextArea}>
+          <EditorArea />
+        </div>
       </div>
     </div>
   );

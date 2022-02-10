@@ -2,7 +2,7 @@
 
 .threadWrapper {
   background-color: $bg-color-1;
-  height: 100vh;
+  height: calc(100vh - 40px);
   overflow-y: scroll;
   position: relative;
   border-left: 1px solid $c-gray-80;
@@ -17,6 +17,7 @@
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid $c-gray-80;
+    z-index: 10;
 
     .title {
       .heading {
@@ -31,6 +32,16 @@
   }
 
   .container {
-    // padding: 5px 5px;
+    position: relative;
+
+    .threadTextArea {
+      background-color: $bg-color-1;
+      padding: 0px 5px;
+      position: sticky;
+      bottom: 0;
+      width: 100%;
+      min-height: 50px;
+      box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+    }
   }
 }

@@ -7,6 +7,7 @@ import EditorArea from './../EditorArea';
 import { useDispatch } from 'react-redux';
 import useEmojiActions from './../../hooks/emojiActions'
 import EmojiDropdown from './../EmojiDropdown'
+import CloseIcon from './../../../../src/components/Extra/CloseIcon'
 
 let parentMessageIdKey = "parent-thread-message-id-";
 let parentMessageActionIdKey = "parent-thread-message-action-id-";
@@ -21,11 +22,8 @@ const ActiveThread = ({ currentActiveThread }) => {
   let parentMessage = convertMessagesArrayToObjectForm({[message.id]: message});
   let threadReplies = parentMessage[message.id].replies;
 
-  console.log(threadReplies)
-
   let updatedMessages = {}
   if (threadReplies) {
-    // CONVERTING MESSAGES OBJECT TO DATE WISE MESSAGES OBJECT
     updatedMessages = convertMessagesArrayToObjectForm(threadReplies);
   }
 
@@ -53,8 +51,8 @@ const ActiveThread = ({ currentActiveThread }) => {
           <span className={styles.heading}>Thread</span>
           <span className={styles.group}>(#{currentSelectedGroup.groupName})</span>
         </div>
-        <div className={styles.action} onClick={() => closeThread()}>
-          close
+        <div>
+          <CloseIcon onClick={() => closeThread()}/>
         </div>
       </div>
       <div className={styles.container}>

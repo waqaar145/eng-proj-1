@@ -60,7 +60,7 @@
   }
 
   .chatSidebar {
-    height: 100%;
+    height: calc(100vh - 40px);
     z-index: 1;
     border-top: 1px solid $victoria;
     background-color: $persian-blue;

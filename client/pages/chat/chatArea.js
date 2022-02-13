@@ -7,7 +7,7 @@ import { chatService } from "../../src/services";
 import {shallowEqual, useDispatch, useSelector} from 'react-redux'
 import { chatActionTypes } from "../../src/store/chat/chat.actiontype";
 import usePagination from "./../../src/hooks/usePagination";
-import useDropdown from "../../src/hooks/useDropdown";
+import useEmojiActions from "./hooks/emojiActions";
 import useReactionChage from "./hooks/useReactionChange";
 import EditorArea from "./components/EditorArea";
 import {convertMessagesArrayToObjectForm} from './utils/messageFormatter'
@@ -16,6 +16,9 @@ const EmojiDropdown = dynamic(
   () => import("./components/EmojiDropdown"),
   { ssr: false }
 );
+
+let messageIdKey = "message-id-";
+let messageActionIdKey = "message-action-id-";
 
 const ChatArea = ({isTabletOrMobile, styles}) => {
 
@@ -40,7 +43,7 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
     if (groupId) {
       getChats(groupId, {pageNo: 1});
     }
-    document.body.style.overflow = 'hidden';
+    // document.body.style.overflow = 'hidden';
   }, [groupId]);
 
   const handleProfileDetailModal = () => {}
@@ -99,27 +102,30 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
   let updatedMessages = convertMessagesArrayToObjectForm(messages);
 
   // HANDLING EMOJI RELATED EVENTS
-  const { toggle: toggleEmojiDropdown, show: showEmojiDropdown } = useDropdown();
-  const [currentEmojiMessageId, setCurrentEmojiMessageId] = useState(null);
-
-  const handleEmojiPicker = (messageElId, id) => {
-    toggleEmojiDropdown(messageElId)
-    setCurrentEmojiMessageId(id)
-  }
-
   const {
-    updateReaction
-  } = useReactionChage();
-
-  const handleChangeReaction = (messageId, emoji) => {
-    updateReaction(messageId, emoji)
-  }
+    showEmojiDropdown,
+    toggleEmojiDropdown,
+    currentEmojiMessageId,
+    handleEmojiPicker,
+    handleChangeReaction
+  } = useEmojiActions();
 
   // Handle Current Thread
   const handleCurrentActiveThread = (id) => {
     dispatch({type: chatActionTypes.THREAD_MESSAGE_ID, data: id || null})
+    getThreadReplies(id)
   }
 
+  const getThreadReplies = async (id) => {
+    try {
+      let currentPage = 1;
+      const paramsObj = {...currentState, pageNo: currentPage, pageSize: 1000}
+      let {data: {data}} = await chatService.getThreadReplies({groupId, messageId: id}, paramsObj);
+      await dispatch({type: chatActionTypes.THREAD_REPLIES, data: {...data, currentPage, messageId: id}})
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <>
@@ -152,10 +158,13 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
                     styles={styles}
                     key={messageId}
                     message={updatedMessages[messageId]}
+                    messageIdKey={messageIdKey}
+                    messageActionIdKey={messageActionIdKey}
                     loggedInUser={loggedInUser}
                     handleEmojiPicker={handleEmojiPicker}
                     handleChangeReaction={handleChangeReaction}
                     handleCurrentActiveThread={handleCurrentActiveThread}
+                    thread={false}
                   />
                 );
               })}
@@ -168,7 +177,7 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
         </div>
       </div>
       <div className={styles.chatContentTextArea}>
-        <EditorArea groupId={groupId}/>
+        <EditorArea parentId={null}/>
       </div>
       <EmojiDropdown
         show={showEmojiDropdown}

@@ -2,11 +2,8 @@
 
 .threadWrapper {
   background-color: $bg-color-1;
-  height: calc(100vh - 40px);
-  overflow-y: scroll;
-  position: relative;
   border-left: 1px solid $c-gray-80;
-
+  
   .header {
     padding: 5px 5px;
     height: 70px;
@@ -32,16 +29,21 @@
   }
 
   .container {
-    position: relative;
+    height: calc(100vh - 110px - 85px); // 85px is height of text editor from computed property
+    overflow-y: scroll;
 
-    .threadTextArea {
-      background-color: $bg-color-1;
-      padding: 0px 5px;
-      position: sticky;
-      bottom: 0;
-      width: 100%;
-      min-height: 50px;
-      box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+    .separator {
+      padding: 10px 10px;
+      color: $c-gray-60;
+      font-size: 0.9rem;
     }
+  }
+
+  .threadTextArea {
+    background-color: $bg-color-1;
+    padding: 0px 5px;
+    width: 100%;
+    min-height: 50px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
   }
 }

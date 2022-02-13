@@ -91,7 +91,7 @@ export const chatService = {
       throw error
     }
   },
-  async getReplies ({groupId, messageId}, params) {
+  async getThreadReplies ({groupId, messageId}, params) {
     try {
       const result = await HTTPClient.get(`/api/v1/chat/replies/${groupId}/${messageId}?${queryString.stringify(params)}`);
       return result;

@@ -193,13 +193,7 @@ export const Chat = (state = initalState, action = {}) => {
         chats: state.chats
       }
 
-    case chatActionTypes.CURRENT_MESSAGE_ID_ACTIVE_FOR_REPLIES_IN_MOBILE:
-      return {
-        ...state,
-        messageIdForRepliesActive: action.data
-      }
-
-    case chatActionTypes.GET_REPLIES:
+    case chatActionTypes.THREAD_REPLIES:
       let repliesObjs = convertArrayIntoObject(action.data.chats);
       return {
         ...state,
@@ -231,65 +225,101 @@ export const Chat = (state = initalState, action = {}) => {
         }
       }
 
-    case chatActionTypes.UPDATE_REACTION:
-      const { messageId: mId, id, parentId: pId, liked, totalLikes } = action.data;
-      if (pId) {
-        state.chats[pId].replies[mId].liked = liked;
-        state.chats[pId].replies[mId].totalLikes = totalLikes
-      } else {
-        state.chats[mId].liked = liked;
-        state.chats[mId].totalLikes = totalLikes;
-      }
-      return {
-        ...state,
-        chats: state.chats
-      }
-
     case chatActionTypes.UPDATE_EMOJI_IN_MESSAGES:
+      console.log(action.data)
       let skinTone = action.data.emoji.skin ? String(action.data.emoji.skin) : "0"; 
       let emojiIdToneString = action.data.emoji.id + "-" + skinTone;
 
-      let messageReactionsObject = state.chats[action.data.messageId].reactions
-      if (!messageReactionsObject) {
-        messageReactionsObject = {
-          [emojiIdToneString]: {
-            count: action.data.count,
-            me: action.data.me
-          }
-        }
-      } else {
-        if (action.data.count === 0 && !action.data.me && messageReactionsObject[emojiIdToneString]) {
-          delete messageReactionsObject[emojiIdToneString]; // removing selected emoji object from reactions object
-        } else {
-          if (messageReactionsObject[emojiIdToneString]) {
-            if (action.data.count > 0 && !action.data.me) {
-              messageReactionsObject[emojiIdToneString].count = action.data.count;
-              messageReactionsObject[emojiIdToneString].me = false
-            } else {
-              messageReactionsObject[emojiIdToneString].count = action.data.count;
-              messageReactionsObject[emojiIdToneString].me = true
+      if (!action.data.parentId) {
+        let messageReactionsObject = state.chats[action.data.messageId].reactions
+        if (!messageReactionsObject) {
+          messageReactionsObject = {
+            [emojiIdToneString]: {
+              count: action.data.count,
+              me: action.data.me
             }
+          }
+        } else {
+          if (action.data.count === 0 && !action.data.me && messageReactionsObject[emojiIdToneString]) {
+            delete messageReactionsObject[emojiIdToneString]; // removing selected emoji object from reactions object
           } else {
-            messageReactionsObject = {
-              ...messageReactionsObject,
-              [emojiIdToneString]: {
-                count: action.data.count,
-                me: action.data.me
+            if (messageReactionsObject[emojiIdToneString]) {
+              if (action.data.count > 0 && !action.data.me) {
+                messageReactionsObject[emojiIdToneString].count = action.data.count;
+                messageReactionsObject[emojiIdToneString].me = false
+              } else {
+                messageReactionsObject[emojiIdToneString].count = action.data.count;
+                messageReactionsObject[emojiIdToneString].me = true
+              }
+            } else {
+              messageReactionsObject = {
+                ...messageReactionsObject,
+                [emojiIdToneString]: {
+                  count: action.data.count,
+                  me: action.data.me
+                }
               }
             }
           }
         }
-      }
-      
+        
 
-      return {
-        ...state,
-        chats: {
-          ...state.chats,
-          [action.data.messageId]: {
-            ...state.chats[action.data.messageId],
-            reactions: messageReactionsObject
+        return {
+          ...state,
+          chats: {
+            ...state.chats,
+            [action.data.messageId]: {
+              ...state.chats[action.data.messageId],
+              reactions: messageReactionsObject
+            }
           }
+        }
+      } else {
+        let messageReactionsObject = state.chats[action.data.parentId].replies[action.data.messageId].reactions
+        if (!messageReactionsObject) {
+          messageReactionsObject = {
+            [emojiIdToneString]: {
+              count: action.data.count,
+              me: action.data.me
+            }
+          }
+        } else {
+          if (action.data.count === 0 && !action.data.me && messageReactionsObject[emojiIdToneString]) {
+            delete messageReactionsObject[emojiIdToneString]; // removing selected emoji object from reactions object
+          } else {
+            if (messageReactionsObject[emojiIdToneString]) {
+              if (action.data.count > 0 && !action.data.me) {
+                messageReactionsObject[emojiIdToneString].count = action.data.count;
+                messageReactionsObject[emojiIdToneString].me = false
+              } else {
+                messageReactionsObject[emojiIdToneString].count = action.data.count;
+                messageReactionsObject[emojiIdToneString].me = true
+              }
+            } else {
+              messageReactionsObject = {
+                ...messageReactionsObject,
+                [emojiIdToneString]: {
+                  count: action.data.count,
+                  me: action.data.me
+                }
+              }
+            }
+          }
+        }
+        
+
+        return {
+          ...state,
+          // chats: {
+          //   ...state.chats,
+          //   [action.data.parentId]: {
+          //     ...state.chats[action.data.parentId].replies,
+          //     [action.data.messageId]: {
+          //       ...state.chats[action.data.parentId].replies[action.data.messageId],
+          //       reactions: messageReactionsObject
+          //     }
+          //   }
+          // }
         }
       }
 

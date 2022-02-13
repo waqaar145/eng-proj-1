@@ -23,10 +23,7 @@ const convertToCode = (key) => {
   }
 }
 
-let messageIdKey = "message-id-";
-let messageActionIdKey = "message-action-id-";
-
-const ShowMessage = ({ message, handleEmojiPicker, handleChangeReaction, handleCurrentActiveThread }) => {
+const ShowMessage = ({ message, handleEmojiPicker, handleChangeReaction, handleCurrentActiveThread, thread, messageIdKey, messageActionIdKey }) => {
   return (
     <div className={styles.messageTextWrapper}>
       <div dangerouslySetInnerHTML={{__html: message.message}} />
@@ -53,9 +50,13 @@ const ShowMessage = ({ message, handleEmojiPicker, handleChangeReaction, handleC
           <div className={styles.icon} onClick={() => handleEmojiPicker(`${messageActionIdKey}${message.id}`, message.id)}>
             <MdOutlineEmojiEmotions />
           </div>
-          <div className={styles.icon} onClick={() => handleCurrentActiveThread(message.id)}>
-            <MdReply />
-          </div>
+          {
+            !thread
+            &&
+            <div className={styles.icon} onClick={() => handleCurrentActiveThread(message.id)}>
+              <MdReply />
+            </div>
+          }
           <div className={styles.icon}>
             <MdDeleteOutline />
           </div>
@@ -64,11 +65,18 @@ const ShowMessage = ({ message, handleEmojiPicker, handleChangeReaction, handleC
           </div>
         </div>
       </div>
+      {
+        !thread
+        &&
+        <div className={styles.viewThread}>
+          View replies
+        </div>
+      }
     </div>
   );
 };
 
-const MessageBox = ({ message, handleEmojiPicker, handleChangeReaction, handleCurrentActiveThread }) => {
+const MessageBox = ({ message, handleEmojiPicker, handleChangeReaction, handleCurrentActiveThread, thread, messageIdKey, messageActionIdKey}) => {
   return (
     <div className={`${styles.messageBoxWrapper}`}>
       <div className={`${styles.profileWrapper} ${styles.messagePos}`} id={`${messageIdKey}${message.id}`}>
@@ -87,10 +95,13 @@ const MessageBox = ({ message, handleEmojiPicker, handleChangeReaction, handleCu
           <div className={styles.messageTextWrapper}>
             <ShowMessage 
               message={message} 
+              messageIdKey={messageIdKey}
+              messageActionIdKey={messageActionIdKey}
               firstMessageInGroup={true} 
               handleEmojiPicker={handleEmojiPicker}
               handleChangeReaction={handleChangeReaction}
               handleCurrentActiveThread={handleCurrentActiveThread}
+              thread={thread}
             />
           </div>
         </div>
@@ -109,10 +120,13 @@ const MessageBox = ({ message, handleEmojiPicker, handleChangeReaction, handleCu
                   <ShowMessage
                     message={message.groupedMessages[messageId]}
                     key={messageId}
+                    messageIdKey={messageIdKey}
+                    messageActionIdKey={messageActionIdKey}
                     firstMessageInGroup={false}
                     handleEmojiPicker={handleEmojiPicker}
                     handleChangeReaction={handleChangeReaction}
                     handleCurrentActiveThread={handleCurrentActiveThread}
+                    thread={thread}
                   />
                 </div>
               </div>

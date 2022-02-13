@@ -3,11 +3,17 @@ import Editor from "./../../../src/components/Form/InputEditor";
 import { chatService } from "../../../src/services";
 import { useDispatch } from 'react-redux';
 import { chatActionTypes } from "../../../src/store/chat/chat.actiontype";
+import { useRouter } from "next/router";
 
 
-const EditorArea = ({groupId}) => {
+const EditorArea = ({parentId}) => {
 
   const dispatch = useDispatch();
+
+  const router = useRouter();
+  const {
+    groupId
+  } = router.query;
 
   const [value, setValue] = useState("")
 
@@ -26,10 +32,14 @@ const EditorArea = ({groupId}) => {
           let chatObj = {
             groupId,
             message: value,
-            parentId: null
+            parentId: parentId
           }
           let {data: {data}} = await chatService.addChat(chatObj);
-          dispatch({type: chatActionTypes.ADD_NEW_MESSAGE, data: {[data.id]: data}})
+          if (!parentId) {
+            dispatch({type: chatActionTypes.ADD_NEW_MESSAGE, data: {[data.id]: data}})
+          } else {
+            dispatch({type: chatActionTypes.REPLY_MESSAGE, data})
+          }
         } catch (error) {
           console.log(error)
         }

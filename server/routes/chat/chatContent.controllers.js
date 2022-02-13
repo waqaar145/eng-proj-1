@@ -376,11 +376,14 @@ const addEmojiReaction = async (req, res) => {
 
   try {
     let result = await knex("messages")
-      .select("m_reactions as reactions")
+      .select(
+        "m_reactions as reactions", 
+        "m_parent_id as parentId"
+      )
       .where({ m_id: messageId })
       .returning("*");
 
-    let { reactions } = result[0];
+    let { reactions, parentId } = result[0];
 
     let skinTone = skin ? String(skin) : "0"; 
     let emojiIdToneString = emojiId + "-" + skinTone;
@@ -445,7 +448,8 @@ const addEmojiReaction = async (req, res) => {
         skin: skin
       },
       me: added,
-      count: count
+      count: count,
+      parentId: parentId || null
     }
 
     return res.status(200).send(okResponse(reactionResObj, "OK"));

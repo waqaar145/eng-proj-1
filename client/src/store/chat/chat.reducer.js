@@ -310,16 +310,19 @@ export const Chat = (state = initalState, action = {}) => {
 
         return {
           ...state,
-          // chats: {
-          //   ...state.chats,
-          //   [action.data.parentId]: {
-          //     ...state.chats[action.data.parentId].replies,
-          //     [action.data.messageId]: {
-          //       ...state.chats[action.data.parentId].replies[action.data.messageId],
-          //       reactions: messageReactionsObject
-          //     }
-          //   }
-          // }
+          chats: {
+            ...state.chats,
+            [action.data.parentId]: {
+              ...state.chats[action.data.parentId],
+              replies: {
+                ...state.chats[action.data.parentId].replies,
+                [action.data.messageId]: {
+                  ...state.chats[action.data.parentId].replies[action.data.messageId],
+                  reactions: messageReactionsObject
+                }
+              }
+            }
+          }
         }
       }
 

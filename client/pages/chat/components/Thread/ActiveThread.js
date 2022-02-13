@@ -21,6 +21,14 @@ const ActiveThread = ({ currentActiveThread }) => {
   let parentMessage = convertMessagesArrayToObjectForm({[message.id]: message});
   let threadReplies = parentMessage[message.id].replies;
 
+  console.log(threadReplies)
+
+  let updatedMessages = {}
+  if (threadReplies) {
+    // CONVERTING MESSAGES OBJECT TO DATE WISE MESSAGES OBJECT
+    updatedMessages = convertMessagesArrayToObjectForm(threadReplies);
+  }
+
   if (!parentMessage) return <div></div>;
 
   const dispatch = useDispatch();
@@ -71,11 +79,11 @@ const ActiveThread = ({ currentActiveThread }) => {
           Total Replies ({threadReplies ? Object.keys(threadReplies).length : null}) 
         </div>
         <div className={styles.replies}>
-          {threadReplies && Object.keys(threadReplies).map((messageId) => {
+          {updatedMessages && Object.keys(updatedMessages).map((messageId) => {
             return (
               <SinlgeMessage
                 key={messageId}
-                message={threadReplies[messageId]}
+                message={updatedMessages[messageId]}
                 messageIdKey={messageIdKey}
                 messageActionIdKey={messageActionIdKey}
                 loggedInUser={true}

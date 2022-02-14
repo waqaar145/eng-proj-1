@@ -131,8 +131,31 @@
 .messageTextWrapper {
   padding: 0.8px 0;
   .viewThread {
-    padding: 4px 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 4px;
     font-size: 0.9rem;
     color: $c-gray-45;
+    height: 40px;
+    border: 1px solid $c-gray-95;
+
+    .userImages{
+      margin-left: 15px;
+      margin-right: 20px;
+      img{
+        border-radius: 5px;
+        height: 30px;
+        width: 30px;
+        margin-left: -5px;
+        box-shadow: $box-shadow-1;
+      }
+    }
+
+    &:hover {
+      background-color: $bg-color-1;
+      box-shadow: $box-shadow-1;
+    }
   }
 }

@@ -66,10 +66,17 @@ const ShowMessage = ({ message, handleEmojiPicker, handleChangeReaction, handleC
         </div>
       </div>
       {
-        !thread
+        !thread && message.totalReplies > 0
         &&
-        <div className={styles.viewThread}>
-          View replies
+        <div className={styles.viewThread} onClick={() => handleCurrentActiveThread(message.id)}>
+          <div className={styles.userImages}>
+            <img src="https://imageio.forbes.com/specials-images/imageserve/5f4ebe0c87612dab4f12a597/0x0.jpg?format=jpg&crop=3392,3395,x292,y592,safe&fit=crop" />
+            <img src="https://imageio.forbes.com/specials-images/imageserve/5f4ebe0c87612dab4f12a597/0x0.jpg?format=jpg&crop=3392,3395,x292,y592,safe&fit=crop" />
+            <img src="https://imageio.forbes.com/specials-images/imageserve/5f4ebe0c87612dab4f12a597/0x0.jpg?format=jpg&crop=3392,3395,x292,y592,safe&fit=crop" />
+          </div>
+          <div>
+            View Thread ({message.totalReplies})
+          </div>
         </div>
       }
     </div>

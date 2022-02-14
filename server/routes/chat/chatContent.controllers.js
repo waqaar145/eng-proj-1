@@ -14,6 +14,7 @@ const getChats = async (userId, groupRes, parentId, offset, limit) => {
 
         "messages.m_reactions as reactions",
         "messages.m_total_replies as totalReplies",
+        "messages.m_profile_replies as profileReplies",
         "messages.m_created_at as createdAt",
         "messages.m_updated_at as updatedAt",
 
@@ -132,6 +133,56 @@ const getGroupChats = async (req, res) => {
   }
 };
 
+const addToMessageReplies = async (parentMessage, user) => {
+  console.log('-------------------------------', parentMessage, user)
+  try {
+    const {
+      m_id,
+      m_profile_replies
+    } = parentMessage;
+
+    // console.log(m_parent_id, m_profile_replies)
+    const {
+      id,
+      first_name,
+      last_name,
+      dp
+    } = user;
+    let obj = {
+      id,
+      name: first_name + ' ' + last_name,
+      dp 
+    }
+    let profileRepliesArray = [];
+    // console.log(m_profile_replies)
+    if (m_profile_replies === null) {
+      profileRepliesArray = [obj]
+    } else {
+      let userFound = false;
+      for (let u of m_profile_replies) {
+        console.log(u)
+        if (u.id === user.id) {
+          userFound = true;
+        }
+      }
+      console.log(userFound)
+      if (userFound) {
+        profileRepliesArray = m_profile_replies;
+      } else {
+        profileRepliesArray = m_profile_replies.push(obj);
+      }
+    }
+    
+    await knex("messages")
+      .where({ m_id: m_id })
+      .update({m_profile_replies: JSON.stringify(profileRepliesArray)})
+      .returning("*");
+  } catch (error) {
+    console.log(error)
+    return [];
+  }
+}
+
 const addChat = async (req, res) => {
   // Form Validation *******
   const errors = validationResult(req);
@@ -157,15 +208,22 @@ const addChat = async (req, res) => {
       m_message: message,
     };
 
+    let parentMessage = null;
     if (parentId) {
-      let message = await knex("messages").where({ m_id: parentId }).first();
-      if (message) {
+      parentMessage = await knex("messages").where({ m_id: parentId }).first();
+      if (parentMessage) {
         messageObj.m_parent_id = message.m_id;
       }
     }
 
+    console.log(parentMessage)
+
     let messageRes = await knex("messages").insert(messageObj).returning("*");
     let messageResObj = messageRes[0];
+
+    if (parentId) {
+      addToMessageReplies(parentMessage, req.user)
+    }
 
     if (messageResObj && parentId) {
       await knex("messages").where({ m_id: parentId }).increment({

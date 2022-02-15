@@ -134,14 +134,11 @@ const getGroupChats = async (req, res) => {
 };
 
 const addToMessageReplies = async (parentMessage, user) => {
-  console.log('-------------------------------', parentMessage, user)
   try {
     const {
       m_id,
       m_profile_replies
     } = parentMessage;
-
-    // console.log(m_parent_id, m_profile_replies)
     const {
       id,
       first_name,
@@ -153,29 +150,35 @@ const addToMessageReplies = async (parentMessage, user) => {
       name: first_name + ' ' + last_name,
       dp 
     }
+
+    let dataInColumn = m_profile_replies;
     let profileRepliesArray = [];
-    // console.log(m_profile_replies)
-    if (m_profile_replies === null) {
+    if (dataInColumn === null) {
       profileRepliesArray = [obj]
     } else {
       let userFound = false;
-      for (let u of m_profile_replies) {
-        console.log(u)
+      for (let u of dataInColumn) {
         if (u.id === user.id) {
           userFound = true;
         }
       }
-      console.log(userFound)
       if (userFound) {
-        profileRepliesArray = m_profile_replies;
+        profileRepliesArray = [...dataInColumn.filter(u => u.id !== user.id), obj];
       } else {
-        profileRepliesArray = m_profile_replies.push(obj);
+        profileRepliesArray = [...dataInColumn, obj]
       }
+    }
+
+    let slicedArray = []
+    if (profileRepliesArray.length > 3) {
+      slicedArray = profileRepliesArray.slice(1);
+    } else {
+      slicedArray = profileRepliesArray;
     }
     
     await knex("messages")
       .where({ m_id: m_id })
-      .update({m_profile_replies: JSON.stringify(profileRepliesArray)})
+      .update({m_profile_replies: JSON.stringify(slicedArray)})
       .returning("*");
   } catch (error) {
     console.log(error)
@@ -208,15 +211,15 @@ const addChat = async (req, res) => {
       m_message: message,
     };
 
+    console.log(req.body)
+
     let parentMessage = null;
     if (parentId) {
       parentMessage = await knex("messages").where({ m_id: parentId }).first();
       if (parentMessage) {
-        messageObj.m_parent_id = message.m_id;
+        messageObj.m_parent_id = parentMessage.m_id;
       }
     }
-
-    console.log(parentMessage)
 
     let messageRes = await knex("messages").insert(messageObj).returning("*");
     let messageResObj = messageRes[0];

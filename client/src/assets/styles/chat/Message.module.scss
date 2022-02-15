@@ -136,8 +136,9 @@
     justify-content: flex-start;
     align-items: center;
     margin-top: 4px;
-    font-size: 0.9rem;
-    color: $c-gray-45;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: $c-gray-70;
     height: 40px;
     border: 1px solid $c-gray-95;
 
@@ -150,12 +151,14 @@
         width: 30px;
         margin-left: -5px;
         box-shadow: $box-shadow-1;
+        border: 2px solid white;
       }
     }
 
     &:hover {
       background-color: $bg-color-1;
       box-shadow: $box-shadow-1;
+      color: $c-gray-60;
     }
   }
 }

@@ -182,7 +182,7 @@ const addToMessageReplies = async (parentMessage, user) => {
       .returning("*");
   } catch (error) {
     console.log(error)
-    return [];
+    return JSON.stringify([]);
   }
 }
 
@@ -210,8 +210,6 @@ const addChat = async (req, res) => {
       m_group_id: group.g_id,
       m_message: message,
     };
-
-    console.log(req.body)
 
     let parentMessage = null;
     if (parentId) {

@@ -4,7 +4,6 @@ const useModal = () => {
   const [show, setShow] = useState(false);
 
   function toggle (data) {
-    console.log(data)
     if (data) {
       document.body.style.overflow = null;
     }

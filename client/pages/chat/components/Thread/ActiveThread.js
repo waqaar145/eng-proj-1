@@ -1,3 +1,4 @@
+import { useState } from "react";
 import styles from "./../../../../src/assets/styles/chat/Thread.module.scss";
 import { convertMessagesArrayToObjectForm } from '../../utils/messageFormatter';
 import { chatActionTypes } from '../../../../src/store/chat/chat.actiontype';
@@ -44,6 +45,12 @@ const ActiveThread = ({ currentActiveThread }) => {
     handleChangeReaction
   } = useEmojiActions();
 
+  // Handling editing message
+  const [currentEditingMessage, setCurrentEditingMessage] = useState(null);
+  const handleEditMessage = (id) => {
+    setCurrentEditingMessage(id)
+  }
+
   return (
     <div className={styles.threadWrapper}>
       <div className={styles.header}>
@@ -69,6 +76,9 @@ const ActiveThread = ({ currentActiveThread }) => {
                 handleChangeReaction={handleChangeReaction}
                 handleCurrentActiveThread={() => {}}
                 thread={true}
+
+                handleEditMessage={handleEditMessage}
+                currentEditingMessage={currentEditingMessage}
               />
             );
           })}
@@ -89,6 +99,9 @@ const ActiveThread = ({ currentActiveThread }) => {
                 handleChangeReaction={handleChangeReaction}
                 handleCurrentActiveThread={() => {}}
                 thread={true}
+
+                handleEditMessage={handleEditMessage}
+                currentEditingMessage={currentEditingMessage}
               />
             );
           })}

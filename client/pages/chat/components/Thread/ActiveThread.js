@@ -1,10 +1,9 @@
-import {useSelector} from 'react-redux'
 import styles from "./../../../../src/assets/styles/chat/Thread.module.scss";
 import { convertMessagesArrayToObjectForm } from '../../utils/messageFormatter';
 import { chatActionTypes } from '../../../../src/store/chat/chat.actiontype';
 import SinlgeMessage from '../Message';
 import EditorArea from './../EditorArea';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import useEmojiActions from './../../hooks/emojiActions'
 import EmojiDropdown from './../EmojiDropdown'
 import CloseIcon from './../../../../src/components/Extra/CloseIcon'
@@ -18,6 +17,7 @@ const ActiveThread = ({ currentActiveThread }) => {
 
   const currentSelectedGroup = useSelector(state => state.Chat.currentSelectedGroup);
   const { chats: messages } = useSelector(state => state.Chat);
+  const {loggedInUser} = useSelector(state => state.Auth, shallowEqual);
   let message = messages[currentActiveThread];
   let parentMessage = convertMessagesArrayToObjectForm({[message.id]: message});
   let threadReplies = parentMessage[message.id].replies;
@@ -64,7 +64,7 @@ const ActiveThread = ({ currentActiveThread }) => {
                 message={parentMessage[messageId]}
                 messageIdKey={parentMessageIdKey}
                 messageActionIdKey={parentMessageActionIdKey}
-                loggedInUser={true}
+                loggedInUser={loggedInUser}
                 handleEmojiPicker={handleEmojiPicker}
                 handleChangeReaction={handleChangeReaction}
                 handleCurrentActiveThread={() => {}}
@@ -84,7 +84,7 @@ const ActiveThread = ({ currentActiveThread }) => {
                 message={updatedMessages[messageId]}
                 messageIdKey={messageIdKey}
                 messageActionIdKey={messageActionIdKey}
-                loggedInUser={true}
+                loggedInUser={loggedInUser}
                 handleEmojiPicker={handleEmojiPicker}
                 handleChangeReaction={handleChangeReaction}
                 handleCurrentActiveThread={() => {}}

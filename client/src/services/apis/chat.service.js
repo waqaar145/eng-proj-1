@@ -75,7 +75,7 @@ export const chatService = {
       throw error
     }
   },
-  async editingAMessage (obj, id) {
+  async updateChat (obj, id) {
     try {
       const result = await HTTPClient.put('/api/v1/chat/' + id, obj);
       return result;

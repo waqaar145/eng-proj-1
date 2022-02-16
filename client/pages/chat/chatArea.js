@@ -8,7 +8,6 @@ import {shallowEqual, useDispatch, useSelector} from 'react-redux'
 import { chatActionTypes } from "../../src/store/chat/chat.actiontype";
 import usePagination from "./../../src/hooks/usePagination";
 import useEmojiActions from "./hooks/emojiActions";
-import useReactionChage from "./hooks/useReactionChange";
 import EditorArea from "./components/EditorArea";
 import {convertMessagesArrayToObjectForm} from './utils/messageFormatter'
 
@@ -127,6 +126,12 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
     }
   }
 
+  // Handling editing message
+  const [currentEditingMessage, setCurrentEditingMessage] = useState(null);
+  const handleEditMessage = (id) => {
+    setCurrentEditingMessage(id)
+  }
+
   return (
     <>
       <div className={styles.chatContentHeader}>
@@ -165,6 +170,9 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
                     handleChangeReaction={handleChangeReaction}
                     handleCurrentActiveThread={handleCurrentActiveThread}
                     thread={false}
+
+                    handleEditMessage={handleEditMessage}
+                    currentEditingMessage={currentEditingMessage}
                   />
                 );
               })}

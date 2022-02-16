@@ -79,6 +79,7 @@
 }
 
 @mixin messagePosAction {
+  padding-right: 5px;
   position: relative;
 
   &:hover {
@@ -129,7 +130,7 @@
 }
 
 .messageTextWrapper {
-  padding: 0.8px 0;
+  padding: 0.8px;
   .viewThread {
     cursor: pointer;
     display: flex;
@@ -140,10 +141,11 @@
     font-weight: 600;
     color: $c-gray-70;
     height: 40px;
-    border: 1px solid $c-gray-95;
+    border: 0.5px solid $c-gray-95;
+    border-radius: 5px;
 
     .userImages{
-      margin-left: 15px;
+      margin-left: 10px;
       margin-right: 20px;
       img{
         border-radius: 5px;
@@ -157,7 +159,7 @@
 
     &:hover {
       background-color: $bg-color-1;
-      box-shadow: $box-shadow-1;
+      // box-shadow: $box-shadow-1;
       color: $c-gray-60;
     }
   }

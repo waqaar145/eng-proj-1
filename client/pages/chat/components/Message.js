@@ -7,7 +7,8 @@ import {
   MdModeEditOutline,
   MdReply,
 } from "react-icons/md";
-import { Emoji } from 'emoji-mart'
+import { Emoji } from 'emoji-mart';
+import EditorArea from "./EditorArea";
 
 const convertToCode = (key) => {
   let emojiObj = key.split('-');
@@ -23,7 +24,7 @@ const convertToCode = (key) => {
   }
 }
 
-const ShowMessage = ({ message, handleEmojiPicker, handleChangeReaction, handleCurrentActiveThread, thread, messageIdKey, messageActionIdKey }) => {
+const ShowMessage = ({ loggedInUser, message, handleEmojiPicker, handleChangeReaction, handleCurrentActiveThread, thread, messageActionIdKey, handleEditMessage }) => {
   return (
     <div className={styles.messageTextWrapper}>
       <div dangerouslySetInnerHTML={{__html: message.message}} />
@@ -57,12 +58,18 @@ const ShowMessage = ({ message, handleEmojiPicker, handleChangeReaction, handleC
               <MdReply />
             </div>
           }
-          <div className={styles.icon}>
-            <MdDeleteOutline />
-          </div>
-          <div className={styles.icon}>
-            <MdModeEditOutline />
-          </div>
+          {
+            loggedInUser.id === message.userId
+            &&
+            <>
+              <div className={styles.icon} onClick={() => handleEditMessage(message.id)}>
+                <MdModeEditOutline />
+              </div>
+              <div className={styles.icon}>
+                <MdDeleteOutline />
+              </div>
+            </>
+          }
         </div>
       </div>
       {
@@ -87,7 +94,9 @@ const ShowMessage = ({ message, handleEmojiPicker, handleChangeReaction, handleC
   );
 };
 
-const MessageBox = ({ message, handleEmojiPicker, handleChangeReaction, handleCurrentActiveThread, thread, messageIdKey, messageActionIdKey}) => {
+const MessageBox = ({ loggedInUser, message, handleEmojiPicker, handleChangeReaction, handleCurrentActiveThread, thread, messageIdKey, messageActionIdKey, handleEditMessage, currentEditingMessage}) => {
+
+
   return (
     <div className={`${styles.messageBoxWrapper}`}>
       <div className={`${styles.profileWrapper} ${styles.messagePos}`} id={`${messageIdKey}${message.id}`}>
@@ -95,26 +104,38 @@ const MessageBox = ({ message, handleEmojiPicker, handleChangeReaction, handleCu
           <img src={message.dp} />
         </div>
         <div className={styles.profileDetailWrapper}>
-          <div className={styles.profileDetail}>
-            <span className={styles.name}>
-              {message.firstName} {message.lastName}
-            </span>
-            <span className={styles.messagedOn}>
-              <Moment format="MMMM Do YYYY, h:mm A">{message.updatedAt}</Moment>
-            </span>
-          </div>
-          <div className={styles.messageTextWrapper}>
-            <ShowMessage 
-              message={message} 
-              messageIdKey={messageIdKey}
-              messageActionIdKey={messageActionIdKey}
-              firstMessageInGroup={true} 
-              handleEmojiPicker={handleEmojiPicker}
-              handleChangeReaction={handleChangeReaction}
-              handleCurrentActiveThread={handleCurrentActiveThread}
-              thread={thread}
-            />
-          </div>
+          {
+            currentEditingMessage === message.id
+            ?
+            <div>
+              <EditorArea editing={true} message={message} onBlur={() => handleEditMessage(null)}/>
+            </div>
+            :
+            <>
+              <div className={styles.profileDetail}>
+                <span className={styles.name}>
+                  {message.firstName} {message.lastName}
+                </span>
+                <span className={styles.messagedOn}>
+                  <Moment format="MMMM Do YYYY, h:mm A">{message.updatedAt}</Moment>
+                </span>
+              </div>
+              <div className={styles.messageTextWrapper}>
+                <ShowMessage 
+                  loggedInUser={loggedInUser}
+                  message={message} 
+                  messageActionIdKey={messageActionIdKey}
+                  firstMessageInGroup={true} 
+                  handleEmojiPicker={handleEmojiPicker}
+                  handleChangeReaction={handleChangeReaction}
+                  handleCurrentActiveThread={handleCurrentActiveThread}
+                  thread={thread}
+
+                  handleEditMessage={handleEditMessage}
+                />
+              </div>
+            </>
+          }
         </div>
       </div>
       {"groupedMessages" in message &&
@@ -127,19 +148,29 @@ const MessageBox = ({ message, handleEmojiPicker, handleChangeReaction, handleCu
                 </div>
               </div>
               <div className={styles.profileDetailWrapper}>
-                <div className={styles.messageTextWrapper}>
-                  <ShowMessage
-                    message={message.groupedMessages[messageId]}
-                    key={messageId}
-                    messageIdKey={messageIdKey}
-                    messageActionIdKey={messageActionIdKey}
-                    firstMessageInGroup={false}
-                    handleEmojiPicker={handleEmojiPicker}
-                    handleChangeReaction={handleChangeReaction}
-                    handleCurrentActiveThread={handleCurrentActiveThread}
-                    thread={thread}
-                  />
-                </div>
+                {
+                  currentEditingMessage === +messageId
+                  ?
+                  <div>
+                    <EditorArea editing={true} message={message.groupedMessages[messageId]} onBlur={() => handleEditMessage(null)}/>
+                  </div>
+                  :
+                  <div className={styles.messageTextWrapper}>
+                    <ShowMessage
+                      loggedInUser={loggedInUser}
+                      message={message.groupedMessages[messageId]}
+                      key={messageId}
+                      messageActionIdKey={messageActionIdKey}
+                      firstMessageInGroup={false}
+                      handleEmojiPicker={handleEmojiPicker}
+                      handleChangeReaction={handleChangeReaction}
+                      handleCurrentActiveThread={handleCurrentActiveThread}
+                      thread={thread}
+
+                      handleEditMessage={handleEditMessage}
+                    />
+                  </div>
+                }
               </div>
             </div>
           );

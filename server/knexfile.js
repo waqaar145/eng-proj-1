@@ -3,7 +3,7 @@ module.exports = {
   connection: {
     host: "localhost",
     user: "postgres",
-    password: "root", // qwertii123 in mac
+    password: "qwertii123", // qwertii123 in mac
     database: "engTech",
   },
   migrations: {

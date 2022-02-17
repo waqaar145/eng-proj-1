@@ -24,10 +24,10 @@ const convertToCode = (key) => {
   }
 }
 
-const ShowMessage = ({ loggedInUser, message, handleEmojiPicker, handleChangeReaction, handleCurrentActiveThread, thread, messageActionIdKey, handleEditMessage }) => {
+const ShowMessage = ({ loggedInUser, message, handleEmojiPicker, handleChangeReaction, handleCurrentActiveThread, thread, messageActionIdKey, handleEditMessage, handleDeleteMessage }) => {
   return (
     <div className={styles.messageTextWrapper}>
-      <div dangerouslySetInnerHTML={{__html: message.message}} />
+      <div dangerouslySetInnerHTML={{__html: message.message}} className={message.createdAt !== message.updatedAt ? styles.messageParagraph : ''}></div>
       <div className={emojiStyles.emojiContainer}>
         {
           message.reactions && Object.keys(message.reactions).length > 0
@@ -65,7 +65,7 @@ const ShowMessage = ({ loggedInUser, message, handleEmojiPicker, handleChangeRea
               <div className={styles.icon} onClick={() => handleEditMessage(message.id)}>
                 <MdModeEditOutline />
               </div>
-              <div className={styles.icon}>
+              <div className={styles.icon} onClick={() => handleDeleteMessage(message.id)}>
                 <MdDeleteOutline />
               </div>
             </>
@@ -94,7 +94,7 @@ const ShowMessage = ({ loggedInUser, message, handleEmojiPicker, handleChangeRea
   );
 };
 
-const MessageBox = ({ loggedInUser, message, handleEmojiPicker, handleChangeReaction, handleCurrentActiveThread, thread, messageIdKey, messageActionIdKey, handleEditMessage, currentEditingMessage}) => {
+const MessageBox = ({ loggedInUser, message, handleEmojiPicker, handleChangeReaction, handleCurrentActiveThread, thread, messageIdKey, messageActionIdKey, handleEditMessage, currentEditingMessage, handleDeleteMessage}) => {
 
 
   return (
@@ -132,6 +132,7 @@ const MessageBox = ({ loggedInUser, message, handleEmojiPicker, handleChangeReac
                   thread={thread}
 
                   handleEditMessage={handleEditMessage}
+                  handleDeleteMessage={handleDeleteMessage}
                 />
               </div>
             </>
@@ -168,6 +169,7 @@ const MessageBox = ({ loggedInUser, message, handleEmojiPicker, handleChangeReac
                       thread={thread}
 
                       handleEditMessage={handleEditMessage}
+                      handleDeleteMessage={handleDeleteMessage}
                     />
                   </div>
                 }

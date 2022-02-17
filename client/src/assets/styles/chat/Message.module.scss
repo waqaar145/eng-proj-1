@@ -163,4 +163,14 @@
       color: $c-gray-60;
     }
   }
+
+  .messageParagraph {
+    &::after {
+      margin-left: 5px;
+      content: '(Edited)';
+      color: $c-gray-80;
+      display: inline-block;
+      font-size: 0.70rem;
+    }
+  }
 }

@@ -8,6 +8,8 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import useEmojiActions from './../../hooks/emojiActions'
 import EmojiDropdown from './../EmojiDropdown'
 import CloseIcon from './../../../../src/components/Extra/CloseIcon'
+import useDeleteMessage from './../../hooks/useDeleteMessage'
+import ConfirmModal from './../ConfirmModal'
 
 let parentMessageIdKey = "parent-thread-message-id-";
 let parentMessageActionIdKey = "parent-thread-message-action-id-";
@@ -51,6 +53,16 @@ const ActiveThread = ({ currentActiveThread }) => {
     setCurrentEditingMessage(id)
   }
 
+  // Handling delete message
+  const {
+    handleConfirmToggle,
+    showConfirmModal,
+    currentDeleteMessage,
+    deleteMessageLoader,
+    handleDeleteMessage,
+    deleteMessage
+  } = useDeleteMessage(currentActiveThread);
+
   return (
     <div className={styles.threadWrapper}>
       <div className={styles.header}>
@@ -79,6 +91,7 @@ const ActiveThread = ({ currentActiveThread }) => {
 
                 handleEditMessage={handleEditMessage}
                 currentEditingMessage={currentEditingMessage}
+                handleDeleteMessage={handleDeleteMessage}
               />
             );
           })}
@@ -102,6 +115,7 @@ const ActiveThread = ({ currentActiveThread }) => {
 
                 handleEditMessage={handleEditMessage}
                 currentEditingMessage={currentEditingMessage}
+                handleDeleteMessage={handleDeleteMessage}
               />
             );
           })}
@@ -115,6 +129,16 @@ const ActiveThread = ({ currentActiveThread }) => {
         toggle={toggleEmojiDropdown}
         messageId={currentEmojiMessageId}
       />
+      <ConfirmModal 
+        id={currentDeleteMessage}
+        titleText="Delete message"
+        bodyText="Are you sure? This can't be undone"
+        handleDelete={deleteMessage}
+        toggle={handleConfirmToggle}
+        show={showConfirmModal}
+        loading={deleteMessageLoader}
+        handleToggle={() => handleConfirmToggle()}
+        />
     </div>
   );
 };

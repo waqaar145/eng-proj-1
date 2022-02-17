@@ -10,6 +10,8 @@ import usePagination from "./../../src/hooks/usePagination";
 import useEmojiActions from "./hooks/emojiActions";
 import EditorArea from "./components/EditorArea";
 import {convertMessagesArrayToObjectForm} from './utils/messageFormatter'
+import ConfirmModal from "./components/ConfirmModal";
+import useDeleteMessage from "./hooks/useDeleteMessage";
 
 const EmojiDropdown = dynamic(
   () => import("./components/EmojiDropdown"),
@@ -132,6 +134,16 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
     setCurrentEditingMessage(id)
   }
 
+  // Handling delete message
+  const {
+    handleConfirmToggle,
+    showConfirmModal,
+    currentDeleteMessage,
+    deleteMessageLoader,
+    handleDeleteMessage,
+    deleteMessage
+  } = useDeleteMessage();
+
   return (
     <>
       <div className={styles.chatContentHeader}>
@@ -173,6 +185,7 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
 
                     handleEditMessage={handleEditMessage}
                     currentEditingMessage={currentEditingMessage}
+                    handleDeleteMessage={handleDeleteMessage}
                   />
                 );
               })}
@@ -192,6 +205,16 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
         toggle={toggleEmojiDropdown}
         messageId={currentEmojiMessageId}
       />
+      <ConfirmModal 
+        id={currentDeleteMessage}
+        titleText="Delete message"
+        bodyText="Are you sure? This can't be undone"
+        handleDelete={deleteMessage}
+        toggle={handleConfirmToggle}
+        show={showConfirmModal}
+        loading={deleteMessageLoader}
+        handleToggle={() => handleConfirmToggle()}
+        />
     </>
   );
 };

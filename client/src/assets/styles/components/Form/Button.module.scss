@@ -9,6 +9,9 @@
   color: $textColor;
   transition: all 0.2s ease-out;
   width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   &:hover {
     cursor: pointer;
@@ -27,7 +30,9 @@
   }
 
   .buttonIcon {
+    font-size: 1.2rem;
     margin-left: 5px;
+    margin-top: -5px;
   }
 }
 

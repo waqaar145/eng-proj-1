@@ -52,3 +52,8 @@ body {
 .activeMessage {
   background-color: $c-gray-98;
 }
+
+
+.RichEditor-hidePlaceholder .public-DraftEditorPlaceholder-root {
+  display: none;
+}

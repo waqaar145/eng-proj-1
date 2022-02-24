@@ -1,0 +1,29 @@
+.editorWrapper {
+  background-color: white;
+  padding: 10px;
+
+  .toolBar {
+    // background-color: red;
+
+    input[type=button] {
+      background-color: none;
+      border: none;
+      padding-right: 5px;
+      padding-left: 5px;
+
+      &.inlineActiveButton {
+        background-color: red;
+      }
+    }
+  }
+
+  .editorArea {
+    border-radius: 5px;
+    border: 1px solid red;
+    padding: 5px;
+
+    &.editorAreaFocus {
+      border: 1px solid green;
+    }
+  }
+}

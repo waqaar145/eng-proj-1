@@ -1,23 +1,18 @@
 import React from "react";
 import BasicDropdown from "./../../../src/components/Dropdown/basicDropdown";
 import { Picker } from "emoji-mart";
-import useReactionChage from "../hooks/useReactionChange";
 
 import "emoji-mart/css/emoji-mart.css";
 
-const EmojiDropdown = ({ show, toggle, messageId }) => {
-
-  const {
-    updateReaction
-  } = useReactionChage()
+const EmojiDropdown = ({ show, toggle, handleSelectedEmoji, messageId }) => {
 
   const hideEmojiDropdown = () => {
     toggle()
   }
 
   const handleEmoji = async (emoji) => {
-    console.log(emoji)
-    updateReaction(messageId, emoji, hideEmojiDropdown)
+    handleSelectedEmoji(emoji)
+    hideEmojiDropdown()
   }
 
   return (

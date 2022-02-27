@@ -107,15 +107,13 @@ const SimpleEditor = () => {
         </div>
         <div className={styles.actionBar}>
           <span style={{float: 'right'}} id="dddd-123123" onClick={() => handleEmojiPicker('dddd-123123', 12)}>Emoji Picker</span>
-          <span onClick={() => addAndFocusAtTheEnd()}>add</span>   
         </div>
-        {/* <pre>{JSON.stringify(editorState, null, 2)}</pre> */}
       </div>
       <EmojiDropdown
         show={showEmojiDropdown}
         toggle={toggleEmojiDropdown}
         handleSelectedEmoji={handleSelectedEmoji}
-        messageId='editorId--000'
+        messageId='dddd-123123'
       />
     </div>
   );

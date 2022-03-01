@@ -12,6 +12,7 @@ import EditorArea from "./components/EditorArea";
 import {convertMessagesArrayToObjectForm} from './utils/messageFormatter'
 import ConfirmModal from "./components/ConfirmModal";
 import useDeleteMessage from "./hooks/useDeleteMessage";
+import MyEditor from './../../src/components/Editor/editor'
 
 const EmojiDropdown = dynamic(
   () => import("./components/EmojiDropdown"),
@@ -144,6 +145,20 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
     deleteMessage
   } = useDeleteMessage();
 
+  // setting height content area
+  const textAreaRef = useRef(null);
+  const [editorState, setEditorState] = useState(null)
+  const [height, setHeight] = useState(0)
+  useEffect(() => {
+    setHeight(chatContentBodyRef.current.clientHeight)
+    chatContentBodyRef.current.style.height = chatContentBodyRef.current.clientHeight - textAreaRef?.current?.clientHeight + 'px';
+  }, []);
+
+  const handleStateChange = (data) => {
+    setEditorState(data)
+    chatContentBodyRef.current.style.height = height - textAreaRef?.current?.clientHeight + 'px';
+  }
+
   return (
     <>
       <div className={styles.chatContentHeader}>
@@ -196,9 +211,9 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
             </div>
           }
         </div>
-      </div>
-      <div className={styles.chatContentTextArea}>
-        <EditorArea parentId={null}/>
+        <div className={styles.chatContentTextArea} ref={textAreaRef}>
+          <MyEditor handleStateChange={handleStateChange} parentId={null}/>
+        </div>
       </div>
       <EmojiDropdown
         show={showEmojiDropdown}

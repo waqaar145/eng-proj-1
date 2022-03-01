@@ -38,8 +38,8 @@
 
   .groupuserContainer {
     // padding: 8px;
+    height: calc(100vh - 40px - 70px);
     overflow-y: scroll;
-    height: calc(100vh - 40px - 40px - 50px);
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none;  /* Internet Explorer 10+ */
     overflow-x: hidden;

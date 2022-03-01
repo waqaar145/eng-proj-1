@@ -26,7 +26,7 @@ const emptyContentState = Draft.convertFromRaw({
 
 const { Editor, EditorState, RichUtils, Modifier, SelectionState } = Draft;
 
-const SimpleEditor = () => {
+const SimpleEditor = ({handleStateChange}) => {
 
   const draftRef = useRef(null)
   const [editorState, setEditorState] = React.useState(EditorState.createWithContent(emptyContentState));
@@ -43,6 +43,10 @@ const SimpleEditor = () => {
   useEffect(() => {
     draftRef.current.focus()
   }, []);
+
+  useEffect(() => {
+    handleStateChange(editorState)
+  }, [editorState])
 
   let className = 'RichEditor-editor';
   var contentState = editorState.getCurrentContent();
@@ -105,9 +109,9 @@ const SimpleEditor = () => {
             handleKeyCommand={handleKeyCommand}
           />
         </div>
-        <div className={styles.actionBar}>
+        {/* <div className={styles.actionBar}>
           <span style={{float: 'right'}} id="dddd-123123" onClick={() => handleEmojiPicker('dddd-123123', 12)}>Emoji Picker</span>
-        </div>
+        </div> */}
       </div>
       <EmojiDropdown
         show={showEmojiDropdown}

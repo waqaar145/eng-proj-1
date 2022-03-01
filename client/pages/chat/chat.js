@@ -138,7 +138,7 @@ const Chat = () => {
   const handleAddUserOrGroupModal = () => {}
 
   return (
-    <div className={styles.chatWrapper}>
+    <div className={styles.chatWrapper} style={{overflow: 'hidden'}}>
       <Header styles={styles} handleNav={handleNav} />
       <div className={`${currentActiveThread ? styles.chatContainerWithThread : styles.chatContainer}`}>
         <div className={styles.chatSidebar}>

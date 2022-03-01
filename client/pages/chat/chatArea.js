@@ -211,9 +211,9 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
             </div>
           }
         </div>
-        <div className={styles.chatContentTextArea} ref={textAreaRef}>
-          <MyEditor handleStateChange={handleStateChange} parentId={null}/>
-        </div>
+      </div>
+      <div className={styles.chatContentTextArea} ref={textAreaRef}>
+        <MyEditor handleStateChange={handleStateChange} parentId={null}/>
       </div>
       <EmojiDropdown
         show={showEmojiDropdown}

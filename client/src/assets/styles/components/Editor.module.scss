@@ -1,29 +1,50 @@
+@import './../variable';
 .editorWrapper {
   background-color: white;
-  padding: 20px;
+  padding: 5px 12px;
+  
 
-  .toolBar {
-    // background-color: red;
-
-    input[type=button] {
-      background-color: none;
-      border: none;
-      padding-right: 5px;
-      padding-left: 5px;
-
-      &.inlineActiveButton {
-        background-color: red;
+  .editorContainer {
+    border: 1px solid $c-gray-80;
+    border-radius: 3px;
+    .toolBar {
+      background-color: $c-gray-95;
+      border-top-left-radius: 2px;
+      border-top-right-radius: 2px;
+      // background-color: red;
+  
+      input[type=button] {
+        background-color: none;
+        border: none;
+        padding-right: 5px;
+        padding-left: 5px;
+  
+        &.inlineActiveButton {
+          background-color: red;
+        }
       }
     }
-  }
-
-  .editorArea {
-    border-radius: 5px;
-    border: 1px solid red;
-    padding: 5px;
-
-    &.editorAreaFocus {
-      border: 1px solid green;
+  
+    .editorArea {
+      padding: 5px;
+  
+      &.editorAreaFocus {
+        border: 1px solid green;
+      }
+    }
+  
+    .actionBar {
+      background-color: $c-gray-98;
+      display: flex;
+      justify-content: end;
+      align-items: center;
+      padding-right: 5px;
+  
+      span {
+        margin-left: 10px;
+        cursor: pointer;
+        font-size: 1.3rem;
+      }
     }
   }
 }

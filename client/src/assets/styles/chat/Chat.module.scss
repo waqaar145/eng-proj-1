@@ -106,13 +106,9 @@
       // padding: 0px 5px;
       position: fixed;
       bottom: 0;
-      width: 80%;
+      width: inherit;
       min-height: 70px;
-      box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
-
-      @include respond-to('small') {
-        width: 100%;
-      }
+      // border-top: 1px solid $athens-gray;
     }
   }
 }

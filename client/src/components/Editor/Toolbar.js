@@ -1,10 +1,42 @@
 import React from "react";
 import { RichUtils } from "draft-js";
+import {
+  AiOutlineBold,
+  AiOutlineUnderline,
+  AiOutlineItalic,
+  AiOutlineCode,
+  AiOutlineStrikethrough,
+  AiOutlineUnorderedList,
+  AiOutlineOrderedList
+} from 'react-icons/ai';
+import styles from './Toolbar.module.scss'
+
+const iconRenderer = (label) => {
+  if (label === 'BOLD') {
+    return <AiOutlineBold/>
+  } else if (label === 'Italic') {
+    return <AiOutlineItalic/>
+  } else if (label === 'Underline') {
+    return <AiOutlineUnderline/>
+  } else if (label === 'Code') {
+    return <AiOutlineCode/>
+  } else if (label === 'Strikethrough') {
+    return <AiOutlineStrikethrough/>
+  } else if (label === 'Unordered List') {
+    return <AiOutlineUnorderedList/>
+  } else if (label === 'Ordered List') {
+    return <AiOutlineOrderedList/>
+  }
+  return <AiOutlineBold/>
+}
+
+
 export const inlineStyles = [
   { type: "BOLD", label: "Bold", toolTip: "Bold" },
   { type: "ITALIC", label: "Italic", toolTip: "Italic" },
   { type: "UNDERLINE", label: "Underline", toolTip: "Underline" },
   { type: "CODE", label: "Code", toolTip: "Code Block" },
+  { type: "STRIKETHROUGH", label: "Strikethrough", toolTip: "Strikethrough" },
 ];
 
 export const blockStyles = [
@@ -27,9 +59,9 @@ const Toolbar = (props) => {
 
   const renderInlineStyleButton = (style, index) => {
     const currentInlineStyle = editorState.getCurrentInlineStyle();
-    let className = "toolbar-button";
+    let className = styles.toolbarButton;
     if (currentInlineStyle.has(style.type)) {
-      className = "toolbar-button-selected";
+      className = styles.toolbarButtonSelected;
     }
 
     return (
@@ -40,16 +72,16 @@ const Toolbar = (props) => {
         onClick={(event) => event.preventDefault()}
         className={className}
       >
-      {style.label}
+      {iconRenderer(style.label)}
       </button>
     );
   };
 
   const renderBlockStyleButton = (block, index) => {
     const currentBlockType = RichUtils.getCurrentBlockType(editorState);
-    let className = "toolbar-button";
+    let className = styles.toolbarButton;
     if (currentBlockType === block.type) {
-      className = "toolbar-button-selected";
+      className = styles.toolbarButtonSelected;
     }
 
     return (
@@ -60,7 +92,7 @@ const Toolbar = (props) => {
         onClick={(event) => event.preventDefault()}
         className={className}
       >
-      {block.label}
+        {iconRenderer(block.label)}
       </button>
     );
   };

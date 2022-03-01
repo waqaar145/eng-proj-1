@@ -1,10 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import Toolbar from './Toolbar';
 import useNormalDropdown from '../../../src/hooks/useNormalDropdown';
 import styles from './../../../src/assets/styles/components/Editor.module.scss'
 const Draft = require('draft-js');
 
+import {
+  MdAddCircle,
+  MdOutlineEmojiEmotions
+} from 'react-icons/md';
 const EmojiDropdown = dynamic(
   () => import("./EmojiDropdown"),
   { ssr: false }
@@ -85,7 +89,7 @@ const SimpleEditor = ({handleStateChange}) => {
       });
 
     //insert text at the selection created above 
-    const textWithInsert = Modifier.insertText(currentContent, selection, native, null);
+    const textWithInsert = Modifier.insertText(currentContent, selection, native + ' ', null);
     const editorWithInsert = EditorState.push(editorState, textWithInsert, 'insert-characters');
 
     // //also focuses cursor at the end of the editor 
@@ -109,15 +113,16 @@ const SimpleEditor = ({handleStateChange}) => {
             handleKeyCommand={handleKeyCommand}
           />
         </div>
-        {/* <div className={styles.actionBar}>
-          <span style={{float: 'right'}} id="dddd-123123" onClick={() => handleEmojiPicker('dddd-123123', 12)}>Emoji Picker</span>
-        </div> */}
+        <div className={styles.actionBar}>
+          <span><MdAddCircle /></span>
+          <span id="main-editor-key" onClick={() => handleEmojiPicker('main-editor-key')}><MdOutlineEmojiEmotions /></span>
+        </div>
       </div>
       <EmojiDropdown
         show={showEmojiDropdown}
         toggle={toggleEmojiDropdown}
         handleSelectedEmoji={handleSelectedEmoji}
-        messageId='dddd-123123'
+        messageId='main-editor-key'
       />
     </div>
   );

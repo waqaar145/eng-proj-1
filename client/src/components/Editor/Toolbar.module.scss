@@ -1,0 +1,27 @@
+@import './../../assets/styles/variable';
+
+@mixin blockStyle {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  padding: 2px 5px;
+  border-radius: 2px;
+  margin-right: 2px;
+}
+
+.toolbarButton {
+  color: $c-gray-40;
+  @include blockStyle();
+
+  &:hover {
+    // color: $font-color-4;
+    color: $c-gray-60;
+    background-color: $c-gray-80;
+  }
+}
+
+.toolbarButtonSelected {
+  @include blockStyle();
+  // color: $font-color-4;
+  background-color: $c-gray-80;
+}

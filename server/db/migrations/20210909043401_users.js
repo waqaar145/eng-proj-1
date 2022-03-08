@@ -48,7 +48,7 @@ exports.up = function (knex, Promise) {
         table.integer("m_user_id").references('u_id').inTable('users');
         table.integer("m_group_id").references('g_id').inTable('groups');
         table.integer('m_parent_id').default(null);
-        table.string("m_message", 5000).notNullable();
+        table.json("m_message");
         table.json('m_reactions');
         table.json('m_profile_replies');
         table.integer('m_total_replies').defaultTo(0);

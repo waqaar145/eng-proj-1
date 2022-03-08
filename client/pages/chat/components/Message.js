@@ -9,6 +9,10 @@ import {
 } from "react-icons/md";
 import { Emoji } from 'emoji-mart';
 import EditorArea from "./EditorArea";
+import MyEditor from './../../../src/components/Editor/editor'
+const Draft = require('draft-js');
+
+const { Editor, EditorState, convertFromRaw } = Draft;
 
 const convertToCode = (key) => {
   let emojiObj = key.split('-');
@@ -25,9 +29,17 @@ const convertToCode = (key) => {
 }
 
 const ShowMessage = ({ loggedInUser, message, handleEmojiPicker, handleChangeReaction, handleCurrentActiveThread, thread, messageActionIdKey, handleEditMessage, handleDeleteMessage }) => {
+  let msg = EditorState.createWithContent(convertFromRaw(message.message))
   return (
     <div className={styles.messageTextWrapper}>
-      <div dangerouslySetInnerHTML={{__html: message.message}} className={message.createdAt !== message.updatedAt ? styles.messageParagraph : ''}></div>
+      <div className={message.createdAt !== message.updatedAt ? styles.messageParagraph : ''}>
+        <Editor
+          placeholder="Write something!"
+          editorKey="foobaz"
+          editorState={msg}
+          readOnly={true}
+        />
+      </div>
       <div className={emojiStyles.emojiContainer}>
         {
           message.reactions && Object.keys(message.reactions).length > 0
@@ -94,12 +106,12 @@ const ShowMessage = ({ loggedInUser, message, handleEmojiPicker, handleChangeRea
   );
 };
 
-const MessageBox = ({ loggedInUser, message, handleEmojiPicker, handleChangeReaction, handleCurrentActiveThread, thread, messageIdKey, messageActionIdKey, handleEditMessage, currentEditingMessage, handleDeleteMessage}) => {
+const MessageBox = ({ loggedInUser, message, handleEmojiPicker, handleChangeReaction, handleCurrentActiveThread, thread, messageIdKey, messageActionIdKey, handleEditMessage, currentEditingMessage, handleDeleteMessage, handleOnBlur, handleEditSubmit}) => {
 
 
   return (
     <div className={`${styles.messageBoxWrapper}`}>
-      <div className={`${styles.profileWrapper} ${styles.messagePos}`} id={`${messageIdKey}${message.id}`}>
+      <div className={`${styles.profileWrapper} ${currentEditingMessage !== message.id ? styles.messagePos : styles.messagePos1}`} id={`${messageIdKey}${message.id}`}>
         <div className={styles.profileImage}>
           <img src={message.dp} />
         </div>
@@ -108,7 +120,15 @@ const MessageBox = ({ loggedInUser, message, handleEmojiPicker, handleChangeReac
             currentEditingMessage === message.id
             ?
             <div>
-              <EditorArea editing={true} message={message} onBlur={() => handleEditMessage(null)}/>
+              {/* <EditorArea editing={true} message={message} onBlur={() => handleEditMessage(null)}/> */}
+              <MyEditor 
+                initValue={message.message} 
+                handleOnBlur={handleOnBlur}
+                handleStateChange={() => {}} 
+                parentId={null} 
+                readOnlyValue={true}
+                submit={handleEditSubmit}
+              />
             </div>
             :
             <>
@@ -142,7 +162,7 @@ const MessageBox = ({ loggedInUser, message, handleEmojiPicker, handleChangeReac
       {"groupedMessages" in message &&
         Object.keys(message.groupedMessages).map((messageId) => {
           return (
-            <div className={`${styles.profileWrapper} ${styles.messagePosChild}`} key={messageId} id={`${messageIdKey}${messageId}`}>
+            <div className={`${styles.profileWrapper} ${currentEditingMessage !== +messageId ? styles.messagePosChild : styles.messagePosChild1}`} key={messageId} id={`${messageIdKey}${messageId}`}>
               <div className={`${styles.profileImage} ${styles.profileImageWrapper}`}>
                 <div className={styles.messageOnInHHMM}>
                   <Moment format="h:mm A">{message.groupedMessages[messageId].updatedAt}</Moment>
@@ -153,7 +173,15 @@ const MessageBox = ({ loggedInUser, message, handleEmojiPicker, handleChangeReac
                   currentEditingMessage === +messageId
                   ?
                   <div>
-                    <EditorArea editing={true} message={message.groupedMessages[messageId]} onBlur={() => handleEditMessage(null)}/>
+                    {/* <EditorArea editing={true} message={message.groupedMessages[messageId]} onBlur={() => handleEditMessage(null)}/> */}
+                    <MyEditor 
+                      initValue={message.groupedMessages[messageId].message} 
+                      handleOnBlur={handleOnBlur}
+                      handleStateChange={() => {}} 
+                      parentId={null} 
+                      readOnlyValue={true}
+                      submit={handleEditSubmit}
+                    />
                   </div>
                   :
                   <div className={styles.messageTextWrapper}>

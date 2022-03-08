@@ -35,6 +35,7 @@
     .profileDetailWrapper {
 
       width: 100%;
+      padding-right: 10px;
       .profileDetail {
         
   
@@ -120,6 +121,19 @@
   }
 }
 
+.messagePos1 {
+  display: flex;
+  align-items: flex-start;
+  // @include messagePosAction;
+}
+
+.messagePosChild1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  // @include messagePosAction;
+}
+
 .messagePos {
   display: flex;
   align-items: flex-start;
@@ -170,10 +184,10 @@
 
   .messageParagraph {
     &::after {
-      margin-left: 5px;
+      // margin-left: 5px;
       content: '(Edited)';
       color: $c-gray-80;
-      display: inline-block;
+      display: flex;
       font-size: 0.70rem;
     }
   }

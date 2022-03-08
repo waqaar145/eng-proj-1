@@ -1,12 +1,14 @@
 @import './../variable';
 .editorWrapper {
   background-color: white;
-  padding: 5px 12px;
+  // padding: 5px 12px;
   
 
   .editorContainer {
-    border: 1px solid $c-gray-80;
-    border-radius: 3px;
+    // border: 1px solid $c-gray-80;
+    background-color: $c-gray-95;
+    border-radius: 5px;
+    display: flex;
     .toolBar {
       background-color: $c-gray-95;
       border-top-left-radius: 2px;
@@ -26,22 +28,33 @@
     }
   
     .editorArea {
-      padding: 5px;
-  
+      
+      padding: 14.50px;
+      flex-grow: 5;
       &.editorAreaFocus {
         border: 1px solid green;
       }
     }
+
+    // .actionBarLeft {
+    //   padding: 10px;
+    //   display: flex;
+    //   justify-content: flex-end;
+    //   align-items: flex-start;
+    //   span {
+    //     // margin-left: 10px;
+    //     cursor: pointer;
+    //     font-size: 1.3rem;
+    //   }
+    // }
   
-    .actionBar {
-      background-color: $c-gray-98;
+    .actionBarRight {
       display: flex;
-      justify-content: end;
-      align-items: center;
-      padding-right: 5px;
+      justify-content: flex-end;
+      align-items: flex-start;
+      padding: 10px;
   
       span {
-        margin-left: 10px;
         cursor: pointer;
         font-size: 1.3rem;
       }

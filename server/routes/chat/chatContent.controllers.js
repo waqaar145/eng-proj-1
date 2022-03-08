@@ -4,6 +4,7 @@ const { getPaginationValues } = require("./../../helpers/pagination");
 const { validationResult } = require("express-validator");
 const { expValidatorMsg } = require("./../../helpers/validation");
 
+
 const getChats = async (userId, groupRes, parentId, offset, limit) => {
   try {
     const result = await knex("messages")
@@ -187,14 +188,15 @@ const addToMessageReplies = async (parentMessage, user) => {
 }
 
 const addChat = async (req, res) => {
+
   // Form Validation *******
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).send({
-      message: "Error!",
-      data: expValidatorMsg(errors.array()),
-    });
-  }
+  // const errors = validationResult(req);
+  // if (!errors.isEmpty()) {
+  //   return res.status(422).send({
+  //     message: "Error!",
+  //     data: expValidatorMsg(errors.array()),
+  //   });
+  // }
 
   try {
     const { groupId, message, parentId } = req.body;

@@ -88,7 +88,7 @@
       overflow-y: scroll;
       display: flex;
       flex-direction: column-reverse;
-      height: calc(100vh - 40px - 70px);
+      height: calc(100vh - 45px - 70px);
 
       .messageWrapperContainer {
         justify-content: flex-end;
@@ -98,17 +98,25 @@
           position: relative;
           border-top: 1px solid $athens-gray;
         }
+
+        .noMessageFound {
+          padding: 10px;
+        }
       }
     }
 
     .chatContentTextArea {
       background-color: $bg-color-1;
-      // padding: 0px 5px;
+      padding: 5px 10px;
       position: fixed;
-      bottom: 0;
-      width: inherit;
+      bottom: 5px;
+      width: 80%;
       min-height: 70px;
       // border-top: 1px solid $athens-gray;
+
+      @include respond-to('small') {
+        width: 100%;
+      }
     }
   }
 }

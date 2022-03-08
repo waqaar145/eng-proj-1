@@ -67,9 +67,9 @@ export const chatService = {
       throw error
     }
   },
-  async addChat (data) {
+  async addChat (payload) {
     try {
-      const result = await HTTPClient.post('/api/v1/chat', data);
+      const result = await HTTPClient.post('/api/v1/chat', payload);
       return result;
     } catch(error) {
       throw error

@@ -13,6 +13,7 @@ import {convertMessagesArrayToObjectForm} from './utils/messageFormatter'
 import ConfirmModal from "./components/ConfirmModal";
 import useDeleteMessage from "./hooks/useDeleteMessage";
 import MyEditor from './../../src/components/Editor/editor'
+import debounce from 'lodash.debounce';
 
 const EmojiDropdown = dynamic(
   () => import("./components/EmojiDropdown"),
@@ -30,6 +31,7 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
 
   const [allMessagesLoaded, setAllMessagesLoaded] = useState(false)
   const currentSelectedGroup = useSelector(state => state.Chat.currentSelectedGroup);
+  const currentActiveThread = useSelector(state => state.Chat.currenThreadMessageId);
   const {loggedInUser} = useSelector(state => state.Auth, shallowEqual);
   const {chats: messages, currentPage, totalEnteries} = useSelector(state => state.Chat, shallowEqual);
 
@@ -149,6 +151,7 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
   const textAreaRef = useRef(null);
   const [editorState, setEditorState] = useState(null)
   const [height, setHeight] = useState(0)
+
   useEffect(() => {
     setHeight(chatContentBodyRef.current.clientHeight)
     chatContentBodyRef.current.style.height = chatContentBodyRef.current.clientHeight - textAreaRef?.current?.clientHeight + 'px';
@@ -157,6 +160,63 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
   const handleStateChange = (data) => {
     setEditorState(data)
     chatContentBodyRef.current.style.height = height - textAreaRef?.current?.clientHeight + 'px';
+  }
+
+  const handleTextareWidth = () => {
+    textAreaRef.current.style.width = chatContentBodyRef.current.clientWidth + 'px';
+  }
+
+  const handleResize = () => {
+    handleTextareWidth()
+    setHeight(chatContentBodyRef.current.clientHeight)
+    chatContentBodyRef.current.style.height = window.innerHeight - 110 - textAreaRef?.current?.clientHeight + 'px'; // 110 -> height of above two divs
+  }
+
+  useEffect(() => {
+    window.addEventListener('resize', debounce(handleResize, 100));
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  useEffect(() => {
+    handleTextareWidth()
+  }, [currentActiveThread])
+
+  // submit data to DB
+  const submit = async (editorData, callback) => {
+    try {
+      let chatObj = {
+        groupId,
+        message: editorData,
+        parentId: null
+      }      
+      let {data: {data}} = await chatService.addChat(chatObj);
+      dispatch({type: chatActionTypes.ADD_NEW_MESSAGE, data: {[data.id]: data}})
+      callback();
+    } catch (error) {
+      console.log('Error when adding a message')
+      console.log(error)
+    }
+  }
+
+  const handleOnBlur = () => {
+    setCurrentEditingMessage(null)
+  }
+
+  // edit submit data to DB
+  const handleEditSubmit = async (editorData, callback) => {
+    try {
+      let chatObj = {
+        messageId: currentEditingMessage,
+        message: editorData
+      }      
+      let {data: {data}} = await chatService.updateChat(chatObj, currentEditingMessage);
+      dispatch({type: chatActionTypes.UPDATE_MESSAGE, data})
+      callback();
+      handleOnBlur()
+    } catch (error) {
+      console.log('Error when adding a message')
+      console.log(error)
+    }
   }
 
   return (
@@ -201,6 +261,8 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
                     handleEditMessage={handleEditMessage}
                     currentEditingMessage={currentEditingMessage}
                     handleDeleteMessage={handleDeleteMessage}
+                    handleOnBlur={handleOnBlur}
+                    handleEditSubmit={handleEditSubmit}
                   />
                 );
               })}
@@ -213,7 +275,7 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
         </div>
       </div>
       <div className={styles.chatContentTextArea} ref={textAreaRef}>
-        <MyEditor handleStateChange={handleStateChange} parentId={null}/>
+        <MyEditor handleStateChange={debounce(handleStateChange, 100)} parentId={null} submit={submit}/>
       </div>
       <EmojiDropdown
         show={showEmojiDropdown}

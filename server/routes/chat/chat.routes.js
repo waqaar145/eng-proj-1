@@ -18,9 +18,9 @@ routes.delete("/chat/group/:groupId", [authentication, groupUserValidation], del
 //chat page - fetching users to chat for current loggedin user
 routes.get("/chat/users", [authentication, usersListValidation], getUsersToChat);
 
-routes.post("/chat", [authentication, chatValidation], addChat);
+routes.post("/chat", [authentication], addChat);
 routes.get("/chat/:groupId", [authentication, groupIDValidation], getGroupChats);
-routes.put("/chat/:messageId", [authentication, updateChatValidation], updateChat);
+routes.put("/chat/:messageId", [authentication], updateChat);
 routes.delete("/chat/:messageId", [authentication, messageIDValidation], deleteChat);
 routes.get("/chat/replies/:groupId/:messageId", [authentication, messageIDValidation], getReplies);
 

@@ -220,13 +220,13 @@ export const Chat = (state = initalState, action = {}) => {
             ...state.chats[action.data.parentId],
             replies: 'replies' in state.chats[action.data.parentId] ? {...state.chats[action.data.parentId].replies, ...repliesObjs1} : {[action.data.id]: action.data},
             currentPage: 'replies' in state.chats[action.data.parentId] ? state.chats[action.data.parentId].currentPage + 1 : 1,
-            totalEnteries: state.chats[action.data.parentId].totalEnteries + 1
+            totalEnteries: state.chats[action.data.parentId].totalEnteries + 1,
+            totalReplies: state.chats[action.data.parentId].totalReplies + 1
           }
         }
       }
 
     case chatActionTypes.UPDATE_EMOJI_IN_MESSAGES:
-      console.log(action.data)
       let skinTone = action.data.emoji.skin ? String(action.data.emoji.skin) : "0"; 
       let emojiIdToneString = action.data.emoji.id + "-" + skinTone;
 

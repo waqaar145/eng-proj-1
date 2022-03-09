@@ -106,13 +106,14 @@
     }
 
     .chatContentTextArea {
+      z-index: 12;
       background-color: $bg-color-1;
       padding: 5px 10px;
       position: fixed;
       bottom: 5px;
-      width: 80%;
       min-height: 70px;
-      // border-top: 1px solid $athens-gray;
+      width: 80%;
+      border-top: 1px solid $athens-gray;
 
       @include respond-to('small') {
         width: 100%;
@@ -343,7 +344,7 @@
       width: 130px;
       background-color: $c-gray-95;
       border-top: 1px solid $athens-gray;
-      border-radius: 2px;
+      border: 2px;
       display: flex;
       justify-content: space-between;
       align-items: center;

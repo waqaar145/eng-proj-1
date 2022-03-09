@@ -4,6 +4,13 @@
   padding-bottom: 5px;
   border-bottom: 1px solid $athens-gray;
 
+  .singleMsgWrapper {
+    padding: 1px 0;
+    &:hover {
+      background-color: $c-gray-98;
+    }
+  }
+
   &:last-child {
     border-bottom: none;
   }
@@ -87,10 +94,6 @@
   padding-right: 5px;
   position: relative;
 
-  &:hover {
-    background-color: $c-gray-98;
-  }
-
   &:hover .actionsContainer {
     display: flex;
     align-items: center;
@@ -102,6 +105,7 @@
   }
   
   .quickActions {
+    z-index: 11;
     position: absolute;
     right: 10px;
     top: -20px;
@@ -148,47 +152,50 @@
 }
 
 .messageTextWrapper {
+  z-index: 10;
   padding: 0.8px;
-  .viewThread {
-    cursor: pointer;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    margin-top: 4px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: $c-gray-60;
-    height: 40px;
-    border: 0.5px solid $c-gray-80;
-    border-radius: 5px;
+}
 
-    .userImages{
-      margin-left: 10px;
-      margin-right: 20px;
-      img{
-        border-radius: 5px;
-        height: 30px;
-        width: 30px;
-        margin-left: -5px;
-        box-shadow: $box-shadow-1;
-        border: 2px solid white;
-      }
-    }
+.viewThread {
+  cursor: pointer;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: $c-gray-60;
+  height: 40px;
+  border: 0.5px solid $c-gray-80;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
 
-    &:hover {
-      background-color: $bg-color-1;
-      // box-shadow: $box-shadow-1;
-      color: $c-gray-60;
+  .userImages{
+    margin-left: 10px;
+    margin-right: 20px;
+    img{
+      border-radius: 5px;
+      height: 30px;
+      width: 30px;
+      margin-left: -5px;
+      box-shadow: $box-shadow-1;
+      border: 2px solid white;
     }
   }
 
-  .messageParagraph {
-    &::after {
-      // margin-left: 5px;
-      content: '(Edited)';
-      color: $c-gray-80;
-      display: flex;
-      font-size: 0.70rem;
-    }
+  &:hover {
+    background-color: $bg-color-1;
+    // box-shadow: $box-shadow-1;
+    color: $c-gray-60;
   }
 }
+
+// .messageParagraph {
+//   &::after {
+//     // margin-left: 5px;
+//     content: '(Edited)';
+//     color: $c-gray-80;
+//     display: inline-block;
+//     font-size: 0.70rem;
+//   }
+// }

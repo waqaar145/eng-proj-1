@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import styles from "./../../../../src/assets/styles/chat/Thread.module.scss";
 import { convertMessagesArrayToObjectForm } from '../../utils/messageFormatter';
 import { chatActionTypes } from '../../../../src/store/chat/chat.actiontype';
 import SinlgeMessage from '../Message';
+import { useRouter } from "next/router";
 import EditorArea from './../EditorArea';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import useEmojiActions from './../../hooks/emojiActions'
@@ -10,6 +11,10 @@ import EmojiDropdown from './../EmojiDropdown'
 import CloseIcon from './../../../../src/components/Extra/CloseIcon'
 import useDeleteMessage from './../../hooks/useDeleteMessage'
 import ConfirmModal from './../ConfirmModal'
+import MyEditor from './../../../../src/components/Editor/editor'
+import { chatService } from "../../../../src/services";
+import debounce from 'lodash.debounce';
+import usePagination from "./../../../../src/hooks/usePagination";
 
 let parentMessageIdKey = "parent-thread-message-id-";
 let parentMessageActionIdKey = "parent-thread-message-action-id-";
@@ -17,6 +22,13 @@ let messageIdKey = "thread-message-id-";
 let messageActionIdKey = "thread-message-action-id-";
 
 const ActiveThread = ({ currentActiveThread }) => {
+
+  const { currentState } = usePagination();
+
+  const router = useRouter();
+  const {
+    groupId
+  } = router.query;
 
   const currentSelectedGroup = useSelector(state => state.Chat.currentSelectedGroup);
   const { chats: messages } = useSelector(state => state.Chat);
@@ -63,6 +75,102 @@ const ActiveThread = ({ currentActiveThread }) => {
     deleteMessage
   } = useDeleteMessage(currentActiveThread);
 
+
+  // setting height content area
+
+  const chatContentBodyRef = useRef(null)
+
+  const textAreaRef = useRef(null);
+  const [editorState, setEditorState] = useState(null)
+  const [height, setHeight] = useState(0)
+
+  useEffect(() => {
+    setHeight(chatContentBodyRef.current.clientHeight)
+    chatContentBodyRef.current.style.height = window.innerHeight - 110 - textAreaRef?.current?.clientHeight + 'px';
+  }, []);
+
+  const handleStateChange = (data) => {
+    setEditorState(data)
+    chatContentBodyRef.current.style.height = height - textAreaRef?.current?.clientHeight + 'px';
+  }
+
+  const handleTextareWidth = () => {
+    textAreaRef.current.style.width = chatContentBodyRef.current.clientWidth + 'px';
+  }
+
+  const handleResizeThread = () => {
+    handleTextareWidth()
+    setHeight(chatContentBodyRef.current.clientHeight)
+    chatContentBodyRef.current.style.height = window.innerHeight - 110 - textAreaRef?.current?.clientHeight + 'px'; // 110 -> height of above two divs
+  }
+
+  useEffect(() => {
+    window.addEventListener('resize', debounce(handleResizeThread, 100));
+    return () => window.removeEventListener('resize', handleResizeThread)
+  }, [])
+
+  useEffect(() => {
+    handleTextareWidth()
+    getThreadReplies(currentActiveThread)
+  }, [currentActiveThread])
+
+  const scrollToBottom = () => {
+    let el = chatContentBodyRef;
+    el.current.scrollTop = el.current.scrollHeight;
+  }
+
+  const getThreadReplies = async (id) => {
+    try {
+      let currentPage = 1;
+      const paramsObj = {...currentState, pageNo: currentPage, pageSize: 1000}
+      let {data: {data}} = await chatService.getThreadReplies({groupId, messageId: id}, paramsObj);
+      await dispatch({type: chatActionTypes.THREAD_REPLIES, data: {...data, currentPage, messageId: id}})
+      scrollToBottom()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+
+  // submit data to DB
+  const submit = async (editorData, callback) => {
+    try {
+      let chatObj = {
+        groupId,
+        message: editorData,
+        parentId: currentActiveThread
+      }      
+      let {data: {data}} = await chatService.addChat(chatObj);
+      await dispatch({type: chatActionTypes.REPLY_MESSAGE, data})
+      callback();
+      scrollToBottom()
+    } catch (error) {
+      console.log('Error when adding a message')
+      console.log(error)
+    }
+  }
+
+  const handleOnBlur = () => {
+    setCurrentEditingMessage(null)
+  }
+
+  // edit submit data to DB
+  const handleEditSubmit = async (editorData, callback) => {
+    try {
+      let chatObj = {
+        messageId: currentEditingMessage,
+        message: editorData
+      }      
+      let {data: {data}} = await chatService.updateChat(chatObj, currentEditingMessage);
+      dispatch({type: chatActionTypes.UPDATE_MESSAGE, data})
+      callback();
+      handleOnBlur()
+    } catch (error) {
+      console.log('Error when adding a message')
+      console.log(error)
+    }
+  }
+
   return (
     <div className={styles.threadWrapper}>
       <div className={styles.header}>
@@ -74,7 +182,7 @@ const ActiveThread = ({ currentActiveThread }) => {
           <CloseIcon onClick={() => closeThread()}/>
         </div>
       </div>
-      <div className={styles.container}>
+      <div className={styles.container} ref={chatContentBodyRef}>
         <div className={styles.parentMessage}>
           {Object.keys(parentMessage).map((messageId) => {
             return (
@@ -116,13 +224,19 @@ const ActiveThread = ({ currentActiveThread }) => {
                 handleEditMessage={handleEditMessage}
                 currentEditingMessage={currentEditingMessage}
                 handleDeleteMessage={handleDeleteMessage}
+                handleEditSubmit={handleEditSubmit}
               />
             );
           })}
         </div>
       </div>
-      <div className={styles.threadTextArea}>
-        <EditorArea parentId={currentActiveThread}/>
+      <div className={styles.threadTextArea} ref={textAreaRef}>
+        <MyEditor 
+          handleStateChange={handleStateChange} 
+          submit={submit} 
+          emojiElementId="main-chat-thread-editor"
+          placeholder={`Reply in Thread #${currentSelectedGroup.groupName}`}
+        />
       </div>
       <EmojiDropdown
         show={showEmojiDropdown}

@@ -4,7 +4,7 @@ import { Picker } from "emoji-mart";
 
 import "emoji-mart/css/emoji-mart.css";
 
-const EmojiDropdown = ({ show, toggle, handleSelectedEmoji, messageId }) => {
+const EmojiDropdown = ({ show, toggle, handleSelectedEmoji, messageId, onBlur }) => {
 
   const hideEmojiDropdown = () => {
     toggle()

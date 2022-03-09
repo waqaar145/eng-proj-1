@@ -117,18 +117,6 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
   // Handle Current Thread
   const handleCurrentActiveThread = (id) => {
     dispatch({type: chatActionTypes.THREAD_MESSAGE_ID, data: id || null})
-    getThreadReplies(id)
-  }
-
-  const getThreadReplies = async (id) => {
-    try {
-      let currentPage = 1;
-      const paramsObj = {...currentState, pageNo: currentPage, pageSize: 1000}
-      let {data: {data}} = await chatService.getThreadReplies({groupId, messageId: id}, paramsObj);
-      await dispatch({type: chatActionTypes.THREAD_REPLIES, data: {...data, currentPage, messageId: id}})
-    } catch (error) {
-      console.log(error)
-    }
   }
 
   // Handling editing message
@@ -218,6 +206,7 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
       console.log(error)
     }
   }
+  console.log(currentSelectedGroup)
 
   return (
     <>
@@ -275,7 +264,13 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
         </div>
       </div>
       <div className={styles.chatContentTextArea} ref={textAreaRef}>
-        <MyEditor handleStateChange={debounce(handleStateChange, 100)} parentId={null} submit={submit}/>
+        <MyEditor 
+          handleStateChange={debounce(handleStateChange, 100)} 
+          parentId={null} 
+          submit={submit} 
+          emojiElementId="main-chat-editor"
+          placeholder={`Message #${currentSelectedGroup.groupName}`}
+        />
       </div>
       <EmojiDropdown
         show={showEmojiDropdown}

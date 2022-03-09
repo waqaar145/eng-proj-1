@@ -32,7 +32,7 @@ const emptyContentState = Draft.convertFromRaw({
 
 const { Editor, EditorState, RichUtils, Modifier, SelectionState, getDefaultKeyBinding, convertFromRaw, convertToRaw, ContentState } = Draft;
 
-const SimpleEditor = ({handleStateChange, submit, initValue, handleOnBlur}) => {
+const SimpleEditor = ({placeholder, handleStateChange, submit, initValue, handleOnBlur, emojiElementId}) => {
 
   const draftRef = useRef(null);
   const [editorState, setEditorState] = React.useState(EditorState.createWithContent(emptyContentState));
@@ -100,30 +100,29 @@ const SimpleEditor = ({handleStateChange, submit, initValue, handleOnBlur}) => {
   }
 
   const handleSelectedEmoji = (emoji) => {
-    console.log(emoji)
     const {native} = emoji;
-    addAndFocusAtTheEnd(native);
+    addAndFocusAtTheEnd(native, editorState.getSelection());
   }
 
-  const addAndFocusAtTheEnd = (native) => {
+  const addAndFocusAtTheEnd = (native, selectionOffset) => {
     const currentContent = editorState.getCurrentContent();
 
     const blockMap = currentContent.getBlockMap();
     const key = blockMap.last().getKey();
     const length = blockMap.last().getLength();
     const selection = new SelectionState({
-      anchorKey: key,
-      anchorOffset: length,
-      focusKey: key,
-      focusOffset: length,
+      anchorKey: selectionOffset.anchorKey,
+      anchorOffset: selectionOffset.anchorOffset,
+      focusKey: selectionOffset.focusKey,
+      focusOffset: selectionOffset.focusOffset,
     });
 
     const textWithInsert = Modifier.insertText(currentContent, selection, native + ' ', null);
     const editorWithInsert = EditorState.push(editorState, textWithInsert, 'insert-characters');
 
-    const newEditorState = EditorState.moveFocusToEnd(editorWithInsert);
+    // const newEditorState = EditorState.moveFocusToEnd(editorWithInsert);
     setEditorState(RichUtils.toggleInlineStyle(
-      newEditorState,
+      editorWithInsert,
       'nameOfCustomStyle'
     ));
   }
@@ -201,7 +200,6 @@ const SimpleEditor = ({handleStateChange, submit, initValue, handleOnBlur}) => {
 
   const clearData = () => {
     const draftJsField = EditorState.moveFocusToEnd(EditorState.push(editorState, ContentState.createFromText(''), 'remove-range'));
-    // const clearedEditorState = EditorState.push(editorState, ContentState.createFromText(''));
     setEditorState(draftJsField);
   }
 
@@ -224,7 +222,7 @@ const SimpleEditor = ({handleStateChange, submit, initValue, handleOnBlur}) => {
         </div> */}
         <div className={`${styles.editorArea} ${className}`}>
           <Editor
-            placeholder="Write something!"
+            placeholder={placeholder}
             editorKey="foobaz"
             ref={draftRef}
             editorState={editorState}
@@ -232,18 +230,17 @@ const SimpleEditor = ({handleStateChange, submit, initValue, handleOnBlur}) => {
             handleKeyCommand={handleKeyCommand}
             keyBindingFn={handleKeyBinding}
             handleReturn={handleReturn}
-            onBlur={handleOnBlur}
           />
         </div>
         <div className={styles.actionBarRight}>
-          <span id="main-editor-key" onClick={() => handleEmojiPicker('main-editor-key')}><MdOutlineEmojiEmotions /></span>
+          <span id={emojiElementId} onClick={() => handleEmojiPicker(emojiElementId)}><MdOutlineEmojiEmotions /></span>
         </div>
       </div>
       <EmojiDropdown
         show={showEmojiDropdown}
         toggle={toggleEmojiDropdown}
         handleSelectedEmoji={handleSelectedEmoji}
-        messageId='main-editor-key'
+        messageId={emojiElementId}
       />
     </div>
   );

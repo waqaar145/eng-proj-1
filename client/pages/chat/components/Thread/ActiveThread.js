@@ -95,23 +95,29 @@ const ActiveThread = ({ currentActiveThread }) => {
   }
 
   const handleTextareWidth = () => {
-    textAreaRef.current.style.width = chatContentBodyRef.current.clientWidth + 'px';
+    if (currentActiveThread && textAreaRef && textAreaRef.current){
+      textAreaRef.current.style.width = chatContentBodyRef.current.clientWidth + 'px';
+    }
   }
 
   const handleResizeThread = () => {
     handleTextareWidth()
-    setHeight(chatContentBodyRef.current.clientHeight)
-    chatContentBodyRef.current.style.height = window.innerHeight - 110 - textAreaRef?.current?.clientHeight + 'px'; // 110 -> height of above two divs
+    if (chatContentBodyRef && chatContentBodyRef.current) {
+      setHeight(chatContentBodyRef.current.clientHeight)
+      chatContentBodyRef.current.style.height = window.innerHeight - 110 - textAreaRef?.current?.clientHeight + 'px'; // 110 -> height of above two divs
+    }
   }
 
   useEffect(() => {
     window.addEventListener('resize', debounce(handleResizeThread, 100));
-    return () => window.removeEventListener('resize', handleResizeThread)
+    return () => window.removeEventListener('resize', debounce(handleResizeThread, 100))
   }, [])
 
   useEffect(() => {
-    handleTextareWidth()
-    getThreadReplies(currentActiveThread)
+    if (currentActiveThread) {
+      handleTextareWidth()
+      getThreadReplies(currentActiveThread)
+    }
   }, [currentActiveThread])
 
   const scrollToBottom = () => {

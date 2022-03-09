@@ -265,7 +265,7 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
       </div>
       <div className={styles.chatContentTextArea} ref={textAreaRef}>
         <MyEditor 
-          handleStateChange={debounce(handleStateChange, 100)} 
+          handleStateChange={debounce(handleStateChange, 1000)} 
           parentId={null} 
           submit={submit} 
           emojiElementId="main-chat-editor"

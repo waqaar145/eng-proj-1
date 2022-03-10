@@ -38,6 +38,54 @@ const convertArrayIntoObject = (array, key="id") => {
   return finalObj;
 }
 
+const addToMessageReplies = (parentMessage, user) => {
+  try {
+    const {
+      profileReplies
+    } = parentMessage;
+    const {
+      userId: id,
+      firstName,
+      lastName,
+      dp
+    } = user;
+    let obj = {
+      id,
+      name: firstName + ' ' + lastName,
+      dp 
+    }
+
+    let dataInColumn = profileReplies;
+    let profileRepliesArray = [];
+    if (dataInColumn === null) {
+      profileRepliesArray = [obj]
+    } else {
+      let userFound = false;
+      for (let u of dataInColumn) {
+        if (u.id === id) {
+          userFound = true;
+        }
+      }
+      if (userFound) {
+        profileRepliesArray = [...dataInColumn.filter(u => u.id !== id), obj];
+      } else {
+        profileRepliesArray = [...dataInColumn, obj]
+      }
+    }
+
+    let slicedArray = []
+    if (profileRepliesArray.length > 3) {
+      slicedArray = profileRepliesArray.slice(1);
+    } else {
+      slicedArray = profileRepliesArray;
+    }
+    return slicedArray;
+  } catch (error) {
+    console.log(error)
+    return []
+  }
+}
+
 export const Chat = (state = initalState, action = {}) => {
 
   switch (action.type) {
@@ -212,6 +260,12 @@ export const Chat = (state = initalState, action = {}) => {
       let repliesObjs1 = {
         [action.data.id]: action.data
       }
+      let updatedProfileReplies = addToMessageReplies(state.chats[action.data.parentId], { 
+        userId: action.data.userId, 
+        firstName: action.data.firstName, 
+        lastName: action.data.lastName, 
+        dp:action.data.dp
+      });
       return {
         ...state,
         chats: {
@@ -221,7 +275,8 @@ export const Chat = (state = initalState, action = {}) => {
             replies: 'replies' in state.chats[action.data.parentId] ? {...state.chats[action.data.parentId].replies, ...repliesObjs1} : {[action.data.id]: action.data},
             currentPage: 'replies' in state.chats[action.data.parentId] ? state.chats[action.data.parentId].currentPage + 1 : 1,
             totalEnteries: state.chats[action.data.parentId].totalEnteries + 1,
-            totalReplies: state.chats[action.data.parentId].totalReplies + 1
+            totalReplies: state.chats[action.data.parentId].totalReplies + 1,
+            profileReplies: updatedProfileReplies
           }
         }
       }

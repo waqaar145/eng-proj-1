@@ -147,17 +147,23 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
 
   const handleStateChange = (data) => {
     setEditorState(data)
-    chatContentBodyRef.current.style.height = height - textAreaRef?.current?.clientHeight + 'px';
+    if (chatContentBodyRef && chatContentBodyRef.current) {
+      chatContentBodyRef.current.style.height = height - textAreaRef?.current?.clientHeight + 'px';
+    }
   }
 
   const handleTextareWidth = () => {
-    textAreaRef.current.style.width = chatContentBodyRef.current.clientWidth + 'px';
+    if (textAreaRef && textAreaRef.current) {
+      textAreaRef.current.style.width = chatContentBodyRef.current.clientWidth + 'px';
+    }
   }
 
   const handleResize = () => {
     handleTextareWidth()
-    setHeight(chatContentBodyRef.current.clientHeight)
-    chatContentBodyRef.current.style.height = window.innerHeight - 110 - textAreaRef?.current?.clientHeight + 'px'; // 110 -> height of above two divs
+    if (chatContentBodyRef && chatContentBodyRef.current) {
+      setHeight(chatContentBodyRef.current.clientHeight)
+      chatContentBodyRef.current.style.height = window.innerHeight - 110 - textAreaRef?.current?.clientHeight + 'px'; // 110 -> height of above two divs
+    }
   }
 
   useEffect(() => {

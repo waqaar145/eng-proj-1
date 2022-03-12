@@ -12,8 +12,8 @@ routes.post("/chat/group", [authentication, createGroupValidation], createGroup)
 routes.get("/chat/group/:groupId", [authentication, groupIDValidation], getGroup);
 routes.delete("/chat/group/:groupId", [authentication, groupUserValidation], deleteGroup);
 
-routes.get("/chat/search-users", [authentication], searchUsers);
-routes.post("/chat/add-user-to-group", [authentication, addUserToGroupValidation], addUserToGroup);
+routes.get("/chat/group/users/:groupId", [authentication, groupIDValidation], searchUsers);
+routes.put("/chat/group/users/:groupId/:userId", [authentication, addUserToGroupValidation], addUserToGroup);
 routes.get("/chat/user-groups", [authentication], getGroupsOfLoggedinUser);
 routes.get("/chat/users-of-group/:groupId", [authentication, groupUserValidation], getUsersOfGroup);
 

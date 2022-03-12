@@ -94,7 +94,26 @@ const searchUsers = async (req, res) => {
     return res.status(200).send(okResponse([], "Search result is fetched."));
   }
 
+  const {
+    groupId
+  } = req.params;
+
   try {
+
+    let group = await knex('groups').select('g_id as id').where('g_uuid', groupId).first();
+    if (!group) {
+      return res.status(422).send(errorResponse({}, "Group does not exists!"));
+    }
+
+    let participants = await knex('participants').select('p_user_id as user_id').where('p_group_id', group.id);
+
+    let participantsIds = [];
+    for (let participant of participants) {
+      participantsIds.push(participant.user_id)
+    }
+
+    let duplicateIds = [...participantsIds, req.user.id];
+
     let query = q.toLowerCase() + "%";
     let result = await knex("users")
       .select(
@@ -108,7 +127,7 @@ const searchUsers = async (req, res) => {
         "u_designation as designation",
       )
       .where("u_username", "like", query)
-      .whereNot("u_id", req.user.id)
+      .whereNotIn("u_id", duplicateIds)
       .orderBy("u_username", sort)
       .offset(offset)
       .limit(limit);
@@ -116,7 +135,7 @@ const searchUsers = async (req, res) => {
     let totalEnteries = await knex("users")
       .count("u_id as count")
       .where("u_username", "like", query)
-      .whereNot("u_id", req.user.id)
+      .whereNotIn("u_id", duplicateIds)
 
     let userResponse = {
       data: result,
@@ -141,7 +160,7 @@ const addUserToGroup = async (req, res) => {
     });
   }
 
-  const { userId, groupId } = req.body;
+  const { userId, groupId } = req.params;
 
   try {
     let check = await knex("participants")

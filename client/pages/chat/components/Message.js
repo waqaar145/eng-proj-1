@@ -99,6 +99,16 @@ const ShowMessage = ({
           )}
         </div>
       </div>
+      <div className={styles.renderEmojisAndExtras}>
+        <div>
+          <RenderEmojiAndExtras
+            message={message}
+            handleChangeReaction={handleChangeReaction}
+            thread={thread}
+            handleCurrentActiveThread={handleCurrentActiveThread}
+          />
+        </div>
+      </div>
     </div>
   );
 };
@@ -110,49 +120,49 @@ const RenderEmojiAndExtras = ({
   handleCurrentActiveThread,
 }) => {
   return (
-    <>
-      <div className={emojiStyles.emojiContainer}>
-        {message.reactions &&
-          Object.keys(message.reactions).length > 0 &&
-          Object.keys(message.reactions).map((reaction, index) => {
-            return (
-              <div
-                className={`${emojiStyles.emojiWrapper} ${
-                  message.reactions[reaction].me ? emojiStyles.reacted : ""
-                }`}
-                key={message.id + "-" + reaction + "-" + index}
-              >
-                <div className={emojiStyles.emoji}>
-                  <Emoji
-                    emoji={convertToCode(reaction)}
-                    size={18}
-                    onClick={(data) => handleChangeReaction(message.id, data)}
-                  />
-                </div>
-                <div className={emojiStyles.count}>
-                  {message.reactions[reaction].count}
-                </div>
-              </div>
-            );
-          })}
-      </div>
-      {!thread && message.totalReplies > 0 && (
-        <div
-          className={styles.viewThread}
-          onClick={() => handleCurrentActiveThread(message.id)}
-        >
-          <div className={styles.userImages}>
-            {Array.isArray(message.profileReplies) &&
-              message.profileReplies.map((profile) => {
+      <>
+        <div className={emojiStyles.emojiContainer}>
+          {message.reactions &&
+              Object.keys(message.reactions).length > 0 &&
+              Object.keys(message.reactions).map((reaction, index) => {
                 return (
-                  <img key={profile.id} src={profile.dp} alt={profile.name} />
+                  <div
+                    className={`${emojiStyles.emojiWrapper} ${
+                      message.reactions[reaction].me ? emojiStyles.reacted : ""
+                    }`}
+                    key={message.id + "-" + reaction + "-" + index}
+                  >
+                    <div className={emojiStyles.emoji}>
+                      <Emoji
+                        emoji={convertToCode(reaction)}
+                        size={18}
+                        onClick={(data) => handleChangeReaction(message.id, data)}
+                      />
+                    </div>
+                    <div className={emojiStyles.count}>
+                      {message.reactions[reaction].count}
+                    </div>
+                  </div>
                 );
               })}
           </div>
-          <div>View Thread ({message.totalReplies})</div>
-        </div>
-      )}
-    </>
+          {!thread && message.totalReplies > 0 && (
+            <div
+              className={styles.viewThread}
+              onClick={() => handleCurrentActiveThread(message.id)}
+            >
+              <div className={styles.userImages}>
+                {Array.isArray(message.profileReplies) &&
+                  message.profileReplies.map((profile) => {
+                    return (
+                      <img key={profile.id} src={profile.dp} alt={profile.name} />
+                    );
+                  })}
+              </div>
+              <div>View Thread ({message.totalReplies})</div>
+            </div>
+          )}
+      </>
   );
 };
 
@@ -231,16 +241,7 @@ const MessageBox = ({
           </div>
         </div>
         {/* message, handleChangeReaction, thread, handleCurrentActiveThread */}
-        <div className={styles.renderEmojisAndExtras}>
-          <div style={{marginLeft: '70px'}}>
-            <RenderEmojiAndExtras
-              message={message}
-              handleChangeReaction={handleChangeReaction}
-              thread={thread}
-              handleCurrentActiveThread={handleCurrentActiveThread}
-            />
-          </div>
-        </div>
+        
       </div>
       {"groupedMessages" in message &&
         Object.keys(message.groupedMessages).map((messageId) => {
@@ -296,16 +297,6 @@ const MessageBox = ({
                       />
                     </div>
                   )}
-                </div>
-              </div>
-              <div className={styles.renderEmojisAndExtras}>
-                <div style={{marginLeft: '70px'}}>
-                  <RenderEmojiAndExtras
-                    message={message.groupedMessages[messageId]}
-                    handleChangeReaction={handleChangeReaction}
-                    thread={thread}
-                    handleCurrentActiveThread={handleCurrentActiveThread}
-                  />
                 </div>
               </div>
             </div>

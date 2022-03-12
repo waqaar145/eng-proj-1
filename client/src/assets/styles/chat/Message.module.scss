@@ -20,7 +20,8 @@
   // }
 
   .profileWrapper {
-    padding-top: 2px;
+    // padding-top: 2px;
+    // display: flex;
 
     .profileImage {
       width: 70px;
@@ -91,7 +92,7 @@
 }
 
 @mixin messagePosAction {
-  padding-right: 5px;
+  // padding-right: 5px;
   position: relative;
 
   &:hover .actionsContainer {
@@ -153,7 +154,6 @@
 
 .messageTextWrapper {
   z-index: 10;
-  padding: 0.8px;
 }
 
 .viewThread {

@@ -1,72 +1,69 @@
 @import './../../variable';
 
-.inputWrapper {
-  
-  .inputBox {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    font-size: 0.9rem;
-    padding-top: 5px;
-    margin-bottom: 5px;
-    min-height: 70px;
-    max-height: 200px;
+@mixin getFontColor ($color) {
+  margin-bottom: 3px;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: $color;
+}
 
-    .label {
-      position: absolute;
-      left: 12px;
-      top: calc(50% + 10px);
-      transform: translateY(-50%);
-      color: $athens-gray-darker-1;
-      transition: top 0.3s ease, font-size 0.3s ease, color 0.3s ease;
+.inputWrapper {
+  padding-top: 5px;
+  margin-bottom: 5px;
+
+  .inputBoxLabel {
+    @include getFontColor($c-gray-30);
+  }
+
+  .notRequired {
+    @include getFontColor($c-gray-30);
+  }
+
+  textarea {
+    border: 2px solid $athens-gray;
+    appearance: none;
+    -ms-appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background: none;
+    padding: 12px;
+    border-radius: 3px;
+    width: 100%;
+    transition: border-color 0.3s ease;
+
+    &:focus{
+      border: 2px solid $persian-blue;
+      outline: none;
+      -webkit-outline: none;
+      -moz-outline: none;
+      -ms-outline: none;
+      -o-outline: none;
+      transition-delay: 0.1s;
     }
 
-    textarea {
-      border: 1px solid $c-gray-70;
-      appearance: none;
-      -ms-appearance: none;
-      -moz-appearance: none;
-      -webkit-appearance: none;
-      background: none;
-      padding: 12px;
-      border-radius: 3px;
-      width: 100%;
-      transition: border-color 0.3s ease;
-
-      &:focus{
-        border: 1px solid $c-gray-30;
-        outline: none;
-        -webkit-outline: none;
-        -moz-outline: none;
-        -ms-outline: none;
-        -o-outline: none;
-        transition-delay: 0.1s;
-      }
-
-      &::placeholder {
-        color: $font-color-2;
-        font-size: 0.8rem;
-      }
+    &::placeholder {
+      color: $font-color-2;
+      font-size: 0.8rem;
     }
   }
 }
 
 .error {
-  .inputBox {
-    width: 100%;
-    position: relative;
-    font-size: 0.9rem;
-    padding-top: 20px;
-    margin-bottom: 5px;
+  // .inputBox {
+  //   width: 100%;
+  //   position: relative;
+  //   font-size: 0.9rem;
+  //   padding-top: 20px;
+  //   margin-bottom: 5px;
 
-    .label {
-      position: absolute;
-      left: 12px;
-      top: calc(50% + 10px);
-      transform: translateY(-50%);
-      color: $error-danger;
-      transition: top 0.3s ease, font-size 0.3s ease, color 0.3s ease;
-    }
+  //   .label {
+  //     position: absolute;
+  //     left: 12px;
+  //     top: calc(50% + 10px);
+  //     transform: translateY(-50%);
+  //     color: $error-danger;
+  //     transition: top 0.3s ease, font-size 0.3s ease, color 0.3s ease;
+  //   }
 
     textarea {
       border: 2px solid $error-danger;
@@ -109,7 +106,7 @@
         color: $error-danger;
       }
     }
-  }
+  // }
   .errorMessage {
     color: $error-danger;
     font-size: 0.8rem;

@@ -2,6 +2,7 @@
 
 .CloseIcon {
   border-radius: 50%;
+  background: $c-gray-98;
 
   .icon {
     padding: 10px;
@@ -13,6 +14,6 @@
 
   &:hover {
     cursor: pointer;
-    background: $c-gray-98;
+    background: $c-gray-90;
   }
 }

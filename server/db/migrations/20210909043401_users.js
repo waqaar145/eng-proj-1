@@ -25,6 +25,7 @@ exports.up = function (knex, Promise) {
         table.increments("g_id").unsigned().primary();
         table.uuid("g_uuid").unique().defaultTo(knex.raw("uuid_generate_v4()"));
         table.string("g_group_name").default("");
+        table.string("g_description").default(null);
         table.boolean("g_group_type"); // Private -> True, Group -> False, Public -> NULL
         table.integer("g_members").default(0);
         table.integer("g_created_by").references('u_id').inTable('users');

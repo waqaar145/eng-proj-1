@@ -1,6 +1,7 @@
 const { check, validationResult } = require('express-validator');
 const createGroupValidation = [
   check('groupName').isLength({ min: 1, max: 20}).withMessage('Group name is required & should be between 1 and 20 characters long.').trim().escape(),
+  check('description').isLength({ min: 0, max: 500}).withMessage('Description must be less than 500 chracters long.').trim().escape(),
 ];
 
 const addUserToGroupValidation = [

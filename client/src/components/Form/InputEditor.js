@@ -5,10 +5,13 @@ const InputBox = ({
   name,
   label,
   placeholder,
+  required,
   value,
-  onChange,
-  onKeyPress,
+  handleChange,
+  handleBlur,
   onBlur,
+  inputRef,
+  error,
   ...restProps
 }) => {
   const moveCaretAtEnd = (e) => {
@@ -18,21 +21,21 @@ const InputBox = ({
   };
 
   return (
-    <div className={`${styles.inputWrapper}`}>
-      <label className={styles.inputBox}>
-        <textarea
-          autoFocus
-          onFocus={moveCaretAtEnd}
-          name={name}
-          type={type}
-          placeholder={placeholder}
-          value={value}
-          onChange={onChange}
-          onKeyPress={onKeyPress}
-          onBlur={onBlur}
-          {...restProps}
-        />
+    <div className={`${styles.inputWrapper} ${error ? styles.error : ""}`}>
+      <label className={`${!required ? styles.notRequired : styles.inputBoxLabel}`}>
+        <span>{label}</span> {required && <span className={styles.requiredField}>*</span>}
       </label>
+      <textarea
+        name={name}
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => handleChange(e.target)}
+        onBlur={handleBlur}
+        value={value}
+        ref={inputRef}
+        {...restProps}
+      />
+      {error && <div className={styles.errorMessage}>{error}</div>}
     </div>
   );
 };

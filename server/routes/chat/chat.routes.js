@@ -3,17 +3,20 @@ const routes = new Router();
 const { authentication } = require('./../../helpers/auth')
 const { createGroupValidation, addUserToGroupValidation, groupUserValidation, groupIDValidation, usersListValidation, chatValidation, messageIDValidation, updateChatValidation, getRepliesChatValidation, addEmojiReactionValidation } = require('./chat.validations')
 
-const { createGroup, searchUsers, addUserToGroup, getGroupsOfLoggedinUser, getUsersOfGroup, deleteGroup } = require("./chat.controllers");
+const { createGroup, getGroup, deleteGroup, searchUsers, addUserToGroup, getGroupsOfLoggedinUser, getUsersOfGroup } = require("./chat.controllers");
 const { getUsersToChat } = require("./chatSidebar.controllers");
 const { getGroupChats, addChat, updateChat, deleteChat, getReplies, addEmojiReaction } = require("./chatContent.controllers");
 
 
-routes.post("/chat/create-group", [authentication, createGroupValidation], createGroup);
+routes.post("/chat/group", [authentication, createGroupValidation], createGroup);
+routes.get("/chat/group/:groupId", [authentication, groupIDValidation], getGroup);
+routes.delete("/chat/group/:groupId", [authentication, groupUserValidation], deleteGroup);
+
 routes.get("/chat/search-users", [authentication], searchUsers);
 routes.post("/chat/add-user-to-group", [authentication, addUserToGroupValidation], addUserToGroup);
 routes.get("/chat/user-groups", [authentication], getGroupsOfLoggedinUser);
 routes.get("/chat/users-of-group/:groupId", [authentication, groupUserValidation], getUsersOfGroup);
-routes.delete("/chat/group/:groupId", [authentication, groupUserValidation], deleteGroup);
+
 
 //chat page - fetching users to chat for current loggedin user
 routes.get("/chat/users", [authentication, usersListValidation], getUsersToChat);

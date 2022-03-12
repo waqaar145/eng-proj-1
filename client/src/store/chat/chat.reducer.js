@@ -129,8 +129,8 @@ export const Chat = (state = initalState, action = {}) => {
           ...state.publicData,
           name: publicName,
           chatList: [...state.publicData.chatList, ...chatListPublic.data],
-          currentPage: publicPage,
-          totalEnteries: chatListPublic.totalEnteries,
+          // currentPage: publicPage,
+          // totalEnteries: chatListPublic.totalEnteries,
           loading: false
         },
       };
@@ -147,8 +147,8 @@ export const Chat = (state = initalState, action = {}) => {
           ...state.groupData,
           name: groupName,
           chatList: [...state.groupData.chatList, ...chatListGroup.data],
-          currentPage: groupPage,
-          totalEnteries: chatListGroup.totalEnteries,
+          // currentPage: groupPage,
+          // totalEnteries: chatListGroup.totalEnteries,
           loading: false
         },
       };
@@ -165,8 +165,8 @@ export const Chat = (state = initalState, action = {}) => {
           ...state.privateData,
           name: privateName,
           chatList: [...state.privateData.chatList, ...chatListPrivate.data],
-          currentPage: privatePage,
-          totalEnteries: chatListPrivate.totalEnteries,
+          // currentPage: privatePage,
+          // totalEnteries: chatListPrivate.totalEnteries,
           loading: false
         },
       };

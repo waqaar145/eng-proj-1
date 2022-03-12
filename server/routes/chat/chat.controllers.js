@@ -17,9 +17,10 @@ const createGroup = async (req, res) => {
     });
   }
 
-  const { groupName } = req.body;
+  const { groupName, description } = req.body;
   const groupObj = {
     g_group_name: groupName,
+    g_description: description,
     g_group_type: false,
     g_created_by: req.user.id,
   };
@@ -30,8 +31,9 @@ const createGroup = async (req, res) => {
     const groupResponse = {
       id: group.g_id,
       uuid: group.g_uuid,
-      groupName: group.g_group_name,
+      name: group.g_group_name,
       members: group.g_members,
+      createdAt: group.g_created_at
     };
     return res.status(200).send(okResponse(groupResponse, "Gorup is created"));
   } catch (error) {
@@ -39,6 +41,51 @@ const createGroup = async (req, res) => {
     return res.status(500).send(errorResponse({}, "Something went wrong!"));
   }
 };
+
+const getGroup = async (req, res) => {
+  // Form Validation *******
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).send({
+      message: "Got error while submitting",
+      data: expValidatorMsg(errors.array()),
+    });
+  }
+
+  try {
+    const { groupId } = req.params;
+
+    let groupRes = await knex("groups")
+      .select(
+        "g_id as id",
+        "g_uuid as uuid",
+        "g_group_name as groupName",
+        "g_group_type as groupType",
+        "g_members as members",
+        "g_created_at as createdAt"
+      )
+      .where({ g_uuid: groupId })
+      .andWhere({ g_is_active: true })
+      .first();
+
+    groupRes = {
+      ...groupRes,
+      groupType:
+        groupRes.groupType === null
+          ? "public"
+          : groupRes.groupType === false
+          ? "group"
+          : "private",
+    };
+
+    return res
+      .status(200)
+      .send(okResponse(groupRes, "Group has been fetched."));
+  } catch (error) {
+    console.log(error)
+    return res.status(500).send(errorResponse({}, "Something went wrong!"));
+  }
+}
 
 const searchUsers = async (req, res) => {
   const { offset, limit, sort, q } = getPaginationValues(req.query);
@@ -292,9 +339,11 @@ const deleteGroup = async (req, res) => {
 
 module.exports = {
   createGroup,
+  getGroup,
+  deleteGroup,
   searchUsers,
   addUserToGroup,
   getGroupsOfLoggedinUser,
   getUsersOfGroup,
-  deleteGroup
+  
 };

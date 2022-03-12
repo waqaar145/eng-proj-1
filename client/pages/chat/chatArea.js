@@ -1,5 +1,4 @@
 import dynamic from "next/dynamic";
-import CurrentUserChattingTo from "./components/CurrentUserChattingTo";
 import { useState, useEffect, useRef } from "react";
 import SinlgeMessage from "./components/Message";
 import { useRouter } from "next/router";
@@ -8,7 +7,6 @@ import {shallowEqual, useDispatch, useSelector} from 'react-redux'
 import { chatActionTypes } from "../../src/store/chat/chat.actiontype";
 import usePagination from "./../../src/hooks/usePagination";
 import useEmojiActions from "./hooks/emojiActions";
-import EditorArea from "./components/EditorArea";
 import {convertMessagesArrayToObjectForm} from './utils/messageFormatter'
 import ConfirmModal from "./components/ConfirmModal";
 import useDeleteMessage from "./hooks/useDeleteMessage";
@@ -23,7 +21,7 @@ const EmojiDropdown = dynamic(
 let messageIdKey = "message-id-";
 let messageActionIdKey = "message-action-id-";
 
-const ChatArea = ({isTabletOrMobile, styles}) => {
+const ChatArea = ({groupId, isTabletOrMobile, styles}) => {
 
   const dispatch = useDispatch()
 
@@ -34,11 +32,6 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
   const currentActiveThread = useSelector(state => state.Chat.currenThreadMessageId);
   const {loggedInUser} = useSelector(state => state.Auth, shallowEqual);
   const {chats: messages, currentPage, totalEnteries} = useSelector(state => state.Chat, shallowEqual);
-
-  const router = useRouter();
-  const {
-    groupId
-  } = router.query;
 
   const chatContentBodyRef = useRef(null)
   const loadMoreChatRef = useRef(null)
@@ -212,13 +205,9 @@ const ChatArea = ({isTabletOrMobile, styles}) => {
       console.log(error)
     }
   }
-  console.log(currentSelectedGroup)
 
   return (
     <>
-      <div className={styles.chatContentHeader}>
-        <CurrentUserChattingTo styles={styles} currentSelectedGroup={currentSelectedGroup}/>
-      </div>
       <div className={styles.chatContentBody} ref={chatContentBodyRef}>
         <div className={styles.messageWrapperContainer}>
           {

@@ -5,7 +5,7 @@ import UsersList from "./components/usersList";
 import styles from "./../../src/assets/styles/chat/Chat.module.scss";
 import useModal from "../../src/hooks/useModal";
 import useNav from "../../src/hooks/useNav";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import SideNavStyles from "./../../src/assets/styles/chat/SideNav.module.scss";
 import { useSelector, useDispatch } from "react-redux";
@@ -15,6 +15,9 @@ import { chatActionTypes } from "../../src/store/chat/chat.actiontype";
 import ChatArea from "./chatArea";
 import { useRouter } from "next/router";
 import ActiveThread from './components/Thread/ActiveThread.js'
+import CreateGroup from './components/CreateGroup'
+import CurrentUserChattingTo from "./components/CurrentUserChattingTo";
+import AddUsersTopGroup from "./components/AddUsersTopGroup";
 
 const SideNavbar = dynamic(() => import("./components/SideNavbar"), {
   ssr: false,
@@ -59,6 +62,7 @@ const SidenavUsers = ({
 const Chat = () => {
 
   const router = useRouter();
+
   const {
     groupId
   } = router.query;
@@ -67,6 +71,7 @@ const Chat = () => {
 
   const loggedInUser = useSelector((state) => state.Auth.loggedInUser);
   const currentActiveThread = useSelector(state => state.Chat.currenThreadMessageId);
+  const currentSelectedGroup = useSelector(state => state.Chat.currentSelectedGroup);
 
   const isTabletOrMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
@@ -114,9 +119,9 @@ const Chat = () => {
   }
 
   useEffect(() => {
-    getPubGroups({pageNo: 1})
-    getGroups({pageNo: 1})
-    getDMs({pageNo: 1})
+    getPubGroups({pageNo: 1, pageSize: 1000})
+    getGroups({pageNo: 1, pageSize: 1000})
+    getDMs({pageNo: 1, pageSize: 1000})
   }, []);
 
   const handleNav = () => {
@@ -135,7 +140,32 @@ const Chat = () => {
     }
   }
 
-  const handleAddUserOrGroupModal = () => {}
+  // CreateGroup Modal
+  const {toggle :toggleCreateGroup, show: showCreateGroup} = useModal()
+
+  // adding users to group
+  // 1 -> Chat Area, 2 -> adding and removing users, 3 -> join open immediate groups to start talking 
+  const [chatArea, setChatArea] = useState(1);
+
+  const handleAddUserOrGroupModal = ({group, dm}) => {
+    console.log('clicked', {group, dm})
+    toggleCreateGroup()
+  }
+
+  const addGroupNameToList = (obj) => {
+    let data = {
+      name: 'Group Messages',
+      chatList: {
+        data: [obj]
+      },
+    }
+    toggleCreateGroup()
+    dispatch({type: chatActionTypes.ADD_GROUPS, data: {...data, currentPage: 1}});
+    router.push(`/chat/chat?groupId=${obj.uuid}`, `/chat/CLIENT/${obj.uuid}`);
+    setChatArea(2)
+  }
+  
+  console.log(groupId)
 
   return (
     <div className={styles.chatWrapper} style={{overflow: 'hidden'}}>
@@ -160,10 +190,25 @@ const Chat = () => {
           </div>
         </div>
         <div className={styles.chatContent}>
-          <ChatArea 
-            isTabletOrMobile={isTabletOrMobile}
-            styles={styles}
-          />
+          <div className={styles.chatContentHeader}>
+            <CurrentUserChattingTo styles={styles} currentSelectedGroup={currentSelectedGroup}/>
+          </div>
+          {
+            chatArea === 1
+            &&
+            <ChatArea 
+              groupId={groupId}
+              isTabletOrMobile={isTabletOrMobile}
+              styles={styles}
+            />
+          }
+          {
+            chatArea === 2
+            &&
+            <AddUsersTopGroup 
+              groupId={groupId}
+            />
+          }
         </div>
         {
           currentActiveThread
@@ -200,6 +245,12 @@ const Chat = () => {
           </div>
         </SideNavbar>
       )}
+      {/* Modal */}
+      <CreateGroup 
+        toggle={toggleCreateGroup}
+        show={showCreateGroup}
+        addGroupNameToList={addGroupNameToList}
+        />
     </div>
   );
 };

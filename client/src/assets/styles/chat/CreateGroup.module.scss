@@ -1,0 +1,22 @@
+.headerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+
+  .title {
+    font-size: 1.3rem;
+  }
+}
+
+.formContainer {
+  padding: 10px;
+}
+
+.footerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  padding: 10px 0;
+}

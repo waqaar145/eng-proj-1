@@ -4,7 +4,15 @@ const queryString = require('query-string');
 export const chatService = {
   async createGroup(data) {
     try {
-      const result = await HTTPClient.post('/api/v1/chat/create-group', data);
+      const result = await HTTPClient.post('/api/v1/chat/group', data);
+      return result;
+    } catch(error) {
+      throw error
+    }
+  },
+  async getGroupInfo (id) {
+    try {
+      const result = await HTTPClient.get(`/api/v1/chat/group/${id}`);
       return result;
     } catch(error) {
       throw error

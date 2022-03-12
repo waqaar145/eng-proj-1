@@ -1,0 +1,24 @@
+@import './../variable';
+
+.wrapper {
+  height: 100%;
+  
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 10px;
+    border-bottom: 1px solid $c-gray-95;
+
+    .title {
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: $c-gray-40;
+    }
+  }
+
+  .body {
+    padding: 10px 10px;
+  }
+}

@@ -33,6 +33,7 @@ const InputBox = ({
         onBlur={handleBlur}
         value={value}
         ref={inputRef}
+        autocomplete="off"
         {...restProps}
       />
       {error && <div className={styles.errorMessage}>{error}</div>}

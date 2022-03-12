@@ -73,7 +73,9 @@ const ChatArea = ({groupId, isTabletOrMobile, styles}) => {
 
   const scrollToBottom = () => {
     let el = chatContentBodyRef;
-    el.current.scrollTop = el.current.scrollHeight;
+    if (el && el.current) {
+      el.current.scrollTop = el.current.scrollHeight;
+    }
   }
 
   const getChats = async (id, pageNoObj) => {

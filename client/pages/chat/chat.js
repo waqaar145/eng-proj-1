@@ -17,7 +17,7 @@ import { useRouter } from "next/router";
 import ActiveThread from './components/Thread/ActiveThread.js'
 import CreateGroup from './components/CreateGroup'
 import CurrentUserChattingTo from "./components/CurrentUserChattingTo";
-import AddUsersTopGroup from "./components/AddUsersTopGroup";
+import AddUsersToGroup from "./components/AddUsersToGroup";
 
 const SideNavbar = dynamic(() => import("./components/SideNavbar"), {
   ssr: false,
@@ -64,7 +64,8 @@ const Chat = () => {
   const router = useRouter();
 
   const {
-    groupId
+    groupId,
+    addUsers
   } = router.query;
 
   const dispatch = useDispatch();
@@ -144,8 +145,8 @@ const Chat = () => {
   const {toggle :toggleCreateGroup, show: showCreateGroup} = useModal()
 
   // adding users to group
-  // 1 -> Chat Area, 2 -> adding and removing users, 3 -> join open immediate groups to start talking 
-  const [chatArea, setChatArea] = useState(1);
+  // 1 -> Chat Area, 2 -> adding and removing users, 3 -> join opened immediate groups to start talking 
+  const [chatArea, setChatArea] = useState(2);
 
   const handleAddUserOrGroupModal = ({group, dm}) => {
     console.log('clicked', {group, dm})
@@ -161,11 +162,17 @@ const Chat = () => {
     }
     toggleCreateGroup()
     dispatch({type: chatActionTypes.ADD_GROUPS, data: {...data, currentPage: 1}});
-    router.push(`/chat/chat?groupId=${obj.uuid}`, `/chat/CLIENT/${obj.uuid}`);
-    setChatArea(2)
+    router.push(`/chat/chat?groupId=${obj.uuid}&addUsers=yes`, `/chat/CLIENT/${obj.uuid}?addUsers=yes`);
   }
-  
-  console.log(groupId)
+
+  useEffect(() => {
+    if (addUsers) {
+      setChatArea(2);
+    } else {
+      setChatArea(2);
+    }
+  }, [groupId])
+
 
   return (
     <div className={styles.chatWrapper} style={{overflow: 'hidden'}}>
@@ -205,7 +212,7 @@ const Chat = () => {
           {
             chatArea === 2
             &&
-            <AddUsersTopGroup 
+            <AddUsersToGroup 
               groupId={groupId}
             />
           }

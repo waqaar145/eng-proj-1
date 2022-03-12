@@ -16,7 +16,6 @@ import ChatArea from "./chatArea";
 import { useRouter } from "next/router";
 import ActiveThread from './components/Thread/ActiveThread.js'
 import CreateGroup from './components/CreateGroup'
-import CurrentUserChattingTo from "./components/CurrentUserChattingTo";
 import AddUsersToGroup from "./components/AddUsersToGroup";
 
 const SideNavbar = dynamic(() => import("./components/SideNavbar"), {
@@ -197,9 +196,6 @@ const Chat = () => {
           </div>
         </div>
         <div className={styles.chatContent}>
-          <div className={styles.chatContentHeader}>
-            <CurrentUserChattingTo styles={styles} currentSelectedGroup={currentSelectedGroup}/>
-          </div>
           {
             chatArea === 1
             &&

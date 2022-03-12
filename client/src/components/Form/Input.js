@@ -18,7 +18,7 @@ const InputBox = ({
           type={type}
           placeholder={placeholder}
           onChange={(e) => handleChange(e.target)}
-          autocomplete="off"
+          autoComplete="off"
           {...restProps}
         />
         <span className={`${styles.label}`}>{label}</span>

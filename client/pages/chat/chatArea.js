@@ -12,6 +12,7 @@ import ConfirmModal from "./components/ConfirmModal";
 import useDeleteMessage from "./hooks/useDeleteMessage";
 import MyEditor from './../../src/components/Editor/editor'
 import debounce from 'lodash.debounce';
+import CurrentUserChattingTo from "./components/CurrentUserChattingTo";
 
 const EmojiDropdown = dynamic(
   () => import("./components/EmojiDropdown"),
@@ -210,6 +211,9 @@ const ChatArea = ({groupId, isTabletOrMobile, styles}) => {
 
   return (
     <>
+      <div className={styles.chatContentHeader}>
+        <CurrentUserChattingTo styles={styles} currentSelectedGroup={currentSelectedGroup}/>
+      </div>
       <div className={styles.chatContentBody} ref={chatContentBodyRef}>
         <div className={styles.messageWrapperContainer}>
           {

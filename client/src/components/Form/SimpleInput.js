@@ -31,7 +31,7 @@ const SimpleInput = ({
         onBlur={handleBlur}
         ref={inputRef}
         className={styles.inputControl}
-        autocomplete="off"
+        autoComplete="off"
         {...restProps}
       />
       {error && <div className={styles.errorMessage}>{error}</div>}

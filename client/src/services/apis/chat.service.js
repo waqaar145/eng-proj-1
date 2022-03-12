@@ -18,17 +18,17 @@ export const chatService = {
       throw error
     }
   },
-  async searchUsers(data) {
+  async searchUsers(groupId, params) {
     try {
-      const result = await HTTPClient.get('/api/v1/chat/search-users?' + queryString.stringify(data));
+      const result = await HTTPClient.get(`/api/v1/chat/group/users/${groupId}?${queryString.stringify(params)}`);
       return result;
     } catch(error) {
       throw error
     }
   },
-  async addUserToGroup (data) {
+  async addUserToGroup ({groupId, userId}) {
     try {
-      const result = await HTTPClient.post('/api/v1/chat/add-user-to-group', data);
+      const result = await HTTPClient.put(`/api/v1/chat/group/users/${groupId}/${userId}`);
       return result;
     } catch(error) {
       throw error

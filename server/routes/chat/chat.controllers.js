@@ -16,17 +16,25 @@ const createGroup = async (req, res) => {
       data: expValidatorMsg(errors.array()),
     });
   }
-
-  const { groupName, description } = req.body;
-  const groupObj = {
-    g_group_name: groupName,
-    g_description: description,
-    g_group_type: false,
-    g_created_by: req.user.id,
-  };
   try {
+    const { groupName, description } = req.body;
+    const groupObj = {
+      g_group_name: groupName,
+      g_description: description,
+      g_group_type: false,
+      g_created_by: req.user.id,
+      g_members: 1
+    };
+
     const groupResult = await knex("groups").insert(groupObj).returning("*");
     const group = groupResult[0];
+
+    let participantObj = {
+      p_user_id: req.user.id,
+      p_group_id: group.g_id,
+      p_admin: 1
+    }
+    await knex('participants').insert(participantObj);
 
     const groupResponse = {
       id: group.g_id,
@@ -105,7 +113,11 @@ const searchUsers = async (req, res) => {
       return res.status(422).send(errorResponse({}, "Group does not exists!"));
     }
 
-    let participants = await knex('participants').select('p_user_id as user_id').where('p_group_id', group.id);
+    let participants = await knex('participants')
+                            .select(
+                              'p_user_id as user_id'
+                            )
+                            .where('p_group_id', group.id);
 
     let participantsIds = [];
     for (let participant of participants) {
@@ -145,6 +157,68 @@ const searchUsers = async (req, res) => {
     return res
       .status(200)
       .send(okResponse(userResponse, "Search result is fetched."));
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send(errorResponse({}, "Something went wrong!"));
+  }
+};
+
+
+const searchExistingUsers = async (req, res) => {
+
+  const {
+    groupId
+  } = req.params;
+
+  try {
+
+    let group = await knex('groups').select('g_id as id').where('g_uuid', groupId).first();
+    if (!group) {
+      return res.status(422).send(errorResponse({}, "Group does not exists!"));
+    }
+
+    let participants = await knex('participants').select('p_user_id as user_id', 'p_admin as admin').where('p_group_id', group.id);
+
+    let userAdminObj = {}
+    let participantsIds = [];
+    for (let participant of participants) {
+      participantsIds.push(participant.user_id)
+      userAdminObj[participant.user_id] = participant.admin === 1 ? true : false;
+    }
+
+    let result = await knex("users")
+      .select(
+        "u_id as id",
+        "u_uuid as uuid",
+        "u_first_name as firstName",
+        "u_last_name as lastName",
+        "u_username as username",
+        "u_username as username",
+        "u_dp as dp",
+        "u_designation as designation",
+      )
+      .whereIn("u_id", participantsIds)
+      .orderBy("u_username", 'desc');
+
+    let updatedResult = result.map(user => {
+      return {
+        ...user,
+        admin: userAdminObj[user.id]
+      }
+    })
+
+    let totalEnteries = await knex("users")
+      .count("u_id as count")
+      .whereIn("u_id", participantsIds)
+
+    let userResponse = {
+      data: updatedResult,
+      totalEnteries: +totalEnteries[0].count
+    }
+
+    return res
+      .status(200)
+      .send(okResponse(userResponse, "Existing users have been fetched."));
   } catch (error) {
     console.log(error);
     return res.status(500).send(errorResponse({}, "Something went wrong!"));
@@ -361,6 +435,7 @@ module.exports = {
   getGroup,
   deleteGroup,
   searchUsers,
+  searchExistingUsers,
   addUserToGroup,
   getGroupsOfLoggedinUser,
   getUsersOfGroup,

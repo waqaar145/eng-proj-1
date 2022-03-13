@@ -145,7 +145,7 @@ const Chat = () => {
 
   // adding users to group
   // 1 -> Chat Area, 2 -> adding and removing users, 3 -> join opened immediate groups to start talking 
-  const [chatArea, setChatArea] = useState(2);
+  const [chatArea, setChatArea] = useState(1);
 
   const handleAddUserOrGroupModal = ({group, dm}) => {
     console.log('clicked', {group, dm})
@@ -168,7 +168,7 @@ const Chat = () => {
     if (addUsers) {
       setChatArea(2);
     } else {
-      setChatArea(2);
+      setChatArea(1);
     }
   }, [groupId])
 

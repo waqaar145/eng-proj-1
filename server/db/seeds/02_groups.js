@@ -27,48 +27,6 @@ exports.seed = function(knex, Promise) {
           g_is_active: true
         },
         {
-          g_group_name: 'First group',
-          g_group_type: false,
-          g_members: 0,
-          g_created_by: 1,
-          g_is_active: true
-        },
-        {
-          g_group_name: 'second group',
-          g_group_type: false,
-          g_members: 0,
-          g_created_by: 1,
-          g_is_active: true
-        },
-        {
-          g_group_name: 'third group',
-          g_group_type: false,
-          g_members: 0,
-          g_created_by: 1,
-          g_is_active: true
-        },
-        {
-          g_group_name: 'forth group',
-          g_group_type: false,
-          g_members: 0,
-          g_created_by: 1,
-          g_is_active: true
-        },
-        {
-          g_group_name: 'fifth group',
-          g_group_type: false,
-          g_members: 0,
-          g_created_by: 1,
-          g_is_active: true
-        },
-        {
-          g_group_name: 'sixth group',
-          g_group_type: false,
-          g_members: 0,
-          g_created_by: 1,
-          g_is_active: true
-        },
-        {
           g_group_name: 'First DM',
           g_group_type: true,
           g_members: 0,

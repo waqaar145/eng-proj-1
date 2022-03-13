@@ -174,7 +174,19 @@ export const Chat = (state = initalState, action = {}) => {
     case chatActionTypes.CURRENT_SELECTED_GROUP:
       return {
         ...state,
-        currentSelectedGroup: action.data.group
+        currentSelectedGroup: {
+          ...state.currentSelectedGroup,
+          ...action.data.group
+        }
+      }
+
+    case chatActionTypes.UPDATE_MEMBERS_COUNT_OF_CURRENT_GROUP:
+      return {
+        ...state,
+        currentSelectedGroup: {
+          ...state.currentSelectedGroup,
+          members: state.currentSelectedGroup.members + action.data
+        }
       }
 
     case chatActionTypes.THREAD_MESSAGE_ID:

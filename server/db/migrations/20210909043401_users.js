@@ -39,6 +39,7 @@ exports.up = function (knex, Promise) {
         table.increments("p_id").unsigned().primary();
         table.integer("p_user_id").references('u_id').inTable('users');
         table.integer("p_group_id").references('g_id').inTable('groups');
+        table.integer("p_admin").default(0); // 1 -> Admin, 0 -> Normal user
         table.boolean("p_is_active").defaultTo(true);
         table.timestamp("p_created_at").defaultTo(knex.fn.now());
         table.timestamp("p_updated_at").defaultTo(knex.fn.now());

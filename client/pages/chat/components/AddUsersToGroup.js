@@ -9,13 +9,14 @@ import debounce from "lodash.debounce";
 import usePagination from "../../../src/hooks/usePagination";
 import Spinner from "../../../src/components/Extra/Spinner";
 import SimpleButton from "../../../src/components/Form/SimpleButton";
-import { MdAdd, MdDone } from 'react-icons/md'
+import { MdAdd, MdDone, MdDelete } from 'react-icons/md'
 
 const AddUsersTopGroup = ({ groupId }) => {
   const { currentState, handlePageChange } = usePagination();
 
   const dispatch = useDispatch();
 
+  const loggedInUser = useSelector((state) => state.Auth.loggedInUser);
   const currentSelectedGroup = useSelector(state => state.Chat.currentSelectedGroup);
 
   const getGroupInfo = async (groupId) => {
@@ -36,8 +37,10 @@ const AddUsersTopGroup = ({ groupId }) => {
   const userListRef = useRef(null);
   const [values, setValues] = useState({ name: "" });
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [totalResults, setTotalResults] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState(1)
 
   useEffect(() => {
     getGroupInfo(groupId);
@@ -51,8 +54,22 @@ const AddUsersTopGroup = ({ groupId }) => {
     const { name, value } = target;
     setValues({ ...values, [name]: value });
     setLoading(true);
-    handleDebounce(value);
+    if (activeTab === 1) {
+      handleDebounce(value);
+    } else {
+      setFilteredUsers(filterList(users, value))
+      setLoading(false);
+    }
   };
+
+  const filterList = (list, searchValue) => {
+    return list.filter(item => {
+      const fullName = `${item.firstName}${item.lastName}`.toLowerCase();
+      const reversedFullName = `${item.lastName}${item.firstName}`.toLowerCase();
+      const trimmedSearchValue = searchValue.replace(/\s+/g, '').toLowerCase();
+      return fullName.includes(trimmedSearchValue) || reversedFullName.includes(trimmedSearchValue);
+    });
+  }
 
   const handleSearchUsers = async (value) => {
     if (!value || value === "") {
@@ -62,7 +79,7 @@ const AddUsersTopGroup = ({ groupId }) => {
       return;
     }
     try {
-      let params = { ...currentState, q: value };
+      let params = { ...currentState, q: value, tab: activeTab };
       let {
         data: {
           data: { data, totalEnteries },
@@ -83,6 +100,30 @@ const AddUsersTopGroup = ({ groupId }) => {
     }
   };
 
+  const getExistingUsers = async () => {
+    try {
+      setLoading(true)
+      let {
+        data: {
+          data: { data, totalEnteries },
+        },
+      } = await chatService.searchExistingUsers(groupId);
+      let dataWithBoolean = data.map(user => {
+        return {
+          ...user,
+          added: true
+        }
+      })
+      setUsers(dataWithBoolean);
+      setFilteredUsers(dataWithBoolean)
+      setTotalResults(totalEnteries);
+      handlePageChange(currentState.pageNo + 1);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const handleDebounce = useCallback(
     debounce((nextValue) => handleSearchUsers(nextValue), 1000),
     []
@@ -98,7 +139,7 @@ const AddUsersTopGroup = ({ groupId }) => {
       userId: userObj.id
     }
     try {
-      let {data: {data}} = await chatService.addUserToGroup(addUserToGroupObj)
+      let {data: {data}} = await chatService.addUserToGroup(addUserToGroupObj);
       let updatedUsersList = users.map((user) => {
         if (user.id === data.userId) {
           return {
@@ -107,18 +148,44 @@ const AddUsersTopGroup = ({ groupId }) => {
           }
         }
         return user;
-      })
-      setUsers(updatedUsersList)
+      });
+      setUsers(updatedUsersList);
+      let updatedFilteredUsersList = filteredUsers.map((user) => {
+        if (user.id === data.userId) {
+          return {
+            ...user,
+            added: data.new
+          }
+        }
+        return user;
+      });
+      setFilteredUsers(updatedFilteredUsersList);
+      dispatch({type: chatActionTypes.UPDATE_MEMBERS_COUNT_OF_CURRENT_GROUP, data: data.new ? 1 : -1})
     } catch (error) {
       console.log(error)
     }
   }
 
+  useEffect(() => {
+    setValues({...values, name: ""})
+    handlePageChange(1)
+    setTotalResults(0)
+    if (activeTab === 1) {
+      setUsers([])
+    } else {
+      getExistingUsers()
+    }
+  }, [activeTab]);
+
+  const userListArray = activeTab === 1 ? users : filteredUsers;
+
+  console.log(loggedInUser);
+
   return (
     <>
       <div className={styles.wrapper} ref={mainRef}>
         <div className={styles.header}>
-          <div className={styles.title}>Add Members to Group</div>
+          <div className={styles.title}>{`#${currentSelectedGroup.groupName}`}</div>
           <div className={styles.action}>
             <CloseIcon onClick={() => {}} />
           </div>
@@ -134,18 +201,16 @@ const AddUsersTopGroup = ({ groupId }) => {
               value={values.name}
             />
           </div>
-          {loading && (
-            <>
-              <div className={styles.separator}>
-                <Spinner />
-              </div>
-            </>
-          )}
-          {users.length > 0 && !loading && (
-            <>
-              <div className={styles.separator}>Results ({totalResults})</div>
-            </>
-          )}
+        </div>
+        <div className={styles.tab}>
+          <ul>
+            <li className={activeTab === 1 ? styles.active : ''} onClick={() => setActiveTab(1)}>
+              <a>New users</a>
+            </li>
+            <li className={`${activeTab === 2 ? styles.active : ''} ${currentSelectedGroup.members === 0 ? styles.disabled : ''}`} onClick={() => setActiveTab(2)}>
+              <a>Existing Users ({currentSelectedGroup.members + 1})</a>
+            </li>
+          </ul>
         </div>
       </div>
       <div className={styles.userList} ref={userListRef}>
@@ -154,9 +219,21 @@ const AddUsersTopGroup = ({ groupId }) => {
             Your results will appear here
           </div>
         )}
+        {loading && (
+          <>
+            <div className={styles.separator}>
+              <Spinner />
+            </div>
+          </>
+        )}
+        {users.length > 0 && !loading && (
+          <>
+            <div className={styles.separator}>Results ({activeTab === 1 ? totalResults : filteredUsers.length})</div>
+          </>
+        )}
         {!loading && (
           <div className={styles.userContainer}>
-            {users.map((user) => {
+            {userListArray.map((user) => {
               return (
                 <div className={styles.userWrapper} key={user.id}>
                   <div className={styles.userInfo}>
@@ -168,7 +245,7 @@ const AddUsersTopGroup = ({ groupId }) => {
                     </div>
                     <div className={styles.nameAndDesination}>
                       <span className={styles.name}>
-                        {user.firstName} {user.lastName}
+                        {user.firstName} {user.lastName} {loggedInUser.id === user.id ? ' (You) ' : ''} {user.admin && <span className={styles.adminLabel}>Admin</span>}
                       </span>{" "}
                       <span className={styles.designation}>
                         ({user.designation})
@@ -177,27 +254,34 @@ const AddUsersTopGroup = ({ groupId }) => {
                   </div>
                   <div className={styles.action}>
                     {
-                      !user.added
+                      loggedInUser.id !== user.id
                       &&
-                      <SimpleButton
-                        text="Add"
-                        onClick={() => {handleAdd(user)}}
-                        size="sm"
-                        buttonStyle="primeButton"
-                        icon={<MdAdd />}
-                      />
-                    }
-                    {
-                      user.added
-                      &&
-                      <SimpleButton
-                        text="Added"
-                        onClick={() => {}}
-                        disabled={true}
-                        size="sm"
-                        buttonStyle="primeButton"
-                        icon={<MdDone />}
-                      />
+                      <>
+                        {
+                          !user.added
+                          &&
+                          <SimpleButton
+                            text={`${activeTab === 1 ? 'Add' : 'Removed'}`}
+                            onClick={() => {handleAdd(user)}}
+                            disabled={activeTab === 2 ? true : false}
+                            size="sm"
+                            buttonStyle="primeButton"
+                            icon={activeTab === 1 ? <MdAdd /> : <MdDone />}
+                          />
+                        }
+                        {
+                          user.added
+                          &&
+                          <SimpleButton
+                            text={`${activeTab === 1 ? 'Added' : 'Remove'}`}
+                            onClick={() => {handleAdd(user)}}
+                            disabled={activeTab === 1 ? true : false}
+                            size="sm"
+                            buttonStyle={`${activeTab === 1 ? 'primeButton' : 'dangerButton'}`}
+                            icon={activeTab === 1 ? <MdDone /> : <MdDelete />}
+                          />
+                        }
+                      </>
                     }
                   </div>
                 </div>
@@ -205,7 +289,7 @@ const AddUsersTopGroup = ({ groupId }) => {
             })}
           </div>
         )}
-        {totalResults > 0 && totalResults > users.length && !loading && (
+        {activeTab === 1 && totalResults > 0 && totalResults > users.length && !loading && (
           <div className={styles.showMore}>
             <SimpleButton
               text={`Show more (${totalResults - users.length})`}
@@ -218,7 +302,7 @@ const AddUsersTopGroup = ({ groupId }) => {
         )}
         {values.name !== "" && !loading && totalResults === 0 && (
           <div className={styles.noResultFound}>
-            No users found
+            No users found, please search other users
           </div>
         )}
       </div>

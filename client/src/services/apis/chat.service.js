@@ -26,6 +26,14 @@ export const chatService = {
       throw error
     }
   },
+  async searchExistingUsers (groupId) {
+    try {
+      const result = await HTTPClient.get(`/api/v1/chat/group/existing/users/${groupId}`);
+      return result;
+    } catch(error) {
+      throw error
+    }
+  },
   async addUserToGroup ({groupId, userId}) {
     try {
       const result = await HTTPClient.put(`/api/v1/chat/group/users/${groupId}/${userId}`);

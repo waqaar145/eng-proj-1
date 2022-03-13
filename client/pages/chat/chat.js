@@ -148,7 +148,6 @@ const Chat = () => {
   const [chatArea, setChatArea] = useState(1);
 
   const handleAddUserOrGroupModal = ({group, dm}) => {
-    console.log('clicked', {group, dm})
     toggleCreateGroup()
   }
 
@@ -171,7 +170,6 @@ const Chat = () => {
       setChatArea(1);
     }
   }, [groupId])
-
 
   return (
     <div className={styles.chatWrapper} style={{overflow: 'hidden'}}>
@@ -210,6 +208,7 @@ const Chat = () => {
             &&
             <AddUsersToGroup 
               groupId={groupId}
+              showChatList={() => setChatArea(1)}
             />
           }
         </div>

@@ -57,7 +57,7 @@ const addToMessageReplies = (parentMessage, user) => {
 
     let dataInColumn = profileReplies;
     let profileRepliesArray = [];
-    if (dataInColumn === null) {
+    if (!dataInColumn || dataInColumn === null) {
       profileRepliesArray = [obj]
     } else {
       let userFound = false;
@@ -79,6 +79,7 @@ const addToMessageReplies = (parentMessage, user) => {
     } else {
       slicedArray = profileRepliesArray;
     }
+    console.log(slicedArray)
     return slicedArray;
   } catch (error) {
     console.log(error)
@@ -269,6 +270,7 @@ export const Chat = (state = initalState, action = {}) => {
       }
 
     case chatActionTypes.REPLY_MESSAGE:
+      console.log(action.data)
       let repliesObjs1 = {
         [action.data.id]: action.data
       }
@@ -278,6 +280,9 @@ export const Chat = (state = initalState, action = {}) => {
         lastName: action.data.lastName, 
         dp:action.data.dp
       });
+
+      console.log(updatedProfileReplies)
+
       return {
         ...state,
         chats: {

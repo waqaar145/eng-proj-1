@@ -11,6 +11,10 @@ import InputEditor from "../../../src/components/Form/InputEditor";
 import Button from "../../../src/components/Form/Button";
 import { useState } from "react";
 import { chatService } from "../../../src/services";
+import { useDispatch } from "react-redux";
+import { chatActionTypes } from "../../../src/store/chat/chat.actiontype";
+import SimpleButton from "../../../src/components/Form/SimpleButton";
+import { MdAdd } from 'react-icons/md'
 
 const validation = {
   groupName(value) {
@@ -31,6 +35,10 @@ const validation = {
 };
 
 const UserProfileDetailModal = ({ show, toggle, addGroupNameToList }) => {
+
+  const dispatch = useDispatch();
+
+  const [loading, setLoading] = useState(false);
   const [values, setValues] = useState({ groupName: "", description: "" });
   const [error, setError] = useState({});
 
@@ -70,14 +78,17 @@ const UserProfileDetailModal = ({ show, toggle, addGroupNameToList }) => {
     let errorObj = validateForm();
     if (Object.keys(errorObj).length === 0) {
       try {
+        setLoading(true);
         let {data: {data}} = await chatService.createGroup(values);
+        dispatch({type: chatActionTypes.THREAD_MESSAGE_ID, data: null});
         setValues({
           ...values,
           groupName: "",
           description: ""
-        })
+        });
         setError({});
         addGroupNameToList(data);
+        setLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -122,10 +133,13 @@ const UserProfileDetailModal = ({ show, toggle, addGroupNameToList }) => {
         </ModalBody>
         <ModalFooter>
           <div className={styles.footerContainer}>
-            <Button
-              type="submit"
-              text="Create Group"
-              disabled={false}
+            <SimpleButton
+              text={`Create Group`}
+              onClick={handleSubmit}
+              disabled={loading}
+              size="lg"
+              buttonStyle="primeButton"
+              icon={<MdAdd />}
             />
           </div>
         </ModalFooter>

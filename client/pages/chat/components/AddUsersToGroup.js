@@ -11,7 +11,7 @@ import Spinner from "../../../src/components/Extra/Spinner";
 import SimpleButton from "../../../src/components/Form/SimpleButton";
 import { MdAdd, MdDone, MdDelete } from 'react-icons/md'
 
-const AddUsersTopGroup = ({ groupId }) => {
+const AddUsersTopGroup = ({ groupId, showChatList}) => {
   const { currentState, handlePageChange } = usePagination();
 
   const dispatch = useDispatch();
@@ -179,15 +179,13 @@ const AddUsersTopGroup = ({ groupId }) => {
 
   const userListArray = activeTab === 1 ? users : filteredUsers;
 
-  console.log(loggedInUser);
-
   return (
     <>
       <div className={styles.wrapper} ref={mainRef}>
         <div className={styles.header}>
           <div className={styles.title}>{`#${currentSelectedGroup.groupName}`}</div>
           <div className={styles.action}>
-            <CloseIcon onClick={() => {}} />
+            <CloseIcon onClick={() => showChatList()} />
           </div>
         </div>
         <div className={styles.body}>
@@ -208,7 +206,7 @@ const AddUsersTopGroup = ({ groupId }) => {
               <a>New users</a>
             </li>
             <li className={`${activeTab === 2 ? styles.active : ''} ${currentSelectedGroup.members === 0 ? styles.disabled : ''}`} onClick={() => setActiveTab(2)}>
-              <a>Existing Users ({currentSelectedGroup.members + 1})</a>
+              <a>Existing Users ({currentSelectedGroup.members})</a>
             </li>
           </ul>
         </div>

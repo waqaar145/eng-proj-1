@@ -41,6 +41,17 @@ const getPublicGroups = async (query, loggedInUserId) => {
 const getGroups = async (query, loggedInUserId) => {
   const { offset, limit, sort, q } = getPaginationValues(query);
   try {
+    let groupIds = await knex('participants')
+                          .select(
+                            'p_group_id as groupId', 'p_admin as admin'
+                          )
+                          .where('p_user_id', loggedInUserId)
+                          .returning('*')
+    let clubbedGroupIds = [];
+    for (let group of groupIds) {
+      clubbedGroupIds.push(group.groupId);
+    }
+
     let groups = await knex("groups")
       .select(
         "g_id as id",
@@ -49,16 +60,15 @@ const getGroups = async (query, loggedInUserId) => {
         "g_members as members",
         "g_created_at as createdAt"
       )
-      .where({ g_created_by: loggedInUserId })
+      .whereIn("g_id", clubbedGroupIds)
       .andWhere({ g_group_type: false })
       .andWhere({ g_is_active: true })
-      .offset(offset)
-      .limit(limit);
+
     let totalEnteries = await knex("groups")
       .count("g_id as count")
-      .where({ g_created_by: loggedInUserId })
+      .whereIn("g_id", clubbedGroupIds)
       .andWhere({ g_group_type: false })
-      .andWhere({ g_is_active: true });
+      .andWhere({ g_is_active: true })
 
     return {
       data: groups,

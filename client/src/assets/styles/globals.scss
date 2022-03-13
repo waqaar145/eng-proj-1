@@ -66,3 +66,16 @@ body {
   font-size: 15px;
   font-weight: normal;
 }
+
+.userBlockImages{
+  margin-left: 10px;
+  margin-right: 20px;
+  img{
+    border-radius: 5px;
+    height: 30px;
+    width: 30px;
+    margin-left: -5px;
+    box-shadow: $box-shadow-1;
+    border: 2px solid white;
+  }
+}

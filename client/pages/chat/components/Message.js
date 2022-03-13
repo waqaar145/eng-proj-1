@@ -10,6 +10,7 @@ import {
 import { Emoji } from "emoji-mart";
 import EditorArea from "./EditorArea";
 import MyEditor from "./../../../src/components/Editor/editor";
+import UserBlockImages from "../../../src/components/Extra/UserBlockImages";
 const Draft = require("draft-js");
 
 const { Editor, EditorState, convertFromRaw } = Draft;
@@ -151,14 +152,9 @@ const RenderEmojiAndExtras = ({
               className={styles.viewThread}
               onClick={() => handleCurrentActiveThread(message.id)}
             >
-              <div className={styles.userImages}>
-                {Array.isArray(message.profileReplies) &&
-                  message.profileReplies.map((profile) => {
-                    return (
-                      <img key={profile.id} src={profile.dp} alt={profile.name} />
-                    );
-                  })}
-              </div>
+              <UserBlockImages 
+                profileReplies={message.profileReplies}
+                />
               <div>View Thread ({message.totalReplies})</div>
             </div>
           )}

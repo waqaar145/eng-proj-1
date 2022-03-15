@@ -73,6 +73,12 @@
   
       }
     }
+
+    .leaveGroup {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 50px;
+    }
   }
 
   .showMore {
@@ -109,7 +115,7 @@
   justify-content: space-between;
   align-items: center;
   padding-right: 10px;
-  
+
   .tab {
     padding: 0 10px; 
     ul {

@@ -301,14 +301,16 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
             {
               activeTab === 2
               &&
-              <SimpleButton
-                text="Leave Group"
-                onClick={() => leaveGroup()}
-                disabled={false}
-                size="lg"
-                buttonStyle="dangerButton"
-                icon={<MdOutlinePersonRemove/>}
-              />
+              <div className={styles.leaveGroup}>
+                <SimpleButton
+                  text="Leave Group"
+                  onClick={() => leaveGroup()}
+                  disabled={false}
+                  size="lg"
+                  buttonStyle="dangerButton"
+                  icon={<MdOutlinePersonRemove/>}
+                />
+              </div>
             }
           </div>
         )}

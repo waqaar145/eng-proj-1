@@ -94,13 +94,13 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
         data: {
           data: { data, totalEnteries },
         },
-      } = await chatService.searchExistingUsers(groupId);
+      } = await chatService.getExistingUsers(groupId);
       let dataWithBoolean = data.map(user => {
         return {
           ...user,
           added: true
         }
-      })
+      });
       setUsers(dataWithBoolean);
       setFilteredUsers(dataWithBoolean)
       setTotalResults(totalEnteries);
@@ -280,7 +280,7 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
                     </div>
                     <div className={styles.nameAndDesination}>
                       <span className={styles.name}>
-                        {user.firstName} {user.lastName} {loggedInUser.id === user.id ? ' (You) ' : ''} {user.admin && <span className={styles.adminLabel}>Admin</span>}
+                        {user.firstName} {user.lastName} {loggedInUser.id === user.id ? ' (You) ' : ''} {user.admin === 1 && <span className={styles.adminLabel}>Admin</span>}
                       </span>{" "}
                       <span className={styles.designation}>
                         ({user.designation})

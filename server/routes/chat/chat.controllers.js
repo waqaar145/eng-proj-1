@@ -164,7 +164,7 @@ const searchUsers = async (req, res) => {
 };
 
 
-const searchExistingUsers = async (req, res) => {
+const getExistingUsers = async (req, res) => {
 
   // Form Validation *******
   const errors = validationResult(req);
@@ -192,7 +192,7 @@ const searchExistingUsers = async (req, res) => {
     let participantsIds = [];
     for (let participant of participants) {
       participantsIds.push(participant.user_id)
-      userAdminObj[participant.user_id] = participant.admin === 1 ? true : false;
+      userAdminObj[participant.user_id] = participant.admin;
     }
 
     let result = await knex("users")
@@ -491,7 +491,7 @@ module.exports = {
   getGroup,
   deleteGroup,
   searchUsers,
-  searchExistingUsers,
+  getExistingUsers,
   addUserToGroup,
   leaveGroup,
   getGroupsOfLoggedinUser,

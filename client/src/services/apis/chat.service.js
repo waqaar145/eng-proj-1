@@ -18,7 +18,7 @@ export const chatService = {
       throw error
     }
   },
-  async searchExistingUsers (groupId) {
+  async getExistingUsers (groupId) {
     try {
       const result = await HTTPClient.get(`/api/v1/chat/group/existing/users/${groupId}`);
       return result;

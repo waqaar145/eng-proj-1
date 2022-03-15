@@ -22,7 +22,7 @@ const EmojiDropdown = dynamic(
 let messageIdKey = "message-id-";
 let messageActionIdKey = "message-action-id-";
 
-const ChatArea = ({groupId, isTabletOrMobile, styles}) => {
+const ChatArea = ({groupId, isTabletOrMobile, styles, showMembers}) => {
 
   const dispatch = useDispatch()
 
@@ -212,7 +212,7 @@ const ChatArea = ({groupId, isTabletOrMobile, styles}) => {
   return (
     <>
       <div className={styles.chatContentHeader}>
-        <CurrentUserChattingTo styles={styles} currentSelectedGroup={currentSelectedGroup}/>
+        <CurrentUserChattingTo styles={styles} currentSelectedGroup={currentSelectedGroup} showMembers={showMembers}/>
       </div>
       <div className={styles.chatContentBody} ref={chatContentBodyRef}>
         <div className={styles.messageWrapperContainer}>

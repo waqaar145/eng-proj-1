@@ -36,6 +36,14 @@ const createGroup = async (req, res) => {
     }
     await knex('participants').insert(participantObj);
 
+    // "g_id as id",
+    // "g_uuid as uuid",
+    // "g_group_name as groupName",
+    // "g_group_type as groupType",
+    // "g_members as members",
+    // "g_created_at as createdAt",
+    // "participants.p_admin as admin",
+
     const groupResponse = {
       id: group.g_id,
       uuid: group.g_uuid,

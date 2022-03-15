@@ -19,20 +19,6 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
   const loggedInUser = useSelector((state) => state.Auth.loggedInUser);
   const currentSelectedGroup = useSelector(state => state.Chat.currentSelectedGroup);
 
-  const getGroupInfo = async (groupId) => {
-    try {
-      let {
-        data: { data },
-      } = await chatService.getGroupInfo(groupId);
-      let obj = {
-        group: data,
-      };
-      dispatch({ type: chatActionTypes.CURRENT_SELECTED_GROUP, data: obj });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const mainRef = useRef(null);
   const userListRef = useRef(null);
   const [values, setValues] = useState({ name: "" });
@@ -43,7 +29,6 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
   const [activeTab, setActiveTab] = useState(1)
 
   useEffect(() => {
-    getGroupInfo(groupId);
     if (userListRef && userListRef.current) {
       userListRef.current.style.height =
         window.innerHeight - (mainRef?.current?.clientHeight + 70) + "px";
@@ -253,6 +238,8 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
                   <div className={styles.action}>
                     {
                       loggedInUser.id !== user.id
+                      &&
+                      currentSelectedGroup.admin === 1
                       &&
                       <>
                         {

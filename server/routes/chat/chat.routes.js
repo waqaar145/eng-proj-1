@@ -9,7 +9,6 @@ const { getGroupChats, addChat, updateChat, deleteChat, getReplies, addEmojiReac
 
 
 routes.post("/chat/group", [authentication, createGroupValidation], createGroup);
-routes.get("/chat/group/:groupId", [authentication, groupIDValidation], getGroup);
 routes.delete("/chat/group/:groupId", [authentication, groupUserValidation], deleteGroup);
 
 routes.get("/chat/group/users/:groupId", [authentication, groupIDValidation], searchUsers);

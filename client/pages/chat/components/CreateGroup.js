@@ -134,6 +134,7 @@ const UserProfileDetailModal = ({ show, toggle, addGroupNameToList }) => {
         <ModalFooter>
           <div className={styles.footerContainer}>
             <SimpleButton
+              type="submit"
               text={`Create Group`}
               onClick={handleSubmit}
               disabled={loading}

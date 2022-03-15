@@ -159,17 +159,18 @@ const Chat = () => {
       },
     }
     toggleCreateGroup()
+    // setChatArea(1);
     dispatch({type: chatActionTypes.ADD_GROUPS, data: {...data, currentPage: 1}});
-    router.push(`/chat/chat?groupId=${obj.uuid}&addUsers=yes`, `/chat/CLIENT/${obj.uuid}?addUsers=yes`);
+    router.push(`/chat/chat?groupId=${obj.uuid}&addUsers=yes`, `/chat/CLIENT/${obj.uuid}`);
   }
 
   useEffect(() => {
-    if (addUsers) {
-      setChatArea(2);
-    } else {
-      setChatArea(1);
-    }
+    setChatArea(1)
   }, [groupId])
+
+  const showMembers = () => {
+    setChatArea(2);
+  }
 
   return (
     <div className={styles.chatWrapper} style={{overflow: 'hidden'}}>
@@ -201,6 +202,7 @@ const Chat = () => {
               groupId={groupId}
               isTabletOrMobile={isTabletOrMobile}
               styles={styles}
+              showMembers={showMembers}
             />
           }
           {

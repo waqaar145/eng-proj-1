@@ -88,10 +88,16 @@ const getGroupChats = async (req, res) => {
         "g_group_name as groupName",
         "g_group_type as groupType",
         "g_members as members",
-        "g_created_at as createdAt"
+        "g_created_at as createdAt",
+        "participants.p_admin as admin",
       )
       .where({ g_uuid: groupId })
       .andWhere({ g_is_active: true })
+      .leftJoin("participants", function (builder) {
+        builder
+          .on("participants.p_group_id", "groups.g_id")
+          .on("participants.p_user_id", req.user.id);
+      })
       .first();
 
     if (!groupRes) {

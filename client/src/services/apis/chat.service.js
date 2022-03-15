@@ -10,14 +10,6 @@ export const chatService = {
       throw error
     }
   },
-  async getGroupInfo (id) {
-    try {
-      const result = await HTTPClient.get(`/api/v1/chat/group/${id}`);
-      return result;
-    } catch(error) {
-      throw error
-    }
-  },
   async searchUsers(groupId, params) {
     try {
       const result = await HTTPClient.get(`/api/v1/chat/group/users/${groupId}?${queryString.stringify(params)}`);

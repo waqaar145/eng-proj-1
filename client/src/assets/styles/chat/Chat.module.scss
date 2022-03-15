@@ -39,10 +39,21 @@
     }
   }
 
+  .currentChatActiveDiv {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
   .loggedinUserDetails {
     .loggedinUserName {
       font-size: 0.9rem;
       color: $titleColor;
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .loggedinUserDesig {
@@ -50,6 +61,15 @@
       color: $descColor;
     }
   }
+}
+
+.showMembers {
+  background-color: $c-gray-95;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  color: $c-gray-20;
+  cursor: pointer;
 }
 
 @mixin chat_container {

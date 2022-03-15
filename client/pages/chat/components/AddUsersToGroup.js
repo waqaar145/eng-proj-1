@@ -200,7 +200,7 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
   const { toggle: handleRemoveUserToggle, show: showRemoveUserModal } = useModal();
 
   const handleRemoveUserFromGroup = (user) => {
-    setCurrentUserToRemoveObj({id: user.id})
+    setCurrentUserToRemoveObj({id: user.id, name: `${user.firstName} ${user.lastName}`})
     handleRemoveUserToggle()
   }
 
@@ -222,7 +222,7 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
             <SimpleInput
               type="text"
               name="name"
-              label={`Search emails/usernames ${activeTab === 1 && currentSelectedGroup.admin === 1 ? 'to add' : ""}`}
+              label={`Search usernames ${activeTab === 1 && currentSelectedGroup.admin === 1 ? 'to add' : ""}`}
               placeholder="Type here..."
               handleChange={handleChange}
               value={values.name}
@@ -361,7 +361,7 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
       {/* Remove user from group */}
       <ConfirmModal 
         id={groupId}
-        titleText="Remove user from group?"
+        titleText={`Remove ${currentUserToRemoveObj.name} from #${currentSelectedGroup.groupName} group?`}
         bodyText="Are you sure? This can't be undone"
         handleDelete={() => handleAdd(currentUserToRemoveObj, hideRemoveUserModal)}
         toggle={handleRemoveUserToggle}
@@ -372,7 +372,7 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
       {/* Leave group */}
       <ConfirmModal 
         id={groupId}
-        titleText="Leave group?"
+        titleText={`Leave #${currentSelectedGroup.groupName} group?`}
         bodyText="Are you sure? This can't be undone"
         handleDelete={leaveGroup}
         toggle={handleLeaveGroupToggle}

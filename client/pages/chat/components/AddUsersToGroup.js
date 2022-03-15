@@ -162,6 +162,15 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
     }
   }, [activeTab]);
 
+
+  useEffect(() => { 
+    if (currentSelectedGroup.admin === 1) {
+      setActiveTab(1);
+    } else {
+      setActiveTab(2);
+    }
+  }, [currentSelectedGroup.admin]);
+
   const userListArray = activeTab === 1 ? users : filteredUsers;
 
   return (
@@ -185,16 +194,20 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
             />
           </div>
         </div>
-        <div className={styles.tab}>
-          <ul>
-            <li className={activeTab === 1 ? styles.active : ''} onClick={() => setActiveTab(1)}>
-              <a>New users</a>
-            </li>
-            <li className={`${activeTab === 2 ? styles.active : ''} ${currentSelectedGroup.members === 0 ? styles.disabled : ''}`} onClick={() => setActiveTab(2)}>
-              <a>Existing Users ({currentSelectedGroup.members})</a>
-            </li>
-          </ul>
-        </div>
+        {
+          currentSelectedGroup.admin === 1
+          &&
+          <div className={styles.tab}>
+            <ul>
+              <li className={activeTab === 1 ? styles.active : ''} onClick={() => setActiveTab(1)}>
+                <a>Add New Users</a>
+              </li>
+              <li className={`${activeTab === 2 ? styles.active : ''} ${currentSelectedGroup.members === 0 ? styles.disabled : ''}`} onClick={() => setActiveTab(2)}>
+                <a>Existing Users ({currentSelectedGroup.members})</a>
+              </li>
+            </ul>
+          </div>
+        }
       </div>
       <div className={styles.userList} ref={userListRef}>
         {values.name === "" && !loading && totalResults === 0 && (

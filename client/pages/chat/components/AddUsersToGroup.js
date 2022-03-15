@@ -9,7 +9,9 @@ import debounce from "lodash.debounce";
 import usePagination from "../../../src/hooks/usePagination";
 import Spinner from "../../../src/components/Extra/Spinner";
 import SimpleButton from "../../../src/components/Form/SimpleButton";
-import { MdAdd, MdDone, MdDelete, MdOutlinePersonRemove } from 'react-icons/md'
+import { MdAdd, MdDone, MdDelete, MdOutlinePersonRemove } from 'react-icons/md';
+import ConfirmModal from './ConfirmModal';
+import useModal from "../../../src/hooks/useModal";
 
 const AddUsersTopGroup = ({ groupId, showChatList}) => {
   const { currentState, handlePageChange } = usePagination();
@@ -118,7 +120,7 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
     handleSearchUsers(values.name);
   };
 
-  const handleAdd = async (userObj) => {
+  const handleAdd = async (userObj, callback) => {
     let addUserToGroupObj = {
       groupId: currentSelectedGroup.id,
       userId: userObj.id
@@ -144,19 +146,13 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
         }
         return user;
       });
+      if (callback) {
+        callback()
+      }
       setFilteredUsers(updatedFilteredUsersList);
       dispatch({type: chatActionTypes.UPDATE_MEMBERS_COUNT_OF_CURRENT_GROUP, data: data.new ? 1 : -1})
     } catch (error) {
       console.log(error)
-    }
-  }
-
-  const leaveGroup = async () => {
-    try {
-      let {data: {data}} = await chatService.leaveGroup(groupId);
-      dispatch({type: chatActionTypes.REMOVE_GROUP, data});
-    } catch (error) {
-      console.log(error);
     }
   }
 
@@ -182,6 +178,36 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
 
   const userListArray = activeTab === 1 ? users : filteredUsers;
 
+  // Leave Group
+  const [leaveGroupLoading, setLeaveGroupLoading] = useState(false);
+  const { toggle: handleLeaveGroupToggle, show: showLeaveGroupModal } = useModal();
+
+  const leaveGroup = async () => {
+    try {
+      setLeaveGroupLoading(true)
+      let {data: {data}} = await chatService.leaveGroup(groupId);
+      dispatch({type: chatActionTypes.REMOVE_GROUP, data});
+      setLeaveGroupLoading(true)
+      handleLeaveGroupToggle()
+    } catch (error) {
+      setLeaveGroupLoading(true)
+      console.log(error);
+    }
+  }
+
+  // Remove user from gorup
+  const [currentUserToRemoveObj, setCurrentUserToRemoveObj] = useState({});
+  const { toggle: handleRemoveUserToggle, show: showRemoveUserModal } = useModal();
+
+  const handleRemoveUserFromGroup = (user) => {
+    setCurrentUserToRemoveObj({id: user.id})
+    handleRemoveUserToggle()
+  }
+
+  const hideRemoveUserModal = () => {
+    handleRemoveUserToggle()
+  }
+
   return (
     <>
       <div className={styles.wrapper} ref={mainRef}>
@@ -196,7 +222,7 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
             <SimpleInput
               type="text"
               name="name"
-              label="Search emails/usernames to add"
+              label={`Search emails/usernames ${activeTab === 1 && currentSelectedGroup.admin === 1 ? 'to add' : ""}`}
               placeholder="Type here..."
               handleChange={handleChange}
               value={values.name}
@@ -285,7 +311,7 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
                           &&
                           <SimpleButton
                             text={`${activeTab === 1 ? 'Added' : 'Remove'}`}
-                            onClick={() => {handleAdd(user)}}
+                            onClick={() => {handleRemoveUserFromGroup(user)}}
                             disabled={activeTab === 1 ? true : false}
                             size="sm"
                             buttonStyle={`${activeTab === 1 ? 'primeButton' : 'dangerButton'}`}
@@ -304,7 +330,7 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
               <div className={styles.leaveGroup}>
                 <SimpleButton
                   text="Leave Group"
-                  onClick={() => leaveGroup()}
+                  onClick={() => handleLeaveGroupToggle()}
                   disabled={false}
                   size="lg"
                   buttonStyle="dangerButton"
@@ -331,6 +357,29 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
           </div>
         )}
       </div>
+
+      {/* Remove user from group */}
+      <ConfirmModal 
+        id={groupId}
+        titleText="Remove user from group?"
+        bodyText="Are you sure? This can't be undone"
+        handleDelete={() => handleAdd(currentUserToRemoveObj, hideRemoveUserModal)}
+        toggle={handleRemoveUserToggle}
+        show={showRemoveUserModal}
+        loading={false}
+        handleToggle={() => handleRemoveUserToggle()}
+        />
+      {/* Leave group */}
+      <ConfirmModal 
+        id={groupId}
+        titleText="Leave group?"
+        bodyText="Are you sure? This can't be undone"
+        handleDelete={leaveGroup}
+        toggle={handleLeaveGroupToggle}
+        show={showLeaveGroupModal}
+        loading={leaveGroupLoading}
+        handleToggle={() => handleLeaveGroupToggle()}
+        />
     </>
   );
 };

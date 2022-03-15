@@ -104,6 +104,12 @@ const getGroupChats = async (req, res) => {
       return res.status(422).send(errorResponse({}, "Group does not exists!"));
     }
 
+    if (groupRes.groupType !== null) {
+      if (groupRes.admin === null) {
+        return res.status(404).send(errorResponse({}, "You don't have access to this chat/group."));
+      }
+    } 
+
     if (pageNo === 1) {
       totalEnteries = await knex("messages")
         .count("m_id as count")

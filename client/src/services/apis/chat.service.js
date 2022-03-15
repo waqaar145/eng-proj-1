@@ -34,6 +34,14 @@ export const chatService = {
       throw error
     }
   },
+  async leaveGroup (groupId) {
+    try {
+      const result = await HTTPClient.put(`/api/v1/chat/leave-group/users/${groupId}`);
+      return result;
+    } catch(error) {
+      throw error
+    }
+  },
   async getGroupsCreatedByCurrentUser (data) {
     try {
       const result = await HTTPClient.get('/api/v1/chat/user-groups?' + queryString.stringify(data));

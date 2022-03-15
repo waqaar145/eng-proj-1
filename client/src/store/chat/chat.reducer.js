@@ -154,6 +154,15 @@ export const Chat = (state = initalState, action = {}) => {
         },
       };
 
+    case chatActionTypes.REMOVE_GROUP:
+      return {
+        ...state,
+        groupData: {
+          ...state.groupData,
+          chatList: state.groupData.chatList.filter(group => group.uuid !== action.data.groupId)
+        }
+      }
+
     case chatActionTypes.ADD_PRIVATES:
 
       const {

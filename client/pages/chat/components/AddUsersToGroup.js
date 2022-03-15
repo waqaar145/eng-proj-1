@@ -9,7 +9,7 @@ import debounce from "lodash.debounce";
 import usePagination from "../../../src/hooks/usePagination";
 import Spinner from "../../../src/components/Extra/Spinner";
 import SimpleButton from "../../../src/components/Form/SimpleButton";
-import { MdAdd, MdDone, MdDelete } from 'react-icons/md'
+import { MdAdd, MdDone, MdDelete, MdOutlinePersonRemove } from 'react-icons/md'
 
 const AddUsersTopGroup = ({ groupId, showChatList}) => {
   const { currentState, handlePageChange } = usePagination();
@@ -151,6 +151,15 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
     }
   }
 
+  const leaveGroup = async () => {
+    try {
+      let {data: {data}} = await chatService.leaveGroup(groupId);
+      dispatch({type: chatActionTypes.REMOVE_GROUP, data});
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   useEffect(() => {
     setValues({...values, name: ""})
     handlePageChange(1)
@@ -197,15 +206,19 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
         {
           currentSelectedGroup.admin === 1
           &&
-          <div className={styles.tab}>
-            <ul>
-              <li className={activeTab === 1 ? styles.active : ''} onClick={() => setActiveTab(1)}>
-                <a>Add New Users</a>
-              </li>
-              <li className={`${activeTab === 2 ? styles.active : ''} ${currentSelectedGroup.members === 0 ? styles.disabled : ''}`} onClick={() => setActiveTab(2)}>
-                <a>Existing Users ({currentSelectedGroup.members})</a>
-              </li>
-            </ul>
+          <div className={styles.tabWrapper}>
+            <div className={styles.tab}>
+              <ul>
+                <li className={activeTab === 1 ? styles.active : ''} onClick={() => setActiveTab(1)}>
+                  <a>Add New Users</a>
+                </li>
+                <li className={`${activeTab === 2 ? styles.active : ''} ${currentSelectedGroup.members === 0 ? styles.disabled : ''}`} onClick={() => setActiveTab(2)}>
+                  <a>Existing Users ({currentSelectedGroup.members})</a>
+                </li>
+              </ul>
+            </div>
+            <div className={styles.leaveGroupAction}>
+            </div>
           </div>
         }
       </div>
@@ -285,6 +298,18 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
                 </div>
               );
             })}
+            {
+              activeTab === 2
+              &&
+              <SimpleButton
+                text="Leave Group"
+                onClick={() => leaveGroup()}
+                disabled={false}
+                size="lg"
+                buttonStyle="dangerButton"
+                icon={<MdOutlinePersonRemove/>}
+              />
+            }
           </div>
         )}
         {activeTab === 1 && totalResults > 0 && totalResults > users.length && !loading && (

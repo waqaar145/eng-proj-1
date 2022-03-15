@@ -36,14 +36,6 @@ const createGroup = async (req, res) => {
     }
     await knex('participants').insert(participantObj);
 
-    // "g_id as id",
-    // "g_uuid as uuid",
-    // "g_group_name as groupName",
-    // "g_group_type as groupType",
-    // "g_members as members",
-    // "g_created_at as createdAt",
-    // "participants.p_admin as admin",
-
     const groupResponse = {
       id: group.g_id,
       uuid: group.g_uuid,
@@ -174,6 +166,15 @@ const searchUsers = async (req, res) => {
 
 const searchExistingUsers = async (req, res) => {
 
+  // Form Validation *******
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).send({
+      message: "Got error while submitting",
+      data: expValidatorMsg(errors.array()),
+    });
+  }
+
   const {
     groupId
   } = req.params;
@@ -234,6 +235,7 @@ const searchExistingUsers = async (req, res) => {
 };
 
 const addUserToGroup = async (req, res) => {
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).send({
@@ -307,6 +309,55 @@ const addUserToGroup = async (req, res) => {
     return res.status(500).send(errorResponse({}, "Something went wrong!"));
   }
 };
+
+const leaveGroup = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).send({
+      message: "Got error while submitting",
+      data: expValidatorMsg(errors.array()),
+    });
+  }
+
+  const {
+    groupId
+  } = req.params;
+
+  try {
+    let group = await knex('groups').select('g_id as id').where('g_uuid', groupId).first();
+    if (!group) {
+      return res.status(422).send(errorResponse({}, "Group does not exists!"));
+    }
+
+    let intGroupId = group.id;
+    let loggedInUserId = req.user.id;
+
+    let check = await knex("participants")
+        .where({ p_user_id: loggedInUserId })
+        .andWhere({ p_group_id: intGroupId })
+        .first();
+
+    if (check) {
+      let deleteData = await knex("participants")
+        .where({ p_user_id: loggedInUserId })
+        .andWhere({ p_group_id: intGroupId })
+        .del();
+
+    let groupResponse = {
+      groupId: groupId
+    }
+
+    return res
+      .status(200)
+      .send(okResponse(groupResponse, "You have left the group."));
+    } else {
+      return res.status(422).send(errorResponse({}, "Group does not exists!"));
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send(errorResponse({}, "Something went wrong!"));
+  }
+}
 
 const getGroupsOfLoggedinUser = async (req, res) => {
   const { offset, limit, sort, q } = getPaginationValues(req.query);
@@ -435,9 +486,6 @@ const deleteGroup = async (req, res) => {
   }
 }
 
-
-
-
 module.exports = {
   createGroup,
   getGroup,
@@ -445,6 +493,7 @@ module.exports = {
   searchUsers,
   searchExistingUsers,
   addUserToGroup,
+  leaveGroup,
   getGroupsOfLoggedinUser,
   getUsersOfGroup,
   

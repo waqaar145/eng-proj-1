@@ -1,11 +1,46 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { validationResult } = require("express-validator");
+const { validationResult, check } = require("express-validator");
 const knex = require("./../../db/knex");
 const config = require("./../../config/config");
 const { okResponse, errorResponse } = require("./../../helpers/message");
 const { expValidatorMsg } = require("./../../helpers/validation");
 const { getPaginationValues } = require("./../../helpers/pagination")
+
+const checkIfUserIsAdmin = async (groupUUID, loggedInUserId) => {
+  try {
+    let groupRes = await knex("groups")
+      .select(
+        "g_id as id",
+        "g_uuid as uuid",
+        "g_group_name as groupName",
+        "g_group_type as groupType",
+        "g_members as members",
+        "g_created_at as createdAt",
+        "participants.p_admin as admin",
+      )
+      .where({ g_uuid: groupUUID })
+      .andWhere({ g_is_active: true })
+      .leftJoin("participants", function (builder) {
+        builder
+          .on("participants.p_group_id", "groups.g_id")
+          .on("participants.p_user_id", loggedInUserId);
+      })
+      .first();
+
+    if (groupRes && groupRes.admin === 1) {
+      return {
+        admin: true,
+        groupIntID: groupRes.id
+      };
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.log(error)
+    return false;
+  }
+}
 
 const createGroup = async (req, res) => {
   // Form Validation *******
@@ -49,51 +84,6 @@ const createGroup = async (req, res) => {
     return res.status(500).send(errorResponse({}, "Something went wrong!"));
   }
 };
-
-const getGroup = async (req, res) => {
-  // Form Validation *******
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).send({
-      message: "Got error while submitting",
-      data: expValidatorMsg(errors.array()),
-    });
-  }
-
-  try {
-    const { groupId } = req.params;
-
-    let groupRes = await knex("groups")
-      .select(
-        "g_id as id",
-        "g_uuid as uuid",
-        "g_group_name as groupName",
-        "g_group_type as groupType",
-        "g_members as members",
-        "g_created_at as createdAt"
-      )
-      .where({ g_uuid: groupId })
-      .andWhere({ g_is_active: true })
-      .first();
-
-    groupRes = {
-      ...groupRes,
-      groupType:
-        groupRes.groupType === null
-          ? "public"
-          : groupRes.groupType === false
-          ? "group"
-          : "private",
-    };
-
-    return res
-      .status(200)
-      .send(okResponse(groupRes, "Group has been fetched."));
-  } catch (error) {
-    console.log(error)
-    return res.status(500).send(errorResponse({}, "Something went wrong!"));
-  }
-}
 
 const searchUsers = async (req, res) => {
   const { offset, limit, sort, q } = getPaginationValues(req.query);
@@ -246,19 +236,27 @@ const addUserToGroup = async (req, res) => {
 
   const { userId, groupId } = req.params;
 
+  let checkAccess = await checkIfUserIsAdmin(groupId, req.user.id);
+    
+  if (checkAccess === false) {
+    return res.status(422).send(errorResponse({}, "you don't have right to this action.")); 
+  }
+
+  let groupIntID = checkAccess.groupIntID;
+
   try {
     let check = await knex("participants")
       .where({ p_user_id: userId })
-      .andWhere({ p_group_id: groupId })
+      .andWhere({ p_group_id: groupIntID })
       .first();
     if (check) {
       let deleteData = await knex("participants")
         .where({ p_user_id: userId })
-        .andWhere({ p_group_id: groupId })
+        .andWhere({ p_group_id: groupIntID })
         .del();
       if (deleteData) {
         await knex("groups")
-        .where("g_id", "=", groupId)
+        .where("g_id", "=", groupIntID)
         .decrement({
           g_members: 1,
         });
@@ -283,13 +281,13 @@ const addUserToGroup = async (req, res) => {
 
     const participantsObj = {
       p_user_id: userId,
-      p_group_id: groupId,
+      p_group_id: groupIntID,
     };
     const participantsResult = await knex("participants")
       .insert(participantsObj)
       .returning("*");
       await knex("groups")
-      .where("g_id", "=", groupId)
+      .where("g_id", "=", groupIntID)
       .increment({
         g_members: 1,
       });
@@ -309,6 +307,46 @@ const addUserToGroup = async (req, res) => {
     return res.status(500).send(errorResponse({}, "Something went wrong!"));
   }
 };
+
+const makeAdmin = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).send({
+      message: "Got error while submitting",
+      data: expValidatorMsg(errors.array()),
+    });
+  }
+
+  try {
+    const { userId, groupId } = req.params;
+
+    let checkAccess = await checkIfUserIsAdmin(groupId, req.user.id);
+    
+    if (checkAccess === false) {
+      return res.status(422).send(errorResponse({}, "you don't have right to this action.")); 
+    }
+
+    let participantCheck = await knex('participants').where({p_group_id: checkAccess.groupIntID, p_user_id: userId}).first();
+
+    if (participantCheck.p_admin === 0) {
+      await knex('participants').update('p_admin', 1).where({p_group_id: checkAccess.groupIntID, p_user_id: userId}).returning('*');
+    } else {
+      await knex('participants').update('p_admin', 0).where({p_group_id: checkAccess.groupIntID, p_user_id: userId}).returning('*');
+    }
+
+    let groupResponse = {
+      userId: participantCheck.p_user_id,
+      admin: participantCheck.p_admin === 0 ? 1 : 0
+    }
+
+    return res
+      .status(200)
+      .send(okResponse(groupResponse, `${participantCheck.p_admin === 0 ? 'Added to Admin' : 'Removed from Admin'}`));
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send(errorResponse({}, "Something went wrong!"));
+  }
+}
 
 const leaveGroup = async (req, res) => {
   const errors = validationResult(req);
@@ -413,7 +451,7 @@ const getUsersOfGroup = async (req, res) => {
   try {
     let group = await knex("groups")
       .where({ g_id: groupId })
-      .first()
+      .first();
 
     if (!group) {
       return res.status(422).send(errorResponse({}, "Group does not exists!"));
@@ -488,11 +526,11 @@ const deleteGroup = async (req, res) => {
 
 module.exports = {
   createGroup,
-  getGroup,
   deleteGroup,
   searchUsers,
   getExistingUsers,
   addUserToGroup,
+  makeAdmin,
   leaveGroup,
   getGroupsOfLoggedinUser,
   getUsersOfGroup,

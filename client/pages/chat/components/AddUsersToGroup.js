@@ -9,7 +9,7 @@ import debounce from "lodash.debounce";
 import usePagination from "../../../src/hooks/usePagination";
 import Spinner from "../../../src/components/Extra/Spinner";
 import SimpleButton from "../../../src/components/Form/SimpleButton";
-import { MdAdd, MdDone, MdDelete, MdOutlinePersonRemove } from 'react-icons/md';
+import { MdAdd, MdDone, MdDelete, MdOutlinePersonRemove, MdAdminPanelSettings } from 'react-icons/md';
 import ConfirmModal from './ConfirmModal';
 import useModal from "../../../src/hooks/useModal";
 
@@ -122,7 +122,7 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
 
   const handleAdd = async (userObj, callback) => {
     let addUserToGroupObj = {
-      groupId: currentSelectedGroup.id,
+      groupId: currentSelectedGroup.uuid,
       userId: userObj.id
     }
     try {
@@ -176,6 +176,8 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
     }
   }, [currentSelectedGroup.admin]);
 
+
+  // Switching between two arrays to show related data based on tab
   const userListArray = activeTab === 1 ? users : filteredUsers;
 
   // Leave Group
@@ -200,12 +202,54 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
   const { toggle: handleRemoveUserToggle, show: showRemoveUserModal } = useModal();
 
   const handleRemoveUserFromGroup = (user) => {
-    setCurrentUserToRemoveObj({id: user.id, name: `${user.firstName} ${user.lastName}`})
+    setCurrentUserToRemoveObj({id: user.id, name: `${user.firstName} ${user.lastName}`, admin: user.admin})
     handleRemoveUserToggle()
   }
 
   const hideRemoveUserModal = () => {
     handleRemoveUserToggle()
+  }
+
+  // Make Admin
+  const [currentUserToBeAdminObj, setCurrentUserToBeAdminObj] = useState({});
+  const { toggle: handleMakeAdminToggle, show: showMakeAdminModal } = useModal();
+
+  const handleMakeAdminOfGroup = (user) => {
+    setCurrentUserToBeAdminObj({id: user.id, name: `${user.firstName} ${user.lastName}`, admin: user.admin});
+    handleMakeAdminToggle();
+  }
+
+  const handleMakeAdmin = async (user, callback) => {
+    try {
+      let {data: {data: {userId, admin}}} = await chatService.makeAdmin({groupId, userId:user.id})
+      setUsers(users.map((user) => {
+        if (user.id === userId) {
+          return {
+            ...user,
+            admin
+          }
+        }
+        return user;
+      }))
+      setFilteredUsers(users.map((user) => {
+        if (user.id === userId) {
+          return {
+            ...user,
+            admin
+          }
+        }
+        return user;
+      }))
+      if (callback) {
+        callback()
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const hideMakeAdminModal = () => {
+    handleMakeAdminToggle()
   }
 
   return (
@@ -295,6 +339,16 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
                       &&
                       <>
                         {
+                          <SimpleButton
+                            text={`${user.admin === 1 ? 'Remove From Admin' : 'Make Admin'}`}
+                            onClick={() => handleMakeAdminOfGroup(user)}
+                            disabled={false}
+                            size="sm"
+                            buttonStyle={`${user.admin === 0 ? 'primeButton' : 'dangerButton'}`}
+                            icon={user.admin === 1 ? <MdDelete /> : <MdAdminPanelSettings />}
+                          />
+                        }
+                        {
                           !user.added
                           &&
                           <SimpleButton
@@ -368,6 +422,19 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
         show={showRemoveUserModal}
         loading={false}
         handleToggle={() => handleRemoveUserToggle()}
+        buttonText={`${currentUserToRemoveObj.admin === 1 ? 'Remove' : 'Add'}`}
+        />
+      {/* Make and remove from admin */}
+      <ConfirmModal 
+        id={groupId}
+        titleText={`${currentUserToBeAdminObj.admin === 1 ? `Remove ${currentUserToBeAdminObj.name} from admin of #${currentSelectedGroup.groupName} group?` : `Make ${currentUserToBeAdminObj.name} admin of #${currentSelectedGroup.groupName} group?`}`}
+        bodyText="Are you sure? This can't be undone"
+        handleDelete={() => {handleMakeAdmin(currentUserToBeAdminObj, hideMakeAdminModal)}}
+        toggle={handleMakeAdminToggle}
+        show={showMakeAdminModal}
+        loading={false}
+        handleToggle={() => handleMakeAdminToggle()}
+        buttonText={`${currentUserToBeAdminObj.admin === 1 ? 'Remove' : 'Add'}`}
         />
       {/* Leave group */}
       <ConfirmModal 
@@ -379,6 +446,7 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
         show={showLeaveGroupModal}
         loading={leaveGroupLoading}
         handleToggle={() => handleLeaveGroupToggle()}
+        buttonText={`Leave`}
         />
     </>
   );

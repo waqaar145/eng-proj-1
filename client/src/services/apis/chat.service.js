@@ -34,6 +34,14 @@ export const chatService = {
       throw error
     }
   },
+  async makeAdmin ({groupId, userId}) {
+    try {
+      const result = await HTTPClient.put(`/api/v1/chat/group/admin/${groupId}/${userId}`);
+      return result;
+    } catch(error) {
+      throw error
+    }
+  },
   async leaveGroup (groupId) {
     try {
       const result = await HTTPClient.put(`/api/v1/chat/leave-group/users/${groupId}`);

@@ -6,8 +6,13 @@ const createGroupValidation = [
 
 const addUserToGroupValidation = [
   check('userId').isNumeric().withMessage('Select a user to add in the group').escape(),
-  check('groupId').isNumeric().withMessage('Please create a group').escape(),
+  check('groupId').isUUID().withMessage('Group id is required').escape(),
 ];
+
+const makeAdminValidation = [
+  check('groupId').isUUID().withMessage('Group id is required').escape(),
+  check('userId').isNumeric().withMessage('Select a user to add in the group').escape(),
+]
 
 const groupUserValidation = [
   check('groupId').isNumeric().withMessage('Group id is required').escape(),
@@ -53,4 +58,4 @@ const addEmojiReactionValidation = [
   })
 ];
 
-module.exports = { createGroupValidation, addUserToGroupValidation, groupIDValidation, groupUserValidation, usersListValidation, chatValidation, messageIDValidation, updateChatValidation, getRepliesChatValidation, addEmojiReactionValidation };
+module.exports = { createGroupValidation, addUserToGroupValidation, makeAdminValidation, groupIDValidation, groupUserValidation, usersListValidation, chatValidation, messageIDValidation, updateChatValidation, getRepliesChatValidation, addEmojiReactionValidation };

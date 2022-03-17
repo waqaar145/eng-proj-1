@@ -16,7 +16,6 @@ const EmojiDropdown = ({ show, toggle, messageId }) => {
   }
 
   const handleEmoji = async (emoji) => {
-    console.log(emoji)
     updateReaction(messageId, emoji, hideEmojiDropdown)
   }
 

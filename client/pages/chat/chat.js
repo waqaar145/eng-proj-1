@@ -14,11 +14,24 @@ import usePagination from "../../src/hooks/usePagination";
 import { chatActionTypes } from "../../src/store/chat/chat.actiontype";
 import ChatArea from "./chatArea";
 import { useRouter } from "next/router";
-import ActiveThread from './components/Thread/ActiveThread.js'
-import CreateGroup from './components/CreateGroup'
-import AddUsersToGroup from "./components/AddUsersToGroup";
 
 const SideNavbar = dynamic(() => import("./components/SideNavbar"), {
+  ssr: false,
+});
+
+const ActiveThread = dynamic(() => import("./components/Thread/ActiveThread.js"), {
+  ssr: false,
+});
+
+const CreateGroup = dynamic(() => import("./components/CreateGroup"), {
+  ssr: false,
+});
+
+const CreateDM = dynamic(() => import("./components/CreateDM"), {
+  ssr: false,
+});
+
+const AddUsersToGroup = dynamic(() => import("./components/AddUsersToGroup"), {
   ssr: false,
 });
 
@@ -140,15 +153,18 @@ const Chat = () => {
     }
   }
 
-  // CreateGroup Modal
-  const {toggle :toggleCreateGroup, show: showCreateGroup} = useModal()
+  // Create Group Modal
+  const {toggle :toggleCreateGroup, show: showCreateGroup} = useModal();
+    // Create DM Modal
+    const {toggle :toggleAddDM, show: showAddDm} = useModal();
 
   // adding users to group
   // 1 -> Chat Area, 2 -> adding and removing users, 3 -> join opened immediate groups to start talking 
   const [chatArea, setChatArea] = useState(1);
 
   const handleAddUserOrGroupModal = ({group, dm}) => {
-    toggleCreateGroup()
+    if (group) toggleCreateGroup();
+    if (dm) toggleAddDM();
   }
 
   const addGroupNameToList = (obj) => {
@@ -166,7 +182,7 @@ const Chat = () => {
 
   useEffect(() => {
     setChatArea(1)
-  }, [groupId])
+  }, [groupId]);
 
   const showMembers = () => {
     setChatArea(2);
@@ -249,12 +265,25 @@ const Chat = () => {
           </div>
         </SideNavbar>
       )}
-      {/* Modal */}
-      <CreateGroup 
-        toggle={toggleCreateGroup}
-        show={showCreateGroup}
-        addGroupNameToList={addGroupNameToList}
-        />
+      {/* Add Group Modal */}
+      {
+        showCreateGroup
+        &&
+        <CreateGroup 
+          toggle={toggleCreateGroup}
+          show={showCreateGroup}
+          addGroupNameToList={addGroupNameToList}
+          />
+      }
+      {
+        showAddDm
+        &&
+        <CreateDM
+          toggle={toggleAddDM}
+          show={showAddDm}
+          groupId={groupId}
+          />
+      }
     </div>
   );
 };

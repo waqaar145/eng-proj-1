@@ -286,11 +286,11 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
           <div className={styles.tabWrapper}>
             <div className={styles.tab}>
               <ul>
-                <li className={activeTab === 1 ? styles.active : ''} onClick={() => setActiveTab(1)}>
-                  <a>Add New Users</a>
+                <li>
+                  <a onClick={() => setActiveTab(1)} className={activeTab === 1 ? styles.active : ''}>Add New Users</a>
                 </li>
-                <li className={`${activeTab === 2 ? styles.active : ''} ${currentSelectedGroup.members === 0 ? styles.disabled : ''}`} onClick={() => setActiveTab(2)}>
-                  <a>Existing Users ({currentSelectedGroup.members})</a>
+                <li>
+                  <a className={`${activeTab === 2 ? styles.active : ''} ${currentSelectedGroup.members === 0 ? styles.disabled : ''}`} onClick={() => setActiveTab(2)}>Existing Users ({currentSelectedGroup.members})</a>
                 </li>
               </ul>
             </div>

@@ -10,9 +10,16 @@
     height: 70px;
 
     .title {
-      font-size: 1.1rem;
-      font-weight: 400;
-      color: $c-gray-40;
+      .groupName {
+        font-size: 0.9rem;
+        color: $c-gray-20;
+        font-weight: 500;
+      }
+      .groupNameMembers {
+        font-size: 0.8rem;
+        color: $c-gray-30;
+        font-weight: 500;
+      }
     }
   }
 
@@ -57,8 +64,9 @@
               background-color: $jordy-blue;
               padding: 4px 7px;
               font-size: 0.75rem;
-              border-radius: 10px;
+              border-radius: 2em;
               color: $font-color-5;
+              border: 1px solid $royal-blue transparent;
             }
           }
           .designation {

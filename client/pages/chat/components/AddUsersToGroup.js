@@ -256,7 +256,14 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
     <>
       <div className={styles.wrapper} ref={mainRef}>
         <div className={styles.header}>
-          <div className={styles.title}>{`#${currentSelectedGroup.groupName}`}</div>
+          <div className={styles.title}>
+            <div className={styles.groupName}>
+              {`# ${currentSelectedGroup.groupName}`}
+            </div>
+            <div className={styles.groupNameMembers}>
+              {currentSelectedGroup.members} (members)
+            </div>
+          </div>
           <div className={styles.action}>
             <CloseIcon onClick={() => showChatList()} />
           </div>
@@ -340,12 +347,12 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
                       <>
                         {
                           <SimpleButton
-                            text={`${user.admin === 1 ? 'Remove From Admin' : 'Make Admin'}`}
+                            text={`${user.admin === 1 ? 'Remove Admin' : 'Make Admin'}`}
                             onClick={() => handleMakeAdminOfGroup(user)}
                             disabled={false}
                             size="sm"
                             buttonStyle={`${user.admin === 0 ? 'primeButton' : 'dangerButton'}`}
-                            icon={user.admin === 1 ? <MdDelete /> : <MdAdminPanelSettings />}
+                            icon={user.admin === 1 ? <MdAdminPanelSettings /> : <MdAdminPanelSettings />}
                           />
                         }
                         {

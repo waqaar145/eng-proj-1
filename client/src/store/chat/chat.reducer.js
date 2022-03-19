@@ -169,12 +169,18 @@ export const Chat = (state = initalState, action = {}) => {
         chatList: chatListPrivate, name: privateName, currentPage: privatePage
       } = action.data;
 
+      const sortedArray = [...state.privateData.chatList, ...chatListPrivate.data].sort(function(a, b) {
+        if(a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+        if(a.name.toLowerCase() > b.name.toLowerCase()) return 1;
+        return 0;
+       })
+
       return {
         ...state,
         privateData: {
           ...state.privateData,
           name: privateName,
-          chatList: [...state.privateData.chatList, ...chatListPrivate.data],
+          chatList: sortedArray,
           // currentPage: privatePage,
           // totalEnteries: chatListPrivate.totalEnteries,
           loading: false

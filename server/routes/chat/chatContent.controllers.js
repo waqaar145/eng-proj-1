@@ -68,7 +68,7 @@ const getChats = async (userId, groupRes, parentId, offset, limit) => {
 
 const addUserToDM = async (req, res) => {
   try {
-    let userID = await getUserIDBasedOnUUID(req.body.userId);
+    let {id: userID, firstName, lastName, dp} = await getUserIDBasedOnUUID(req.body.userId);
     if (userID === null) {
       return res.status(422).send(errorResponse({}, "User does not exists!"));
     }
@@ -83,7 +83,7 @@ const addUserToDM = async (req, res) => {
     for (let group of checkCurrentUsersGroupIDs) {
       ids.push(group.groupId);
     }
-    
+
     let check = await knex("participants")
       .select("p_user_id as userId", "p_group_id as groupId")
       .innerJoin("groups", "groups.g_id", "participants.p_group_id")
@@ -126,12 +126,24 @@ const addUserToDM = async (req, res) => {
 
     await knex("participants").insert(arrayToInsert).returning("*");
 
-    const pResObj = {
-      userID,
-      groupId: group.g_uuid,
+    const userObj = {
+      createdAt: group.u_created_at,
+      dp: dp,
+      id: group.g_id,
+      members: group.g_members,
+      name: `${firstName} ${lastName}`,
+      uuid: group.g_uuid
+    }
+
+    const groupResponse = {
+      name: 'Direct Messages',
+      chatList: {
+        data: [userObj],
+        totalEnteries: 0
+      },
     };
 
-    return res.status(200).send(okResponse(pResObj, "OK"));
+    return res.status(200).send(okResponse(groupResponse, "OK"));
   } catch (error) {
     console.log(error);
     return res.status(500).send(errorResponse({}, "Something went wrong!"));

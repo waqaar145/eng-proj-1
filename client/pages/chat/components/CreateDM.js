@@ -15,10 +15,16 @@ import Spinner from "../../../src/components/Extra/Spinner";
 import SimpleButton from "../../../src/components/Form/SimpleButton";
 import { MdAdd } from 'react-icons/md';
 import { BsFillEnvelopeFill } from 'react-icons/bs';
+import { useDispatch } from "react-redux";
+import { chatActionTypes } from "../../../src/store/chat/chat.actiontype";
+import { useRouter } from "next/router";
 
 const CreateDM = ({ show, toggle, groupId }) => {
 
+  const router = useRouter();
+
   const userListRef = useRef(null);
+  const dispatch = useDispatch();
 
   const { currentState, handlePageChange } = usePagination();
 
@@ -83,8 +89,10 @@ const CreateDM = ({ show, toggle, groupId }) => {
       userId: user.uuid
     }
     try {
-      let result = await chatService.addUserToDM(userObj);
-      console.log(result);
+      let {data: {data}} = await chatService.addUserToDM(userObj);
+      await dispatch({type: chatActionTypes.ADD_PRIVATES, data: {...data, currentPage: 1}})
+      toggle()
+      router.push(`/chat/chat?groupId=${data.chatList.data[0].uuid}`, `/chat/CLIENT/${data.chatList.data[0].uuid}`);
     } catch (error) {
       console.log(error);
     }

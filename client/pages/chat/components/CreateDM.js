@@ -14,10 +14,11 @@ import stylesSearch from "./../../../src/assets/styles/chat/AddUsersToGroup.modu
 import Spinner from "../../../src/components/Extra/Spinner";
 import SimpleButton from "../../../src/components/Form/SimpleButton";
 import { MdAdd } from 'react-icons/md';
+import { BsFillEnvelopeFill } from 'react-icons/bs';
 
 const CreateDM = ({ show, toggle, groupId }) => {
 
-  const userListRef = useRef(null)
+  const userListRef = useRef(null);
 
   const { currentState, handlePageChange } = usePagination();
 
@@ -57,13 +58,13 @@ const CreateDM = ({ show, toggle, groupId }) => {
         data: {
           data: { data, totalEnteries },
         },
-      } = await chatService.searchUsers(groupId, params);
+      } = await chatService.searchUsersForDM(params);
       let dataWithBoolean = data.map(user => {
         return {
           ...user,
           added: false
         }
-      })
+      });
       setUsers([...users, ...dataWithBoolean]);
       setTotalResults(totalEnteries);
       handlePageChange(currentState.pageNo + 1);
@@ -77,7 +78,17 @@ const CreateDM = ({ show, toggle, groupId }) => {
     handleSearchUsers(values.name);
   };
 
-  console.log(users)
+  const handleAddDM = async (user) => {
+    const userObj = {
+      userId: user.uuid
+    }
+    try {
+      let result = await chatService.addUserToDM(userObj);
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <Modal visible={show} toggle={toggle}>
@@ -143,11 +154,11 @@ const CreateDM = ({ show, toggle, groupId }) => {
                       <div className={stylesSearch.action}>
                         <SimpleButton
                           text="Message"
-                          onClick={() => {}}
+                          onClick={() => {handleAddDM(user)}}
                           disabled={false}
                           size="sm"
                           buttonStyle="primeButton"
-                          icon={<MdAdd />}
+                          icon={<BsFillEnvelopeFill />}
                         />
                       </div>
                     </div>

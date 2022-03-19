@@ -1,11 +1,11 @@
 const Router = require("express");
 const routes = new Router();
 const { authentication } = require('./../../helpers/auth')
-const { createGroupValidation, addUserToGroupValidation, makeAdminValidation, groupUserValidation, groupIDValidation, usersListValidation, chatValidation, messageIDValidation, updateChatValidation, getRepliesChatValidation, addEmojiReactionValidation } = require('./chat.validations')
+const { createGroupValidation, addUserToGroupValidation, makeAdminValidation, groupUserValidation, groupIDValidation, userIDValidation, usersListValidation, chatValidation, messageIDValidation, updateChatValidation, getRepliesChatValidation, addEmojiReactionValidation } = require('./chat.validations')
 
 const { createGroup, deleteGroup, searchUsers, getExistingUsers, addUserToGroup, makeAdmin, leaveGroup, getGroupsOfLoggedinUser, getUsersOfGroup } = require("./chat.controllers");
 const { getUsersToChat } = require("./chatSidebar.controllers");
-const { getGroupChats, addChat, updateChat, deleteChat, getReplies, addEmojiReaction } = require("./chatContent.controllers");
+const { addUserToDM, searchUsersForDM, getGroupChats, addChat, updateChat, deleteChat, getReplies, addEmojiReaction } = require("./chatContent.controllers");
 
 
 routes.post("/chat/group", [authentication, createGroupValidation], createGroup);
@@ -22,6 +22,8 @@ routes.get("/chat/users-of-group/:groupId", [authentication, groupUserValidation
 
 //chat page - fetching users to chat for current loggedin user
 routes.get("/chat/users", [authentication, usersListValidation], getUsersToChat);
+routes.post("/chat/users", [authentication, userIDValidation], addUserToDM);
+routes.get("/chat/search-users", [authentication], searchUsersForDM);
 
 routes.post("/chat", [authentication], addChat);
 routes.get("/chat/:groupId", [authentication, groupIDValidation], getGroupChats);

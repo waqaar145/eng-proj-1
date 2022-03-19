@@ -241,7 +241,7 @@ const ActiveThread = ({ currentActiveThread }) => {
           handleStateChange={handleStateChange} 
           submit={submit} 
           emojiElementId="main-chat-thread-editor"
-          placeholder={`Reply in Thread of #${currentSelectedGroup.groupName}`}
+          placeholder={`Reply in Thread ${currentSelectedGroup.groupType !== 'private' ? `of #${currentSelectedGroup.groupName}` : ""}`}
         />
       </div>
       <EmojiDropdown

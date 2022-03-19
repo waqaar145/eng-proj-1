@@ -270,7 +270,7 @@ const ChatArea = ({groupId, isTabletOrMobile, styles, showMembers}) => {
           parentId={null} 
           submit={submit} 
           emojiElementId="main-chat-editor"
-          placeholder={`Message #${currentSelectedGroup.groupName}`}
+          placeholder={`Message ${currentSelectedGroup.groupType !== 'private' ? `#${currentSelectedGroup.groupName}` : `${currentSelectedGroup.currentUser ? `${currentSelectedGroup.currentUser.firstName} ${currentSelectedGroup.currentUser.lastName}`: ""}`}`}
         />
       </div>
       <EmojiDropdown

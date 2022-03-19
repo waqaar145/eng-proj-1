@@ -22,6 +22,10 @@ const groupIDValidation = [
   check('groupId').isUUID().withMessage('Group id is required').escape(),
 ];
 
+const userIDValidation = [
+  check('userId').isUUID().withMessage('User id is required').escape(),
+];
+
 const usersListValidation = [
   check('type').isIn(['public', 'gp', 'dm']).withMessage('Type is required').escape(),
 ];
@@ -58,4 +62,4 @@ const addEmojiReactionValidation = [
   })
 ];
 
-module.exports = { createGroupValidation, addUserToGroupValidation, makeAdminValidation, groupIDValidation, groupUserValidation, usersListValidation, chatValidation, messageIDValidation, updateChatValidation, getRepliesChatValidation, addEmojiReactionValidation };
+module.exports = { createGroupValidation, addUserToGroupValidation, makeAdminValidation, groupIDValidation, userIDValidation, groupUserValidation, usersListValidation, chatValidation, messageIDValidation, updateChatValidation, getRepliesChatValidation, addEmojiReactionValidation };

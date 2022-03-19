@@ -75,6 +75,22 @@ export const chatService = {
     }
   },
   // Chat page - Fetching users for chatting
+  async searchUsersForDM (params) {
+    try {
+      const result = await HTTPClient.get(`/api/v1/chat/search-users?${queryString.stringify(params)}`);
+      return result;
+    } catch(error) {
+      throw error
+    }
+  },
+  async addUserToDM (obj) {
+    try {
+      const result = await HTTPClient.post('/api/v1/chat/users', obj);
+      return result;
+    } catch(error) {
+      throw error
+    }
+  },
   async getChatUsers (params) {
     try {
       const result = await HTTPClient.get('/api/v1/chat/users?' + queryString.stringify(params));

@@ -346,6 +346,8 @@ const AddUsersTopGroup = ({ groupId, showChatList}) => {
                       &&
                       <>
                         {
+                          activeTab === 2
+                          &&
                           <SimpleButton
                             text={`${user.admin === 1 ? 'Remove Admin' : 'Make Admin'}`}
                             onClick={() => handleMakeAdminOfGroup(user)}

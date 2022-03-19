@@ -182,7 +182,11 @@ const ActiveThread = ({ currentActiveThread }) => {
       <div className={styles.header}>
         <div className={styles.title}>
           <span className={styles.heading}>Thread</span>
-          <span className={styles.group}>(#{currentSelectedGroup.groupName})</span>
+          {
+            currentSelectedGroup.groupType !== 'private'
+            &&
+            <span className={styles.group}>(#{currentSelectedGroup.groupName})</span>
+          }
         </div>
         <div>
           <CloseIcon onClick={() => closeThread()}/>

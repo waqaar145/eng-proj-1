@@ -8,7 +8,6 @@ import {
   MdReply,
 } from "react-icons/md";
 import { Emoji } from "emoji-mart";
-import EditorArea from "./EditorArea";
 import MyEditor from "./../../../src/components/Editor/editor";
 import UserBlockImages from "../../../src/components/Extra/UserBlockImages";
 const Draft = require("draft-js");

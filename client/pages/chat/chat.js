@@ -84,7 +84,6 @@ const Chat = () => {
 
   const loggedInUser = useSelector((state) => state.Auth.loggedInUser);
   const currentActiveThread = useSelector(state => state.Chat.currenThreadMessageId);
-  const currentSelectedGroup = useSelector(state => state.Chat.currentSelectedGroup);
 
   const isTabletOrMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
@@ -99,7 +98,6 @@ const Chat = () => {
     let type = "public"
     let params = {...currentState, ...pageNoObj}
     try {
-      if (pageNoObj.pageNo === 1) dispatch({type: chatActionTypes.REQUEST_PUBLIC_DATA, data: true})
       let {data: {data}} = await chatService.getChatUsers({...params, type: type});
       dispatch({type: chatActionTypes.ADD_PUBLIC_GROUPS, data: {...data, currentPage: pageNoObj.pageNo}})
     } catch (error) {
@@ -111,7 +109,6 @@ const Chat = () => {
     let type = "gp"
     let params = {...currentState, ...pageNoObj}
     try {
-      if (pageNoObj.pageNo === 1) dispatch({type: chatActionTypes.REQUEST_GROUP_DATA, data: true})
       let {data: {data}} = await chatService.getChatUsers({...params, type: type});
       dispatch({type: chatActionTypes.ADD_GROUPS, data: {...data, currentPage: pageNoObj.pageNo}})
     } catch (error) {
@@ -123,7 +120,6 @@ const Chat = () => {
     let type = "dm"
     let params = {...currentState, ...pageNoObj}
     try {
-      if (pageNoObj.pageNo === 1) dispatch({type: chatActionTypes.REQUEST_PRIVATE_DATA, data: true})
       let {data: {data}} = await chatService.getChatUsers({...params, type: type});
       dispatch({type: chatActionTypes.ADD_PRIVATES, data: {...data, currentPage: pageNoObj.pageNo}})
     } catch (error) {

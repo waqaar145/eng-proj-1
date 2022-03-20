@@ -4,7 +4,6 @@ import { convertMessagesArrayToObjectForm } from '../../utils/messageFormatter';
 import { chatActionTypes } from '../../../../src/store/chat/chat.actiontype';
 import SinlgeMessage from '../Message';
 import { useRouter } from "next/router";
-import EditorArea from './../EditorArea';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import useEmojiActions from './../../hooks/emojiActions'
 import EmojiDropdown from './../EmojiDropdown'

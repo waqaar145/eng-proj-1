@@ -2,21 +2,21 @@ import { chatActionTypes } from "./chat.actiontype";
 
 const initalState = {
   publicData: {
-    loading: false,
+    loading: true,
     name: "",
     chatList: [],
     currentPage: 1,
     totalEnteries: 0
   },
   groupData: {
-    loading: false,
+    loading: true,
     name: "",
     chatList: [],
     currentPage: 1,
     totalEnteries: 0
   },
   privateData: {
-    loading: false,
+    loading: true,
     name: "",
     chatList: [],
     currentPage: 1,
@@ -79,7 +79,6 @@ const addToMessageReplies = (parentMessage, user) => {
     } else {
       slicedArray = profileRepliesArray;
     }
-    console.log(slicedArray)
     return slicedArray;
   } catch (error) {
     console.log(error)
@@ -90,33 +89,6 @@ const addToMessageReplies = (parentMessage, user) => {
 export const Chat = (state = initalState, action = {}) => {
 
   switch (action.type) {
-
-    case chatActionTypes.REQUEST_PUBLIC_DATA:
-      return {
-        ...state,
-        publicData: {
-          ...state.publicData,
-          loading: true
-        }
-      }
-  
-    case chatActionTypes.REQUEST_GROUP_DATA:
-      return {
-        ...state,
-        groupData: {
-          ...state.groupData,
-          loading: true
-        }
-      }
-
-    case chatActionTypes.REQUEST_PRIVATE_DATA:
-      return {
-        ...state,
-        privateData: {
-          ...state.privateData,
-          loading: true
-        }
-      }
 
     case chatActionTypes.ADD_PUBLIC_GROUPS:
 
@@ -295,8 +267,6 @@ export const Chat = (state = initalState, action = {}) => {
         lastName: action.data.lastName, 
         dp:action.data.dp
       });
-
-      console.log(updatedProfileReplies)
 
       return {
         ...state,

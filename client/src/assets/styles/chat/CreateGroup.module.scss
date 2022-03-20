@@ -1,3 +1,5 @@
+@import './../variable';
+
 .headerContainer {
   display: flex;
   align-items: center;
@@ -5,7 +7,8 @@
   padding: 10px;
 
   .title {
-    font-size: 1.3rem;
+    color: $c-gray-30;
+    font-size: 1.2rem;
   }
 }
 

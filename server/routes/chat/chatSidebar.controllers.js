@@ -93,7 +93,7 @@ const getPrivateGroups = async (query, loggedInUserId) => {
       .whereNot("p1.p_user_id", loggedInUserId)
       .where("groups.g_group_type", true);
 
-    let userIds = []
+    let userIds = [];
     let userAndGroupObj = {};
     for (let user of allPrivateChatUsers) {
       userIds.push(user.p_user_id)

@@ -1,7 +1,6 @@
 import dynamic from "next/dynamic";
 import { useState, useEffect, useRef } from "react";
 import SinlgeMessage from "./components/Message";
-import { useRouter } from "next/router";
 import { chatService } from "../../src/services";
 import {shallowEqual, useDispatch, useSelector} from 'react-redux'
 import { chatActionTypes } from "../../src/store/chat/chat.actiontype";

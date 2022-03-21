@@ -1,5 +1,6 @@
 import { FaArrowLeft } from "@react-icons/all-files/fa/FaArrowLeft";
 import { MdMenu } from "@react-icons/all-files/md/MdMenu";
+import Link from "next/link";
 
 const Header = ({ styles, handleNav }) => {
   return (

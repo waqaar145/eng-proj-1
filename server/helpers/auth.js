@@ -4,10 +4,11 @@ const knex = require("./../db/knex");
 const loggedinUserObject = async (id) => {
   try {
     if (!id) return false;
-    let user = await knex("users").where({ u_id: id }).first(); // set redis cache here to improve response time coz this is gonna be too often
+    let user = await knex("users").where({ u_uuid: id }).first(); // set redis cache here to improve response time coz this is gonna be too often
     if (!user) return false;
     let userObj = {
       id: user.u_id,
+      uuid: user.u_uuid,
       first_name: user.u_first_name,
       last_name: user.u_last_name,
       username: user.u_username,

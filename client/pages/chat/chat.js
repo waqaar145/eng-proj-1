@@ -14,6 +14,7 @@ import usePagination from "../../src/hooks/usePagination";
 import { chatActionTypes } from "../../src/store/chat/chat.actiontype";
 import ChatArea from "./chatArea";
 import { useRouter } from "next/router";
+import useChat from './hooks/useChat';
 
 const SideNavbar = dynamic(() => import("./components/SideNavbar"), {
   ssr: false,
@@ -94,12 +95,16 @@ const Chat = () => {
     publicData, groupData, privateData
   } = useSelector((state) => state.Chat);
 
+  // Socket io
+  const { socketObj, handleConnectClients, handleDisconnectClients } = useChat(groupId);
+
   const getPubGroups = async (pageNoObj) => {
     let type = "public"
     let params = {...currentState, ...pageNoObj}
     try {
       let {data: {data}} = await chatService.getChatUsers({...params, type: type});
       dispatch({type: chatActionTypes.ADD_PUBLIC_GROUPS, data: {...data, currentPage: pageNoObj.pageNo}})
+      return data.chatList.data;
     } catch (error) {
       console.log(error)
     }
@@ -110,7 +115,8 @@ const Chat = () => {
     let params = {...currentState, ...pageNoObj}
     try {
       let {data: {data}} = await chatService.getChatUsers({...params, type: type});
-      dispatch({type: chatActionTypes.ADD_GROUPS, data: {...data, currentPage: pageNoObj.pageNo}})
+      dispatch({type: chatActionTypes.ADD_GROUPS, data: {...data, currentPage: pageNoObj.pageNo}});
+      return data.chatList.data;
     } catch (error) {
       console.log(error)
     }
@@ -122,15 +128,21 @@ const Chat = () => {
     try {
       let {data: {data}} = await chatService.getChatUsers({...params, type: type});
       dispatch({type: chatActionTypes.ADD_PRIVATES, data: {...data, currentPage: pageNoObj.pageNo}})
+      return data.chatList.data;
     } catch (error) {
       console.log(error)
     }
   }
 
   useEffect(() => {
-    getPubGroups({pageNo: 1, pageSize: 1000})
-    getGroups({pageNo: 1, pageSize: 1000})
-    getDMs({pageNo: 1, pageSize: 1000})
+    (async function() {
+      const pb = await getPubGroups({pageNo: 1, pageSize: 1000})
+      const gp = await getGroups({pageNo: 1, pageSize: 1000})
+      const pv = await getDMs({pageNo: 1, pageSize: 1000})
+      const allGroups = [...pb, ...gp, ...pv];
+      handleConnectClients(allGroups)
+      return () => handleDisconnectClients();
+    })()
   }, []);
 
   const handleNav = () => {

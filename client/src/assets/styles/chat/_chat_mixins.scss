@@ -122,6 +122,29 @@
             color: $font-color-3;
             font-size: 0.9rem;
 
+            &.text {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding-right: 10px;
+
+              .extraChatCountPublic {
+                font-size: 0.75rem;
+                background-color: $bg-color-1;
+                color: $c-gray-30;
+                padding: 3px 8px;
+                border-radius: 2em;
+              }
+
+              .extraChatCountPrivate {
+                font-size: 0.75rem;
+                background-color: $error-danger;
+                color: $font-color-4;
+                padding: 3px 8px;
+                border-radius: 2em;
+              }
+            }
+
             &.dmActive {
               // margin-top: 5px;
               color: $font-color-2;

@@ -160,12 +160,15 @@ export const Chat = (state = initalState, action = {}) => {
       };
 
     case chatActionTypes.CURRENT_SELECTED_GROUP:
+      let newObj = null;
+      if (state.extraChatCount[action.data.group.uuid]) {
+        newObj = {...state.extraChatCount};
+        delete newObj[action.data.group.uuid]
+      }
       return {
         ...state,
-        currentSelectedGroup: {
-          ...state.currentSelectedGroup,
-          ...action.data.group,
-        },
+        currentSelectedGroup: action.data.group,
+        ...newObj && { extraChatCount: newObj }
       };
 
     case chatActionTypes.UPDATE_MEMBERS_COUNT_OF_CURRENT_GROUP:

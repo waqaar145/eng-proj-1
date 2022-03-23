@@ -17,7 +17,7 @@ const UsersList = ({
   handleAddUserOrGroupModal,
   handlePagination,
   groupId,
-  extraChatCount
+  extraChatCount,
 }) => {
   if (list.loading) return <Loader color="spinner-secondary-color" />;
 
@@ -30,8 +30,6 @@ const UsersList = ({
   const handleButtonClick = () => {
     dispatch({ type: chatActionTypes.THREAD_MESSAGE_ID, data: null });
   };
-
-  console.log(extraChatCount)
 
   return (
     <>
@@ -70,19 +68,29 @@ const UsersList = ({
                         passHref={true}
                       >
                         <a
-                          className={`${
+                          className={`${styles.text} ${
                             l.uuid === groupId ? styles.dmActive : ""
                           }`}
                           onClick={() => handleButtonClick()}
                         >
-                          {dm ? <img src={l.dp} alt={l.name} /> : "#"}
                           <span className={`${dm ? "" : styles.name}`}>
-                            {l.name} 
-                            {
-                              l.uuid !== groupId
-                              &&
-                              <span>{ extraChatCount[l.uuid] ? extraChatCount[l.uuid] : "" }</span>
-                            }
+                            {dm ? <img src={l.dp} alt={l.name} /> : "#"}{" "}
+                            {l.name}
+                          </span>
+                          <span>
+                            {l.uuid !== groupId && extraChatCount && extraChatCount[l.uuid] && (
+                              <span
+                                className={
+                                  general
+                                    ? styles.extraChatCountPublic
+                                    : styles.extraChatCountPrivate
+                                }
+                              >
+                                {extraChatCount[l.uuid]
+                                  ? extraChatCount[l.uuid]
+                                  : ""}
+                              </span>
+                            )}
                           </span>
                         </a>
                       </Link>

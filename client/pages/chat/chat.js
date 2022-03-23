@@ -307,6 +307,7 @@ const Chat = () => {
                 handleAddUserOrGroupModal={handleAddUserOrGroupModal}
                 handlePagination={handlePagination}
                 groupId={groupId}
+                extraChatCount={extraChatCount}
               />
             </div>
           </div>

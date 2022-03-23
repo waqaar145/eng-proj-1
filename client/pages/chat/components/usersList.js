@@ -17,6 +17,7 @@ const UsersList = ({
   handleAddUserOrGroupModal,
   handlePagination,
   groupId,
+  extraChatCount
 }) => {
   if (list.loading) return <Loader color="spinner-secondary-color" />;
 
@@ -29,6 +30,8 @@ const UsersList = ({
   const handleButtonClick = () => {
     dispatch({ type: chatActionTypes.THREAD_MESSAGE_ID, data: null });
   };
+
+  console.log(extraChatCount)
 
   return (
     <>
@@ -74,7 +77,12 @@ const UsersList = ({
                         >
                           {dm ? <img src={l.dp} alt={l.name} /> : "#"}
                           <span className={`${dm ? "" : styles.name}`}>
-                            {l.name}
+                            {l.name} 
+                            {
+                              l.uuid !== groupId
+                              &&
+                              <span>{ extraChatCount[l.uuid] ? extraChatCount[l.uuid] : "" }</span>
+                            }
                           </span>
                         </a>
                       </Link>

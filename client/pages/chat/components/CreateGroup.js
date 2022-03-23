@@ -14,7 +14,7 @@ import { chatService } from "../../../src/services";
 import { useDispatch } from "react-redux";
 import { chatActionTypes } from "../../../src/store/chat/chat.actiontype";
 import SimpleButton from "../../../src/components/Form/SimpleButton";
-import { MdAdd } from 'react-icons/md'
+import { MdAdd } from "react-icons/md";
 
 const validation = {
   groupName(value) {
@@ -35,7 +35,6 @@ const validation = {
 };
 
 const UserProfileDetailModal = ({ show, toggle, addGroupNameToList }) => {
-
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(false);
@@ -79,12 +78,14 @@ const UserProfileDetailModal = ({ show, toggle, addGroupNameToList }) => {
     if (Object.keys(errorObj).length === 0) {
       try {
         setLoading(true);
-        let {data: {data}} = await chatService.createGroup(values);
-        dispatch({type: chatActionTypes.THREAD_MESSAGE_ID, data: null});
+        let {
+          data: { data },
+        } = await chatService.createGroup(values);
+        dispatch({ type: chatActionTypes.THREAD_MESSAGE_ID, data: null });
         setValues({
           ...values,
           groupName: "",
-          description: ""
+          description: "",
         });
         setError({});
         addGroupNameToList(data);

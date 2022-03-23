@@ -13,14 +13,13 @@ import { chatService } from "../../../src/services";
 import stylesSearch from "./../../../src/assets/styles/chat/AddUsersToGroup.module.scss";
 import Spinner from "../../../src/components/Extra/Spinner";
 import SimpleButton from "../../../src/components/Form/SimpleButton";
-import { MdAdd } from 'react-icons/md';
-import { BsFillEnvelopeFill } from 'react-icons/bs';
+import { MdAdd } from "react-icons/md";
+import { BsFillEnvelopeFill } from "react-icons/bs";
 import { useDispatch } from "react-redux";
 import { chatActionTypes } from "../../../src/store/chat/chat.actiontype";
 import { useRouter } from "next/router";
 
 const CreateDM = ({ show, toggle, groupId }) => {
-
   const router = useRouter();
 
   const userListRef = useRef(null);
@@ -65,11 +64,11 @@ const CreateDM = ({ show, toggle, groupId }) => {
           data: { data, totalEnteries },
         },
       } = await chatService.searchUsersForDM(params);
-      let dataWithBoolean = data.map(user => {
+      let dataWithBoolean = data.map((user) => {
         return {
           ...user,
-          added: false
-        }
+          added: false,
+        };
       });
       setUsers([...users, ...dataWithBoolean]);
       setTotalResults(totalEnteries);
@@ -86,17 +85,25 @@ const CreateDM = ({ show, toggle, groupId }) => {
 
   const handleAddDM = async (user) => {
     const userObj = {
-      userId: user.uuid
-    }
+      userId: user.uuid,
+    };
     try {
-      let {data: {data}} = await chatService.addUserToDM(userObj);
-      await dispatch({type: chatActionTypes.ADD_PRIVATES, data: {...data, currentPage: 1}})
-      toggle()
-      router.push(`/chat/chat?groupId=${data.chatList.data[0].uuid}`, `/chat/CLIENT/${data.chatList.data[0].uuid}`);
+      let {
+        data: { data },
+      } = await chatService.addUserToDM(userObj);
+      await dispatch({
+        type: chatActionTypes.ADD_PRIVATES,
+        data: { ...data, currentPage: 1 },
+      });
+      toggle();
+      router.push(
+        `/chat/chat?groupId=${data.chatList.data[0].uuid}`,
+        `/chat/CLIENT/${data.chatList.data[0].uuid}`
+      );
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   return (
     <Modal visible={show} toggle={toggle}>
@@ -135,7 +142,9 @@ const CreateDM = ({ show, toggle, groupId }) => {
             )}
             {users.length > 0 && !loading && (
               <>
-                <div className={stylesSearch.separator}>Results ({totalResults})</div>
+                <div className={stylesSearch.separator}>
+                  Results ({totalResults})
+                </div>
               </>
             )}
             {!loading && (
@@ -162,7 +171,9 @@ const CreateDM = ({ show, toggle, groupId }) => {
                       <div className={stylesSearch.action}>
                         <SimpleButton
                           text="Message"
-                          onClick={() => {handleAddDM(user)}}
+                          onClick={() => {
+                            handleAddDM(user);
+                          }}
                           disabled={false}
                           size="sm"
                           buttonStyle="primeButton"

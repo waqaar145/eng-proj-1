@@ -13,7 +13,7 @@ const ConfirmModal = ({
   handleDelete,
   handleToggle,
   loading,
-  buttonText
+  buttonText,
 }) => {
   return (
     <Modal visible={show} toggle={toggle}>
@@ -34,7 +34,7 @@ const ConfirmModal = ({
               icon={<MdClose />}
             />
             <Button
-              text={`${buttonText ? buttonText : 'Delete'}`}
+              text={`${buttonText ? buttonText : "Delete"}`}
               onClick={() => handleDelete(id)}
               size="sm"
               disabled={loading}

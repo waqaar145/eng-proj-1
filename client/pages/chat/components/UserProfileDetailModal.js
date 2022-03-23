@@ -12,24 +12,32 @@ const UserProfileDetailModal = ({ activeModal, show, toggle }) => {
           <img src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500" />
         </div>
         <div className={styles.profileDetails}>
-          <div className={styles.userName}>
-            John Doe
-          </div>
-          <div className={styles.userDesc}>
-            Senior Software Developer
-          </div>
+          <div className={styles.userName}>John Doe</div>
+          <div className={styles.userDesc}>Senior Software Developer</div>
         </div>
         <div className={styles.action}>
           <div className={styles.button}>
-            <Button icon={<MdMail />} text="Message" onClick={() => {}} disabled={false} size="sm" />
+            <Button
+              icon={<MdMail />}
+              text="Message"
+              onClick={() => {}}
+              disabled={false}
+              size="sm"
+            />
           </div>
           <div className={styles.button}>
-            <Button icon={<MdCall />} text="Call" onClick={() => {}} disabled={false} size="sm" />
+            <Button
+              icon={<MdCall />}
+              text="Call"
+              onClick={() => {}}
+              disabled={false}
+              size="sm"
+            />
           </div>
         </div>
       </div>
     </Modal>
-  )
-}
+  );
+};
 
 export default UserProfileDetailModal;

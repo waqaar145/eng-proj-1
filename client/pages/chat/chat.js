@@ -14,15 +14,18 @@ import usePagination from "../../src/hooks/usePagination";
 import { chatActionTypes } from "../../src/store/chat/chat.actiontype";
 import ChatArea from "./chatArea";
 import { useRouter } from "next/router";
-import useChat from './hooks/useChat';
+import useChat from "./hooks/useChat";
 
 const SideNavbar = dynamic(() => import("./components/SideNavbar"), {
   ssr: false,
 });
 
-const ActiveThread = dynamic(() => import("./components/Thread/ActiveThread.js"), {
-  ssr: false,
-});
+const ActiveThread = dynamic(
+  () => import("./components/Thread/ActiveThread.js"),
+  {
+    ssr: false,
+  }
+);
 
 const CreateGroup = dynamic(() => import("./components/CreateGroup"), {
   ssr: false,
@@ -44,12 +47,20 @@ const SidenavUsers = ({
   handleAddUserOrGroupModal,
   loadingChatUsers,
   handlePagination,
-  groupId
+  groupId,
+  extraChatCount,
 }) => {
-
   return (
     <>
-      <UsersList styles={styles} list={generalChatObject} general={true} loading={loadingChatUsers} handlePagination={handlePagination} groupId={groupId}/>
+      <UsersList
+        styles={styles}
+        list={generalChatObject}
+        general={true}
+        loading={loadingChatUsers}
+        handlePagination={handlePagination}
+        groupId={groupId}
+        extraChatCount={extraChatCount}
+      />
       <UsersList
         styles={styles}
         list={groupChatObject}
@@ -58,6 +69,7 @@ const SidenavUsers = ({
         loading={loadingChatUsers}
         handlePagination={handlePagination}
         groupId={groupId}
+        extraChatCount={extraChatCount}
       />
       <UsersList
         styles={styles}
@@ -67,139 +79,172 @@ const SidenavUsers = ({
         loading={loadingChatUsers}
         handlePagination={handlePagination}
         groupId={groupId}
+        extraChatCount={extraChatCount}
       />
     </>
   );
 };
 
 const Chat = () => {
-
   const router = useRouter();
 
-  const {
-    groupId,
-    addUsers
-  } = router.query;
+  const { groupId, addUsers } = router.query;
 
   const dispatch = useDispatch();
 
   const loggedInUser = useSelector((state) => state.Auth.loggedInUser);
-  const currentActiveThread = useSelector(state => state.Chat.currenThreadMessageId);
+  const currentActiveThread = useSelector(
+    (state) => state.Chat.currenThreadMessageId
+  );
 
   const isTabletOrMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
   const { toggle: handleNavToggle, show: showSideNav } = useNav();
 
   const { currentState } = usePagination();
-  const {
-    publicData, groupData, privateData
-  } = useSelector((state) => state.Chat);
+  const { publicData, groupData, privateData } = useSelector(
+    (state) => state.Chat
+  );
 
   // Socket io
-  const { socketObj, handleConnectClients, handleDisconnectClients } = useChat(groupId);
+  const {
+    handleConnectClients,
+    addNewMessageSocketEmitter,
+    onNewMessageReceive,
+    handleDisconnectClients,
+    extraChatCount,
+  } = useChat(groupId);
 
   const getPubGroups = async (pageNoObj) => {
-    let type = "public"
-    let params = {...currentState, ...pageNoObj}
+    let type = "public";
+    let params = { ...currentState, ...pageNoObj };
     try {
-      let {data: {data}} = await chatService.getChatUsers({...params, type: type});
-      dispatch({type: chatActionTypes.ADD_PUBLIC_GROUPS, data: {...data, currentPage: pageNoObj.pageNo}})
+      let {
+        data: { data },
+      } = await chatService.getChatUsers({ ...params, type: type });
+      dispatch({
+        type: chatActionTypes.ADD_PUBLIC_GROUPS,
+        data: { ...data, currentPage: pageNoObj.pageNo },
+      });
       return data.chatList.data;
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   const getGroups = async (pageNoObj) => {
-    let type = "gp"
-    let params = {...currentState, ...pageNoObj}
+    let type = "gp";
+    let params = { ...currentState, ...pageNoObj };
     try {
-      let {data: {data}} = await chatService.getChatUsers({...params, type: type});
-      dispatch({type: chatActionTypes.ADD_GROUPS, data: {...data, currentPage: pageNoObj.pageNo}});
+      let {
+        data: { data },
+      } = await chatService.getChatUsers({ ...params, type: type });
+      dispatch({
+        type: chatActionTypes.ADD_GROUPS,
+        data: { ...data, currentPage: pageNoObj.pageNo },
+      });
       return data.chatList.data;
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   const getDMs = async (pageNoObj) => {
-    let type = "dm"
-    let params = {...currentState, ...pageNoObj}
+    let type = "dm";
+    let params = { ...currentState, ...pageNoObj };
     try {
-      let {data: {data}} = await chatService.getChatUsers({...params, type: type});
-      dispatch({type: chatActionTypes.ADD_PRIVATES, data: {...data, currentPage: pageNoObj.pageNo}})
+      let {
+        data: { data },
+      } = await chatService.getChatUsers({ ...params, type: type });
+      dispatch({
+        type: chatActionTypes.ADD_PRIVATES,
+        data: { ...data, currentPage: pageNoObj.pageNo },
+      });
       return data.chatList.data;
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
-    (async function() {
-      const pb = await getPubGroups({pageNo: 1, pageSize: 1000})
-      const gp = await getGroups({pageNo: 1, pageSize: 1000})
-      const pv = await getDMs({pageNo: 1, pageSize: 1000})
+    (async function () {
+      const pb = await getPubGroups({ pageNo: 1, pageSize: 1000 });
+      const gp = await getGroups({ pageNo: 1, pageSize: 1000 });
+      const pv = await getDMs({ pageNo: 1, pageSize: 1000 });
       const allGroups = [...pb, ...gp, ...pv];
-      handleConnectClients(allGroups)
+      handleConnectClients(allGroups);
+      onNewMessageReceive(groupId);
       return () => handleDisconnectClients();
-    })()
+    })();
   }, []);
 
   const handleNav = () => {
     handleNavToggle();
   };
 
-  const handlePagination = ({dm, group, currentPage}) => {
+  const handlePagination = ({ dm, group, currentPage }) => {
     if (group) {
-      getGroups({pageNo: currentPage + 1})
+      getGroups({ pageNo: currentPage + 1 });
     }
     if (dm) {
-      getDMs({pageNo: currentPage + 1})
+      getDMs({ pageNo: currentPage + 1 });
     }
     if (!group && !dm) {
-      getPubGroups({pageNo: currentPage + 1})
+      getPubGroups({ pageNo: currentPage + 1 });
     }
-  }
+  };
 
   // Create Group Modal
-  const {toggle :toggleCreateGroup, show: showCreateGroup} = useModal();
-    // Create DM Modal
-    const {toggle :toggleAddDM, show: showAddDm} = useModal();
+  const { toggle: toggleCreateGroup, show: showCreateGroup } = useModal();
+  // Create DM Modal
+  const { toggle: toggleAddDM, show: showAddDm } = useModal();
 
   // adding users to group
-  // 1 -> Chat Area, 2 -> adding and removing users, 3 -> join opened immediate groups to start talking 
+  // 1 -> Chat Area, 2 -> adding and removing users, 3 -> join opened immediate groups to start talking
   const [chatArea, setChatArea] = useState(1);
 
-  const handleAddUserOrGroupModal = ({group, dm}) => {
+  const handleAddUserOrGroupModal = ({ group, dm }) => {
     if (group) toggleCreateGroup();
     if (dm) toggleAddDM();
-  }
+  };
 
   const addGroupNameToList = (obj) => {
     let data = {
-      name: 'Group Messages',
+      name: "Group Messages",
       chatList: {
-        data: [obj]
+        data: [obj],
       },
-    }
-    toggleCreateGroup()
+    };
+    toggleCreateGroup();
     // setChatArea(1);
-    dispatch({type: chatActionTypes.ADD_GROUPS, data: {...data, currentPage: 1}});
-    router.push(`/chat/chat?groupId=${obj.uuid}&addUsers=yes`, `/chat/CLIENT/${obj.uuid}`);
-  }
+    dispatch({
+      type: chatActionTypes.ADD_GROUPS,
+      data: { ...data, currentPage: 1 },
+    });
+    router.push(
+      `/chat/chat?groupId=${obj.uuid}&addUsers=yes`,
+      `/chat/CLIENT/${obj.uuid}`
+    );
+  };
 
   useEffect(() => {
-    setChatArea(1)
+    setChatArea(1);
   }, [groupId]);
 
   const showMembers = () => {
     setChatArea(2);
-  }
+  };
 
   return (
-    <div className={styles.chatWrapper} style={{overflow: 'hidden'}}>
+    <div className={styles.chatWrapper} style={{ overflow: "hidden" }}>
       <Header styles={styles} handleNav={handleNav} />
-      <div className={`${currentActiveThread ? styles.chatContainerWithThread : styles.chatContainer}`}>
+      <div
+        className={`${
+          currentActiveThread
+            ? styles.chatContainerWithThread
+            : styles.chatContainer
+        }`}
+      >
         <div className={styles.chatSidebar}>
           <div className={styles.loggedinUser}>
             {loggedInUser && (
@@ -215,38 +260,32 @@ const Chat = () => {
               handleAddUserOrGroupModal={handleAddUserOrGroupModal}
               handlePagination={handlePagination}
               groupId={groupId}
+              extraChatCount={extraChatCount}
             />
           </div>
         </div>
         <div className={styles.chatContent}>
-          {
-            chatArea === 1
-            &&
-            <ChatArea 
+          {chatArea === 1 && (
+            <ChatArea
               groupId={groupId}
               isTabletOrMobile={isTabletOrMobile}
               styles={styles}
               showMembers={showMembers}
+              addNewMessageSocketEmitter={addNewMessageSocketEmitter}
             />
-          }
-          {
-            chatArea === 2
-            &&
-            <AddUsersToGroup 
+          )}
+          {chatArea === 2 && (
+            <AddUsersToGroup
               groupId={groupId}
               showChatList={() => setChatArea(1)}
             />
-          }
+          )}
         </div>
-        {
-          currentActiveThread
-          &&
+        {currentActiveThread && (
           <div>
-            <ActiveThread
-              currentActiveThread={currentActiveThread}
-             />
+            <ActiveThread currentActiveThread={currentActiveThread} />
           </div>
-        }
+        )}
       </div>
       {showSideNav && (
         <SideNavbar show={showSideNav} toggle={handleNav}>
@@ -274,24 +313,16 @@ const Chat = () => {
         </SideNavbar>
       )}
       {/* Add Group Modal */}
-      {
-        showCreateGroup
-        &&
-        <CreateGroup 
+      {showCreateGroup && (
+        <CreateGroup
           toggle={toggleCreateGroup}
           show={showCreateGroup}
           addGroupNameToList={addGroupNameToList}
-          />
-      }
-      {
-        showAddDm
-        &&
-        <CreateDM
-          toggle={toggleAddDM}
-          show={showAddDm}
-          groupId={groupId}
-          />
-      }
+        />
+      )}
+      {showAddDm && (
+        <CreateDM toggle={toggleAddDM} show={showAddDm} groupId={groupId} />
+      )}
     </div>
   );
 };

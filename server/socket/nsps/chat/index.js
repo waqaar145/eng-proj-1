@@ -1,6 +1,7 @@
 const { isAuthenticated } = require("./../../utils/isAuthenticated");
 const { chatNsps } = require("./constants");
 const ChatRedis = require("./redis");
+const events = require('./events')
 
 let nsp;
 
@@ -18,29 +19,38 @@ const onConnection = (socket) => {
   let roomName = getRoomName(groupId); // getting room name with discussion prefix
   if (!roomName) return;
 
+  let finalObj = (roomName, resObj) => {
+    return {
+      [roomName]: resObj
+    }
+  }
+
   socket.on(chatNsps['wsEvents']['JOIN_ROOM'], async () => {
-    console.log('connected', roomName)
     try {
       await socket.join(roomName);
       await ChatRedis.addUserToRoom(socketId, roomName, user);
       const allUsersInRoom = await ChatRedis.getAllUsersInRoom(roomName);
-      nsp.to(roomName).emit(chatNsps['wsEvents']['ALL_USERS_IN_ROOM'], {
+      nsp.to(roomName).emit(chatNsps['wsEvents']['ALL_USERS_IN_ROOM'], finalObj(roomName, {
         allUsersInRoom,
         newUser: user,
-      });
+      }));
     } catch (error) {
       console.log(`Socket.on Error - ${chatNsps["wsEvents"]["joinRoom"]} namespace `, error);
     }
   });
 
+  socket.on(chatNsps['wsEvents']['ADD_NEW_MESSAGE'], events.addNewMessage(socket, roomName))
+
   socket.on("disconnect", async () => {
     try {
-      console.log("Disconnect - ", socket.handshake.query);
+      await ChatRedis.removeUserFromRoom(roomName, socketId);
+      let allUsersInRoom = await ChatRedis.getAllUsersInRoom(roomName);
+      nsp.to(roomName).emit(chatNsps['wsEvents']['ALL_USERS_IN_ROOM'], finalObj(roomName, {
+        allUsersInRoom,
+        leftUser: user,
+      }));
     } catch (error) {
-      console.log(
-        `Socket.on Disconnect - ${discussionNsps["wsEvents"]["joinRoom"]} namespace `,
-        error
-      );
+      console.log(`Socket.on Disconnect - ${discussionNsps["wsEvents"]["joinRoom"]} namespace `, error);
     }
   });
 

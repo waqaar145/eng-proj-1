@@ -26,6 +26,7 @@ const initalState = {
   currenThreadMessageId: null,
   messageIdForRepliesActive: null,
   chats: {},
+  extraChatCount: {},
   currentPage: 1,
   totalEnteries: 0
 };
@@ -193,13 +194,40 @@ export const Chat = (state = initalState, action = {}) => {
       }
 
     case chatActionTypes.ADD_NEW_MESSAGE:
-      return {
-        ...state,
-        chats:  {
-          ...state.chats, 
-          ...action.data
-        },
-        totalEnteries: state.totalEnteries + 1
+      const {
+        currentSocketKey,
+        message: messageObj
+      } = action.data;
+      let messageObjKeyValue = {
+        [messageObj.id]: messageObj
+      }
+      if (state.currentSelectedGroup.uuid === currentSocketKey || currentSocketKey === null) {
+        return {
+          ...state,
+          chats:  {
+            ...state.chats, 
+            ...messageObjKeyValue
+          },
+          totalEnteries: state.totalEnteries + 1
+        }
+      } else {
+        if (!state.extraChatCount[currentSocketKey]) {
+          return {
+            ...state,
+            extraChatCount: {
+              ...state.extraChatCount,
+              [currentSocketKey]: 1
+            }
+          }
+        } else {
+          return {
+            ...state,
+            extraChatCount: {
+              ...state.extraChatCount,
+              extraChatCount: state.extraChatCount[currentSocketKey] + 1
+            }
+          }
+        }
       }
 
     case chatActionTypes.DELETE_MESSAGE:
@@ -257,7 +285,6 @@ export const Chat = (state = initalState, action = {}) => {
       }
 
     case chatActionTypes.REPLY_MESSAGE:
-      console.log(action.data)
       let repliesObjs1 = {
         [action.data.id]: action.data
       }

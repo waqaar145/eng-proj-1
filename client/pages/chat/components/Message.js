@@ -120,44 +120,42 @@ const RenderEmojiAndExtras = ({
   handleCurrentActiveThread,
 }) => {
   return (
-      <>
-        <div className={emojiStyles.emojiContainer}>
-          {message.reactions &&
-              Object.keys(message.reactions).length > 0 &&
-              Object.keys(message.reactions).map((reaction, index) => {
-                return (
-                  <div
-                    className={`${emojiStyles.emojiWrapper} ${
-                      message.reactions[reaction].me ? emojiStyles.reacted : ""
-                    }`}
-                    key={message.id + "-" + reaction + "-" + index}
-                  >
-                    <div className={emojiStyles.emoji}>
-                      <Emoji
-                        emoji={convertToCode(reaction)}
-                        size={18}
-                        onClick={(data) => handleChangeReaction(message.id, data)}
-                      />
-                    </div>
-                    <div className={emojiStyles.count}>
-                      {message.reactions[reaction].count}
-                    </div>
-                  </div>
-                );
-              })}
-          </div>
-          {!thread && message.totalReplies > 0 && (
-            <div
-              className={styles.viewThread}
-              onClick={() => handleCurrentActiveThread(message.id)}
-            >
-              <UserBlockImages 
-                profileReplies={message.profileReplies}
-                />
-              <div>View Thread ({message.totalReplies})</div>
-            </div>
-          )}
-      </>
+    <>
+      <div className={emojiStyles.emojiContainer}>
+        {message.reactions &&
+          Object.keys(message.reactions).length > 0 &&
+          Object.keys(message.reactions).map((reaction, index) => {
+            return (
+              <div
+                className={`${emojiStyles.emojiWrapper} ${
+                  message.reactions[reaction].me ? emojiStyles.reacted : ""
+                }`}
+                key={message.id + "-" + reaction + "-" + index}
+              >
+                <div className={emojiStyles.emoji}>
+                  <Emoji
+                    emoji={convertToCode(reaction)}
+                    size={18}
+                    onClick={(data) => handleChangeReaction(message.id, data)}
+                  />
+                </div>
+                <div className={emojiStyles.count}>
+                  {message.reactions[reaction].count}
+                </div>
+              </div>
+            );
+          })}
+      </div>
+      {!thread && message.totalReplies > 0 && (
+        <div
+          className={styles.viewThread}
+          onClick={() => handleCurrentActiveThread(message.id)}
+        >
+          <UserBlockImages profileReplies={message.profileReplies} />
+          <div>View Thread ({message.totalReplies})</div>
+        </div>
+      )}
+    </>
   );
 };
 
@@ -178,7 +176,11 @@ const MessageBox = ({
 }) => {
   return (
     <div className={`${styles.messageBoxWrapper}`}>
-      <div className={ currentEditingMessage !== message.id ? styles.singleMsgWrapper :''}>
+      <div
+        className={
+          currentEditingMessage !== message.id ? styles.singleMsgWrapper : ""
+        }
+      >
         <div
           className={`${styles.profileWrapper} ${
             currentEditingMessage !== message.id
@@ -236,19 +238,24 @@ const MessageBox = ({
           </div>
         </div>
         {/* message, handleChangeReaction, thread, handleCurrentActiveThread */}
-        
       </div>
       {"groupedMessages" in message &&
         Object.keys(message.groupedMessages).map((messageId) => {
           return (
-            <div key={messageId} className={currentEditingMessage !== +messageId ? styles.singleMsgWrapper : ''}>
+            <div
+              key={messageId}
+              className={
+                currentEditingMessage !== +messageId
+                  ? styles.singleMsgWrapper
+                  : ""
+              }
+            >
               <div
                 className={`${styles.profileWrapper} ${
                   currentEditingMessage !== +messageId
                     ? styles.messagePosChild
                     : styles.messagePosChild1
                 }`}
-                
                 id={`${messageIdKey}${messageId}`}
               >
                 <div

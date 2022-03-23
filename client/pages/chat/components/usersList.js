@@ -27,8 +27,8 @@ const UsersList = ({
   const dispatch = useDispatch();
 
   const handleButtonClick = () => {
-    dispatch({type: chatActionTypes.THREAD_MESSAGE_ID, data: null})
-  }
+    dispatch({ type: chatActionTypes.THREAD_MESSAGE_ID, data: null });
+  };
 
   return (
     <>
@@ -72,11 +72,7 @@ const UsersList = ({
                           }`}
                           onClick={() => handleButtonClick()}
                         >
-                          {dm ? (
-                            <img src={l.dp} alt={l.name}/>
-                          ) : (
-                            "#"
-                          )}
+                          {dm ? <img src={l.dp} alt={l.name} /> : "#"}
                           <span className={`${dm ? "" : styles.name}`}>
                             {l.name}
                           </span>

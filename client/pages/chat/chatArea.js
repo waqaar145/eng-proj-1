@@ -45,6 +45,7 @@ const ChatArea = ({
     totalEnteries,
   } = useSelector((state) => state.Chat, shallowEqual);
 
+  const chatRef = useRef(null);
   const chatContentBodyRef = useRef(null);
   const loadMoreChatRef = useRef(null);
 
@@ -152,16 +153,14 @@ const ChatArea = ({
   useEffect(() => {
     setHeight(chatContentBodyRef.current.clientHeight);
     chatContentBodyRef.current.style.height =
-      chatContentBodyRef.current.clientHeight -
-      textAreaRef?.current?.clientHeight +
-      "px";
+    window.innerHeight - 110 - textAreaRef?.current?.clientHeight + "px";
   }, []);
 
   const handleStateChange = (data) => {
     setEditorState(data);
     if (chatContentBodyRef && chatContentBodyRef.current) {
       chatContentBodyRef.current.style.height =
-        height - textAreaRef?.current?.clientHeight + "px";
+      window.innerHeight - 110 - textAreaRef?.current?.clientHeight + "px";
     }
   };
 
@@ -201,7 +200,7 @@ const ChatArea = ({
       let {
         data: { data },
       } = await chatService.addChat(chatObj);
-      addNewMessageSocketEmitter(data);
+      addNewMessageSocketEmitter(data, scrollToBottom);
       callback();
     } catch (error) {
       console.log("Error when adding a message");
@@ -233,7 +232,7 @@ const ChatArea = ({
   };
 
   return (
-    <>
+    <div ref={chatRef}>
       <div className={styles.chatContentHeader}>
         <CurrentUserChattingTo
           styles={styles}
@@ -316,7 +315,7 @@ const ChatArea = ({
         loading={deleteMessageLoader}
         handleToggle={() => handleConfirmToggle()}
       />
-    </>
+    </div>
   );
 };
 

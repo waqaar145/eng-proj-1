@@ -1,5 +1,5 @@
 import useDropdown from "../../../src/hooks/useDropdown";
-import useReactionChage from "./useReactionChange";
+import useReactionChange from "./useReactionChange";
 import { useState } from "react";
 
 const useEmojiActions = () => {
@@ -15,7 +15,7 @@ const useEmojiActions = () => {
 
     const {
       updateReaction
-    } = useReactionChage();
+    } = useReactionChange();
   
     const handleChangeReaction = (messageId, emoji) => {
       updateReaction(messageId, emoji)

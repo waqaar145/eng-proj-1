@@ -92,7 +92,7 @@ const ActiveThread = ({ currentActiveThread }) => {
   const handleStateChange = (data) => {
     setEditorState(data);
     chatContentBodyRef.current.style.height =
-      height - textAreaRef?.current?.clientHeight + "px";
+    window.innerHeight - 110 - textAreaRef?.current?.clientHeight + "px";
   };
 
   const handleTextareWidth = () => {
@@ -107,7 +107,7 @@ const ActiveThread = ({ currentActiveThread }) => {
     if (chatContentBodyRef && chatContentBodyRef.current) {
       setHeight(chatContentBodyRef.current.clientHeight);
       chatContentBodyRef.current.style.height =
-        window.innerHeight - 110 - textAreaRef?.current?.clientHeight + "px"; // 110 -> height of above two divs
+      window.innerHeight - 110 - textAreaRef?.current?.clientHeight + "px"; // 110 -> height of above two divs
     }
   };
 

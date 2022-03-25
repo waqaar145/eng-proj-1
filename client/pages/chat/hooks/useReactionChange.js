@@ -13,6 +13,7 @@ const useReactionChage = () => {
     }
     try {
       let {data: {data}} = await chatService.addEmojiReaction(messageId, emojiObj, callback)
+      console.log(data);
       dispatch({type: chatActionTypes.UPDATE_EMOJI_IN_MESSAGES, data})
       if (callback) callback()
     } catch (error) {

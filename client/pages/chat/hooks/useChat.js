@@ -42,13 +42,17 @@ const useChat = (groupId) => {
     }
   };
 
-  const addNewMessageSocketEmitter = (data) => {
-    socketObj[groupId].emit(chatNsps.wsEvents.ADD_NEW_MESSAGE, data);
-    let chatObj = {
-      currentSocketKey: null,
-      message: data,
-    };
-    dispatch({ type: chatActionTypes.ADD_NEW_MESSAGE, data: chatObj });
+  const addNewMessageSocketEmitter = (data, scrollToBottom) => {
+    socketObj[groupId].emit(chatNsps.wsEvents.ADD_NEW_MESSAGE, data, ({ data, process }) => {
+      if (process) {
+        let chatObj = {
+          currentSocketKey: null,
+          message: data,
+        };
+        dispatch({ type: chatActionTypes.ADD_NEW_MESSAGE, data: chatObj });
+        scrollToBottom()
+      }
+    });
   };
 
   const onNewMessageReceive = () => {

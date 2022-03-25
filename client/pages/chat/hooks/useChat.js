@@ -67,13 +67,33 @@ const useChat = (groupId) => {
     }
   };
 
+  const addNewReplySocketEmitter = (data, scrollToBottom) => {
+    socketObj[groupId].emit(chatNsps.wsEvents.ADD_NEW_REPLY, data, ({ data, process }) => {
+      if (process) {
+        dispatch({ type: chatActionTypes.REPLY_MESSAGE, data });
+        scrollToBottom()
+      }
+    });
+  }
+
+  const onNewReplyReceive = () => {
+    for (const [key] of Object.entries(socketObj)) {
+      socketObj[key].on(chatNsps.wsEvents.SEND_REPLY_TO_ROOM, (data) => {
+        dispatch({ type: chatActionTypes.REPLY_MESSAGE, data });
+      });
+    }
+  }; 
+
   return {
     socketObj,
     handleConnectClients,
     handleDisconnectClients,
     addNewMessageSocketEmitter,
     onNewMessageReceive,
-    extraChatCount
+    extraChatCount,
+
+    addNewReplySocketEmitter,
+    onNewReplyReceive
   };
 };
 

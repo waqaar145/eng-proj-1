@@ -20,7 +20,7 @@ let parentMessageActionIdKey = "parent-thread-message-action-id-";
 let messageIdKey = "thread-message-id-";
 let messageActionIdKey = "thread-message-action-id-";
 
-const ActiveThread = ({ currentActiveThread }) => {
+const ActiveThread = ({ currentActiveThread, addNewReplySocketEmitter }) => {
   const { currentState } = usePagination();
 
   const router = useRouter();
@@ -164,9 +164,8 @@ const ActiveThread = ({ currentActiveThread }) => {
       let {
         data: { data },
       } = await chatService.addChat(chatObj);
-      await dispatch({ type: chatActionTypes.REPLY_MESSAGE, data });
+      addNewReplySocketEmitter(data, scrollToBottom);
       callback();
-      scrollToBottom();
     } catch (error) {
       console.log("Error when adding a message");
       console.log(error);

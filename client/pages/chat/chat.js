@@ -113,6 +113,9 @@ const Chat = () => {
     onNewMessageReceive,
     handleDisconnectClients,
     extraChatCount,
+
+    addNewReplySocketEmitter,
+    onNewReplyReceive
   } = useChat(groupId);
 
   const getPubGroups = async (pageNoObj) => {
@@ -173,7 +176,8 @@ const Chat = () => {
       const pv = await getDMs({ pageNo: 1, pageSize: 1000 });
       const allGroups = [...pb, ...gp, ...pv];
       handleConnectClients(allGroups);
-      onNewMessageReceive(groupId);
+      onNewMessageReceive();
+      onNewReplyReceive()
       return () => handleDisconnectClients();
     })();
   }, []);
@@ -283,7 +287,7 @@ const Chat = () => {
         </div>
         {currentActiveThread && (
           <div>
-            <ActiveThread currentActiveThread={currentActiveThread} />
+            <ActiveThread currentActiveThread={currentActiveThread} addNewReplySocketEmitter={addNewReplySocketEmitter}/>
           </div>
         )}
       </div>

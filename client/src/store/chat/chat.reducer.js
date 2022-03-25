@@ -301,42 +301,57 @@ export const Chat = (state = initalState, action = {}) => {
       };
 
     case chatActionTypes.REPLY_MESSAGE:
-      let repliesObjs1 = {
-        [action.data.id]: action.data,
-      };
-      let updatedProfileReplies = addToMessageReplies(
-        state.chats[action.data.parentId],
-        {
-          userId: action.data.userId,
-          firstName: action.data.firstName,
-          lastName: action.data.lastName,
-          dp: action.data.dp,
-        }
-      );
 
-      return {
-        ...state,
-        chats: {
-          ...state.chats,
-          [action.data.parentId]: {
-            ...state.chats[action.data.parentId],
-            replies:
-              "replies" in state.chats[action.data.parentId]
-                ? {
-                    ...state.chats[action.data.parentId].replies,
-                    ...repliesObjs1,
-                  }
-                : { [action.data.id]: action.data },
-            currentPage:
-              "replies" in state.chats[action.data.parentId]
-                ? state.chats[action.data.parentId].currentPage + 1
-                : 1,
-            totalEnteries: state.chats[action.data.parentId].totalEnteries + 1,
-            totalReplies: state.chats[action.data.parentId].totalReplies + 1,
-            profileReplies: updatedProfileReplies,
+      const {
+        currentSocketKey: replySocket,
+        message: replyMessage
+      } = action.data;
+
+      if (
+        state.currentSelectedGroup.uuid === replySocket ||
+        replySocket === null
+      ) {
+        let repliesObjs1 = {
+          [replyMessage.id]: replyMessage,
+        };
+        let updatedProfileReplies = addToMessageReplies(
+          state.chats[replyMessage.parentId],
+          {
+            userId: replyMessage.userId,
+            firstName: replyMessage.firstName,
+            lastName: replyMessage.lastName,
+            dp: replyMessage.dp,
+          }
+        );
+
+        return {
+          ...state,
+          chats: {
+            ...state.chats,
+            [replyMessage.parentId]: {
+              ...state.chats[replyMessage.parentId],
+              replies:
+                "replies" in state.chats[replyMessage.parentId]
+                  ? {
+                      ...state.chats[replyMessage.parentId].replies,
+                      ...repliesObjs1,
+                    }
+                  : { [replyMessage.id]: replyMessage },
+              currentPage:
+                "replies" in state.chats[replyMessage.parentId]
+                  ? state.chats[replyMessage.parentId].currentPage + 1
+                  : 1,
+              totalEnteries: state.chats[replyMessage.parentId].totalEnteries + 1,
+              totalReplies: state.chats[replyMessage.parentId].totalReplies + 1,
+              profileReplies: updatedProfileReplies,
+            },
           },
-        },
-      };
+        };
+      } else {
+        return state;
+      }
+
+      
 
     case chatActionTypes.UPDATE_EMOJI_IN_MESSAGES:
       let skinTone = action.data.emoji.skin

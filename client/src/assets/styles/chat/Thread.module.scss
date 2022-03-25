@@ -45,12 +45,11 @@
 
   .threadTextArea {
     z-index: 12;
-    border-top: 1px solid $athens-gray;
     background-color: $bg-color-1;
-    padding: 5px 10px;
+    padding: 15px 10px;
     position: fixed;
-    bottom: 0px;
-    min-height: 75px;
+    min-height: 90px;
     width: 80%;
+    
   }
 }

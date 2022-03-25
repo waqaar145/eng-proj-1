@@ -236,6 +236,7 @@ const Chat = () => {
   }, [groupId]);
 
   const showMembers = () => {
+    dispatch({ type: chatActionTypes.THREAD_MESSAGE_ID, data: null });
     setChatArea(2);
   };
 

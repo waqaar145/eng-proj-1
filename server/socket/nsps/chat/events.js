@@ -34,7 +34,25 @@ const addNewReply = (nsp, roomName) => async (messageObj, callback) => {
   }
 };
 
+const addEmojiInMessage = (nsp, roomName) => async (emojiObj, callback) => {
+  try {
+    let data = emojiObj;
+    nsp.broadcast.to(roomName).emit(chatNsps.wsEvents.SEND_EMOJI_TO_ROOM, data);
+    callback({
+      data,
+      process: true
+    });
+  } catch (error) {
+    console.log(error);
+    callback({
+      data,
+      process: false
+    });
+  }
+};
+
 module.exports = {
   addNewMessage,
-  addNewReply
+  addNewReply,
+  addEmojiInMessage
 };

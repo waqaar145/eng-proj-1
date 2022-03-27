@@ -92,6 +92,30 @@ const useChat = (groupId) => {
     }
   }; 
 
+  const addEmojiInMessageSocketEmitter = (data) => {
+    socketObj[groupId].emit(chatNsps.wsEvents.ADD_EMOJI_IN_MESSAGES, data, ({ data, process }) => {
+      if (process) {
+        let emojiObj = {
+          currentSocketKey: null,
+          emoji: data,
+        };
+        dispatch({type: chatActionTypes.UPDATE_EMOJI_IN_MESSAGES, data: emojiObj})
+      }
+    });
+  }
+
+  const onNewEmojiReceive = () => {
+    for (const [key] of Object.entries(socketObj)) {
+      socketObj[key].on(chatNsps.wsEvents.SEND_EMOJI_TO_ROOM, (data) => {
+        let emojiObj = {
+          currentSocketKey: key,
+          emoji: { ...data, me: false },
+        };
+        dispatch({ type: chatActionTypes.UPDATE_EMOJI_IN_MESSAGES, data: emojiObj });
+      });
+    }
+  }
+
   return {
     socketObj,
     handleConnectClients,
@@ -101,7 +125,9 @@ const useChat = (groupId) => {
     extraChatCount,
 
     addNewReplySocketEmitter,
-    onNewReplyReceive
+    onNewReplyReceive,
+    addEmojiInMessageSocketEmitter,
+    onNewEmojiReceive
   };
 };
 

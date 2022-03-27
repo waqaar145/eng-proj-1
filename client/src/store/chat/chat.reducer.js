@@ -354,45 +354,57 @@ export const Chat = (state = initalState, action = {}) => {
       
 
     case chatActionTypes.UPDATE_EMOJI_IN_MESSAGES:
-      let skinTone = action.data.emoji.skin
-        ? String(action.data.emoji.skin)
+      const {
+        currentSocketKey: emojiSocket,
+        emoji: emojiObj
+      } = action.data;
+      if (
+        state.currentSelectedGroup.uuid === emojiSocket ||
+        emojiSocket === null
+      ) {
+      let skinTone = emojiObj.emoji.skin
+        ? String(emojiObj.emoji.skin)
         : "0";
-      let emojiIdToneString = action.data.emoji.id + "-" + skinTone;
+      let emojiIdToneString = emojiObj.emoji.id + "-" + skinTone;
 
-      if (!action.data.parentId) {
+      if (!emojiObj.parentId) {
         let messageReactionsObject =
-          state.chats[action.data.messageId].reactions;
+          state.chats[emojiObj.messageId].reactions;
         if (!messageReactionsObject) {
           messageReactionsObject = {
             [emojiIdToneString]: {
-              count: action.data.count,
-              me: action.data.me,
+              count: emojiObj.count,
+              ...emojiSocket === null && { me: emojiObj.me },
             },
           };
         } else {
           if (
-            action.data.count === 0 &&
-            !action.data.me &&
+            emojiObj.count === 0 &&
+            !emojiObj.me &&
             messageReactionsObject[emojiIdToneString]
           ) {
             delete messageReactionsObject[emojiIdToneString]; // removing selected emoji object from reactions object
           } else {
             if (messageReactionsObject[emojiIdToneString]) {
-              if (action.data.count > 0 && !action.data.me) {
+              if (emojiObj.count > 0 && !emojiObj.me) {
                 messageReactionsObject[emojiIdToneString].count =
-                  action.data.count;
-                messageReactionsObject[emojiIdToneString].me = false;
+                  emojiObj.count;
+                if (emojiSocket === null) {
+                  messageReactionsObject[emojiIdToneString].me = false;
+                }
               } else {
                 messageReactionsObject[emojiIdToneString].count =
-                  action.data.count;
-                messageReactionsObject[emojiIdToneString].me = true;
+                  emojiObj.count;
+                if (emojiSocket === null) {
+                  messageReactionsObject[emojiIdToneString].me = true;
+                }
               }
             } else {
               messageReactionsObject = {
                 ...messageReactionsObject,
                 [emojiIdToneString]: {
-                  count: action.data.count,
-                  me: action.data.me,
+                  count: emojiObj.count,
+                  ...emojiSocket === null && { me: emojiObj.me },
                 },
               };
             }
@@ -403,47 +415,51 @@ export const Chat = (state = initalState, action = {}) => {
           ...state,
           chats: {
             ...state.chats,
-            [action.data.messageId]: {
-              ...state.chats[action.data.messageId],
+            [emojiObj.messageId]: {
+              ...state.chats[emojiObj.messageId],
               reactions: messageReactionsObject,
             },
           },
         };
       } else {
         let messageReactionsObject =
-          state.chats[action.data.parentId].replies[action.data.messageId]
+          state.chats[emojiObj.parentId].replies[emojiObj.messageId]
             .reactions;
         if (!messageReactionsObject) {
           messageReactionsObject = {
             [emojiIdToneString]: {
-              count: action.data.count,
-              me: action.data.me,
+              count: emojiObj.count,
+              ...emojiSocket === null && { me: emojiObj.me },
             },
           };
         } else {
           if (
-            action.data.count === 0 &&
-            !action.data.me &&
+            emojiObj.count === 0 &&
+            !emojiObj.me &&
             messageReactionsObject[emojiIdToneString]
           ) {
             delete messageReactionsObject[emojiIdToneString]; // removing selected emoji object from reactions object
           } else {
             if (messageReactionsObject[emojiIdToneString]) {
-              if (action.data.count > 0 && !action.data.me) {
+              if (emojiObj.count > 0 && !emojiObj.me) {
                 messageReactionsObject[emojiIdToneString].count =
-                  action.data.count;
-                messageReactionsObject[emojiIdToneString].me = false;
+                  emojiObj.count;
+                if (emojiSocket === null) {
+                  messageReactionsObject[emojiIdToneString].me = false;
+                }
               } else {
                 messageReactionsObject[emojiIdToneString].count =
-                  action.data.count;
-                messageReactionsObject[emojiIdToneString].me = true;
+                  emojiObj.count;
+                if (emojiSocket === null) {
+                  messageReactionsObject[emojiIdToneString].me = true;
+                }
               }
             } else {
               messageReactionsObject = {
                 ...messageReactionsObject,
                 [emojiIdToneString]: {
-                  count: action.data.count,
-                  me: action.data.me,
+                  count: emojiObj.count,
+                  ...emojiSocket === null && { me: emojiObj.me },
                 },
               };
             }
@@ -454,13 +470,13 @@ export const Chat = (state = initalState, action = {}) => {
           ...state,
           chats: {
             ...state.chats,
-            [action.data.parentId]: {
-              ...state.chats[action.data.parentId],
+            [emojiObj.parentId]: {
+              ...state.chats[emojiObj.parentId],
               replies: {
-                ...state.chats[action.data.parentId].replies,
-                [action.data.messageId]: {
-                  ...state.chats[action.data.parentId].replies[
-                    action.data.messageId
+                ...state.chats[emojiObj.parentId].replies,
+                [emojiObj.messageId]: {
+                  ...state.chats[emojiObj.parentId].replies[
+                    emojiObj.messageId
                   ],
                   reactions: messageReactionsObject,
                 },
@@ -469,6 +485,9 @@ export const Chat = (state = initalState, action = {}) => {
           },
         };
       }
+    } else {
+      return state;
+    }
 
     default:
       return state;

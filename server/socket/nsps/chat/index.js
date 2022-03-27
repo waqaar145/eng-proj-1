@@ -41,6 +41,7 @@ const onConnection = (socket) => {
 
   socket.on(chatNsps['wsEvents']['ADD_NEW_MESSAGE'], events.addNewMessage(socket, roomName))
   socket.on(chatNsps['wsEvents']['ADD_NEW_REPLY'], events.addNewReply(socket, roomName))
+  socket.on(chatNsps['wsEvents']['ADD_EMOJI_IN_MESSAGES'], events.addEmojiInMessage(socket, roomName))
 
   socket.on("disconnect", async () => {
     try {

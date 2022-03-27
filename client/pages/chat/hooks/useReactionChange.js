@@ -1,8 +1,17 @@
 import { useDispatch } from 'react-redux'
 import { chatService } from '../../../src/services';
 import { chatActionTypes } from "../../../src/store/chat/chat.actiontype";
+import { useRouter } from "next/router";
+import useChat from './useChat';
 
 const useReactionChage = () => {
+
+  const router = useRouter();
+  const { groupId, addUsers } = router.query;
+
+  const {
+    addEmojiInMessageSocketEmitter
+  } = useChat(groupId);
 
   const dispatch = useDispatch();
 
@@ -13,9 +22,8 @@ const useReactionChage = () => {
     }
     try {
       let {data: {data}} = await chatService.addEmojiReaction(messageId, emojiObj, callback)
-      console.log(data);
-      dispatch({type: chatActionTypes.UPDATE_EMOJI_IN_MESSAGES, data})
-      if (callback) callback()
+      addEmojiInMessageSocketEmitter(data)
+      if (callback) callback();
     } catch (error) {
       console.log(error);
     }

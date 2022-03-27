@@ -115,7 +115,8 @@ const Chat = () => {
     extraChatCount,
 
     addNewReplySocketEmitter,
-    onNewReplyReceive
+    onNewReplyReceive,
+    onNewEmojiReceive
   } = useChat(groupId);
 
   const getPubGroups = async (pageNoObj) => {
@@ -177,7 +178,8 @@ const Chat = () => {
       const allGroups = [...pb, ...gp, ...pv];
       handleConnectClients(allGroups);
       onNewMessageReceive();
-      onNewReplyReceive()
+      onNewReplyReceive();
+      onNewEmojiReceive();
       return () => handleDisconnectClients();
     })();
   }, []);

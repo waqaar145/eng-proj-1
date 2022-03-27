@@ -194,7 +194,7 @@ const MessageBox = ({
           </div>
           <div className={styles.profileDetailWrapper}>
             {currentEditingMessage === message.id ? (
-              <div>
+              <div className={styles.editorEditWrapper}>
                 {/* <EditorArea editing={true} message={message} onBlur={() => handleEditMessage(null)}/> */}
                 <MyEditor
                   initValue={message.message}
@@ -269,7 +269,7 @@ const MessageBox = ({
                 </div>
                 <div className={styles.profileDetailWrapper}>
                   {currentEditingMessage === +messageId ? (
-                    <div>
+                    <div className={styles.editorEditWrapper}>
                       {/* <EditorArea editing={true} message={message.groupedMessages[messageId]} onBlur={() => handleEditMessage(null)}/> */}
                       <MyEditor
                         initValue={message.groupedMessages[messageId].message}

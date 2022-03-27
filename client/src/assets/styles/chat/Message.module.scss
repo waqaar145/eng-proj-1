@@ -1,13 +1,21 @@
 @import './../variable';
 
 .messageBoxWrapper {
+  
   padding-bottom: 5px;
   border-bottom: 1px solid $athens-gray;
 
+
   .singleMsgWrapper {
     padding: 3px 0;
+    &::first-child {
+      padding-top: 20px;
+    }
     &:hover {
       background-color: $c-gray-98;
+      &::first-child {
+        padding-top: 20px;
+      }
     }
   }
 
@@ -36,14 +44,18 @@
         height: 40px;
         object-fit: cover;
         border-radius: 50%;
-        box-shadow: $box-shadow-1
+        box-shadow: $box-shadow-1;
       }
     }
 
     .profileDetailWrapper {
-
       width: 100%;
       padding-right: 10px;
+
+      .editorEditWrapper {
+        padding-top: 5px;
+      }
+
       .profileDetail {
         
   

@@ -676,6 +676,7 @@ const addEmojiReaction = async (req, res) => {
       },
       me: added,
       count: count,
+      userId: req.user.id,
       parentId: parentId || null,
     };
 

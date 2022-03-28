@@ -238,44 +238,62 @@ export const Chat = (state = initalState, action = {}) => {
       }
 
     case chatActionTypes.DELETE_MESSAGE:
-      let chatsObj = state.chats;
-      if (action.data.parentId === null) {
-        delete chatsObj[action.data.messageId];
-        return {
-          ...state,
-          chats: {
-            ...chatsObj,
-          },
-          totalEnteries: state.totalEnteries - 1,
-        };
-      } else {
-        delete chatsObj[action.data.parentId].replies[action.data.messageId];
-        return {
-          ...state,
-          chats: {
-            ...chatsObj,
-            [action.data.parentId]: {
-              ...state.chats[action.data.parentId],
-              totalEnteries:
-                state.chats[action.data.parentId].totalEnteries - 1,
+      
+      const { currentSocketKey: deleteMessageSocket, message: deleteMessageObj } = action.data;
+      if (
+        state.currentSelectedGroup.uuid === deleteMessageSocket ||
+        deleteMessageSocket === null
+      ) {
+        let chatsObj = state.chats;
+        if (deleteMessageObj.parentId === null) {
+          delete chatsObj[deleteMessageObj.messageId];
+          return {
+            ...state,
+            chats: {
+              ...chatsObj,
             },
-          },
-        };
+            totalEnteries: state.totalEnteries - 1,
+          };
+        } else {
+          delete chatsObj[deleteMessageObj.parentId].replies[deleteMessageObj.messageId];
+          return {
+            ...state,
+            chats: {
+              ...chatsObj,
+              [deleteMessageObj.parentId]: {
+                ...state.chats[deleteMessageObj.parentId],
+                totalEnteries:
+                  state.chats[deleteMessageObj.parentId].totalEnteries - 1,
+              },
+            },
+          };
+        }
+      } else {
+        return state;
       }
+      
 
     case chatActionTypes.UPDATE_MESSAGE:
-      const { messageId, message, parentId, updatedAt } = action.data;
-      if (parentId) {
-        state.chats[parentId].replies[messageId].message = message;
-        state.chats[parentId].replies[messageId].updatedAt = updatedAt;
+      const { currentSocketKey: updateMessageSocket, message: updatedMessageObj } = action.data;
+      if (
+        state.currentSelectedGroup.uuid === updateMessageSocket ||
+        updateMessageSocket === null
+      ) {
+        const { messageId, message, parentId, updatedAt } = updatedMessageObj;
+        if (parentId) {
+          state.chats[parentId].replies[messageId].message = message;
+          state.chats[parentId].replies[messageId].updatedAt = updatedAt;
+        } else {
+          state.chats[messageId].message = message;
+          state.chats[messageId].updatedAt = updatedAt;
+        }
+        return {
+          ...state,
+          chats: state.chats,
+        };
       } else {
-        state.chats[messageId].message = message;
-        state.chats[messageId].updatedAt = updatedAt;
+        return state;
       }
-      return {
-        ...state,
-        chats: state.chats,
-      };
 
     case chatActionTypes.THREAD_REPLIES:
       let repliesObjs = convertArrayIntoObject(action.data.chats);
@@ -367,7 +385,7 @@ export const Chat = (state = initalState, action = {}) => {
         ? String(emojiObj.emoji.skin)
         : "0";
       let emojiIdToneString = emojiObj.emoji.id + "-" + skinTone;
-      
+
       if (!emojiObj.parentId) {
         let messageReactionsObject =
           state.chats[emojiObj.messageId].reactions;

@@ -116,7 +116,11 @@ const Chat = () => {
 
     addNewReplySocketEmitter,
     onNewReplyReceive,
-    onNewEmojiReceive
+    onNewEmojiReceive,
+    updateMessageSocketEmitter,
+    onUpdatedMessageReceive,
+    updateReplySocketEmitter,
+    onDeletedMessageReceive
   } = useChat(groupId);
 
   const getPubGroups = async (pageNoObj) => {
@@ -180,6 +184,8 @@ const Chat = () => {
       onNewMessageReceive();
       onNewReplyReceive();
       onNewEmojiReceive();
+      onUpdatedMessageReceive();
+      onDeletedMessageReceive();
       return () => handleDisconnectClients();
     })();
   }, []);
@@ -279,6 +285,7 @@ const Chat = () => {
               styles={styles}
               showMembers={showMembers}
               addNewMessageSocketEmitter={addNewMessageSocketEmitter}
+              updateMessageSocketEmitter={updateMessageSocketEmitter}
             />
           )}
           {chatArea === 2 && (
@@ -290,7 +297,7 @@ const Chat = () => {
         </div>
         {currentActiveThread && (
           <div>
-            <ActiveThread currentActiveThread={currentActiveThread} addNewReplySocketEmitter={addNewReplySocketEmitter}/>
+            <ActiveThread currentActiveThread={currentActiveThread} addNewReplySocketEmitter={addNewReplySocketEmitter} updateReplySocketEmitter={updateReplySocketEmitter}/>
           </div>
         )}
       </div>

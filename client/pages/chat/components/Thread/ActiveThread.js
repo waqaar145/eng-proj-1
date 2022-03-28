@@ -20,7 +20,7 @@ let parentMessageActionIdKey = "parent-thread-message-action-id-";
 let messageIdKey = "thread-message-id-";
 let messageActionIdKey = "thread-message-action-id-";
 
-const ActiveThread = ({ currentActiveThread, addNewReplySocketEmitter }) => {
+const ActiveThread = ({ currentActiveThread, addNewReplySocketEmitter, updateReplySocketEmitter }) => {
   const { currentState } = usePagination();
 
   const router = useRouter();
@@ -186,7 +186,7 @@ const ActiveThread = ({ currentActiveThread, addNewReplySocketEmitter }) => {
       let {
         data: { data },
       } = await chatService.updateChat(chatObj, currentEditingMessage);
-      dispatch({ type: chatActionTypes.UPDATE_MESSAGE, data });
+      updateReplySocketEmitter(data)
       callback();
       handleOnBlur();
     } catch (error) {

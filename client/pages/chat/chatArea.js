@@ -26,6 +26,7 @@ const ChatArea = ({
   styles,
   showMembers,
   addNewMessageSocketEmitter,
+  updateMessageSocketEmitter
 }) => {
   const dispatch = useDispatch();
 
@@ -222,7 +223,7 @@ const ChatArea = ({
       let {
         data: { data },
       } = await chatService.updateChat(chatObj, currentEditingMessage);
-      dispatch({ type: chatActionTypes.UPDATE_MESSAGE, data });
+      updateMessageSocketEmitter(data);
       callback();
       handleOnBlur();
     } catch (error) {

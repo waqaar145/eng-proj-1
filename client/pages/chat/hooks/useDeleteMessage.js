@@ -3,10 +3,18 @@ import useModal from "../../../src/hooks/useModal";
 import {useDispatch} from 'react-redux'
 import { chatService } from './../../../src/services' 
 import { chatActionTypes } from "../../../src/store/chat/chat.actiontype";
+import { useRouter } from "next/router";
+import useChat from './useChat';
 
 const useDeleteMessage = (currentActiveThread) => {
 
   const dispatch = useDispatch();
+  const router = useRouter();
+  const { groupId } = router.query;
+
+  const {
+    deleteMessageSocketEmitter
+  } = useChat(groupId);
 
   const { toggle: handleConfirmToggle, show: showConfirmModal } = useModal();
   const [currentDeleteMessage, setCurrentDeleteMessage] = useState(null);
@@ -24,11 +32,11 @@ const useDeleteMessage = (currentActiveThread) => {
       if (currentActiveThread && currentActiveThread === currentDeleteMessage) {
         dispatch({type: chatActionTypes.THREAD_MESSAGE_ID, data: null})
         setTimeout(() => { // Memory leak warning
-          dispatch({type: chatActionTypes.DELETE_MESSAGE, data})
+          deleteMessageSocketEmitter(data)
           handleConfirmToggle()
         })
       } else {
-        dispatch({type: chatActionTypes.DELETE_MESSAGE, data})
+        deleteMessageSocketEmitter(data)
         handleConfirmToggle()
       }
       setDeleteMessageLoader(false)

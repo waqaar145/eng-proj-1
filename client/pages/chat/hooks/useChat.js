@@ -127,6 +127,66 @@ const useChat = (groupId) => {
     }
   }
 
+  const updateMessageSocketEmitter = (data) => { 
+    socketObj[groupId].emit(chatNsps.wsEvents.UPDATE_MESSAGE, data, ({ data, process }) => {
+      if (process) {
+        let chatObj = {
+          currentSocketKey: null,
+          message: data,
+        };
+        dispatch({ type: chatActionTypes.UPDATE_MESSAGE, data: chatObj });
+      }
+    });
+  }
+
+  const onUpdatedMessageReceive = () => {
+    for (const [key] of Object.entries(socketObj)) {
+      socketObj[key].on(chatNsps.wsEvents.SEND_UPDATED_MESSAGE_TO_ROOM, (data) => {
+        let chatObj = {
+          currentSocketKey: key,
+          message: data,
+        };
+        dispatch({ type: chatActionTypes.UPDATE_MESSAGE, data: chatObj });
+      });
+    }
+  };
+
+  const updateReplySocketEmitter = (data) => {
+    socketObj[groupId].emit(chatNsps.wsEvents.UPDATE_MESSAGE, data, ({ data, process }) => {
+      if (process) {
+        let chatObj = {
+          currentSocketKey: null,
+          message: data,
+        };
+        dispatch({ type: chatActionTypes.UPDATE_MESSAGE, data: chatObj });
+      }
+    });
+  }
+
+  const deleteMessageSocketEmitter = (data) => {
+    socketObj[groupId].emit(chatNsps.wsEvents.DELETE_MESSAGE, data, ({ data, process }) => {
+      if (process) {
+        let chatObj = {
+          currentSocketKey: null,
+          message: data,
+        };
+        dispatch({ type: chatActionTypes.DELETE_MESSAGE, data: chatObj });
+      }
+    });
+  }
+
+  const onDeletedMessageReceive = () => {
+    for (const [key] of Object.entries(socketObj)) {
+      socketObj[key].on(chatNsps.wsEvents.SEND_DELETED_MESSAGE_TO_ROOM, (data) => {
+        let chatObj = {
+          currentSocketKey: key,
+          message: data,
+        };
+        dispatch({ type: chatActionTypes.DELETE_MESSAGE, data: chatObj });
+      });
+    }
+  };
+
   return {
     socketObj,
     handleConnectClients,
@@ -138,7 +198,12 @@ const useChat = (groupId) => {
     addNewReplySocketEmitter,
     onNewReplyReceive,
     addEmojiInMessageSocketEmitter,
-    onNewEmojiReceive
+    onNewEmojiReceive,
+    updateMessageSocketEmitter,
+    onUpdatedMessageReceive,
+    updateReplySocketEmitter,
+    deleteMessageSocketEmitter,
+    onDeletedMessageReceive
   };
 };
 

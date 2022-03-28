@@ -102,7 +102,7 @@ const useChat = (groupId) => {
         let emojiObj = {
           currentSocketKey: null,
           emoji: data,
-          updateMe: false
+          updateMe: true
         };
         dispatch({type: chatActionTypes.UPDATE_EMOJI_IN_MESSAGES, data: emojiObj})
       }
@@ -110,7 +110,6 @@ const useChat = (groupId) => {
   }
 
   const onNewEmojiReceive = () => {
-    
     for (const [key] of Object.entries(socketObj)) {
       socketObj[key].on(chatNsps.wsEvents.SEND_EMOJI_TO_ROOM, (data) => {
         let updateMe = false;
@@ -120,8 +119,8 @@ const useChat = (groupId) => {
 
         let emojiObj = {
           currentSocketKey: key,
-          emoji: { ...data, me: false },
-          ...updateMe && {updateMe: true}
+          emoji: { ...data, me: updateMe ? data.me : false },
+          updateMe: updateMe ? true : false
         };
         dispatch({ type: chatActionTypes.UPDATE_EMOJI_IN_MESSAGES, data: emojiObj });
       });

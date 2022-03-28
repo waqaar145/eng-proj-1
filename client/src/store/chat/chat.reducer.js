@@ -356,7 +356,8 @@ export const Chat = (state = initalState, action = {}) => {
     case chatActionTypes.UPDATE_EMOJI_IN_MESSAGES:
       const {
         currentSocketKey: emojiSocket,
-        emoji: emojiObj
+        emoji: emojiObj,
+        updateMe
       } = action.data;
       if (
         state.currentSelectedGroup.uuid === emojiSocket ||
@@ -366,7 +367,7 @@ export const Chat = (state = initalState, action = {}) => {
         ? String(emojiObj.emoji.skin)
         : "0";
       let emojiIdToneString = emojiObj.emoji.id + "-" + skinTone;
-
+      
       if (!emojiObj.parentId) {
         let messageReactionsObject =
           state.chats[emojiObj.messageId].reactions;
@@ -374,7 +375,7 @@ export const Chat = (state = initalState, action = {}) => {
           messageReactionsObject = {
             [emojiIdToneString]: {
               count: emojiObj.count,
-              ...emojiSocket === null && { me: emojiObj.me },
+              ...(updateMe) && { me: emojiObj.me }
             },
           };
         } else {
@@ -389,13 +390,14 @@ export const Chat = (state = initalState, action = {}) => {
               if (emojiObj.count > 0 && !emojiObj.me) {
                 messageReactionsObject[emojiIdToneString].count =
                   emojiObj.count;
-                if (emojiSocket === null) {
+                if (updateMe) {
                   messageReactionsObject[emojiIdToneString].me = false;
                 }
+                
               } else {
                 messageReactionsObject[emojiIdToneString].count =
                   emojiObj.count;
-                if (emojiSocket === null) {
+                if (updateMe) {
                   messageReactionsObject[emojiIdToneString].me = true;
                 }
               }
@@ -404,7 +406,7 @@ export const Chat = (state = initalState, action = {}) => {
                 ...messageReactionsObject,
                 [emojiIdToneString]: {
                   count: emojiObj.count,
-                  ...emojiSocket === null && { me: emojiObj.me },
+                  ...(updateMe) && { me: emojiObj.me }
                 },
               };
             }
@@ -429,7 +431,7 @@ export const Chat = (state = initalState, action = {}) => {
           messageReactionsObject = {
             [emojiIdToneString]: {
               count: emojiObj.count,
-              ...emojiSocket === null && { me: emojiObj.me },
+              ...(updateMe) && { me: emojiObj.me }
             },
           };
         } else {
@@ -444,13 +446,13 @@ export const Chat = (state = initalState, action = {}) => {
               if (emojiObj.count > 0 && !emojiObj.me) {
                 messageReactionsObject[emojiIdToneString].count =
                   emojiObj.count;
-                if (emojiSocket === null) {
+                if (updateMe) {
                   messageReactionsObject[emojiIdToneString].me = false;
                 }
               } else {
                 messageReactionsObject[emojiIdToneString].count =
                   emojiObj.count;
-                if (emojiSocket === null) {
+                if (updateMe) {
                   messageReactionsObject[emojiIdToneString].me = true;
                 }
               }
@@ -459,7 +461,7 @@ export const Chat = (state = initalState, action = {}) => {
                 ...messageReactionsObject,
                 [emojiIdToneString]: {
                   count: emojiObj.count,
-                  ...emojiSocket === null && { me: emojiObj.me },
+                  ...(updateMe) && { me: emojiObj.me }
                 },
               };
             }

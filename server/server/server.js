@@ -7,6 +7,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 const routes = require("./../routes/index");
 const { createNamespace: chatNamespace } = require("../socket/nsps/chat");
+const { conferenceNamespace } = require("../socket/nsps/conference");
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 chatNamespace(io);
+conferenceNamespace(io);
 
 // Routes registration
 routes(app);

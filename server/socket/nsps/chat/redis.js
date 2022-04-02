@@ -12,7 +12,7 @@ class ChatRedis {
     });
   }
 
-  async addUserToRoom(socketId, roomName, userObj) {
+  async addUserToRoom(roomName, socketId, userObj) {
     try {
       let result =  await this.client.hsetAsync(roomName, socketId, JSON.stringify(userObj));
       return result;

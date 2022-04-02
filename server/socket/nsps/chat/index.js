@@ -28,7 +28,7 @@ const onConnection = (socket) => {
   socket.on(chatNsps['wsEvents']['JOIN_ROOM'], async () => {
     try {
       await socket.join(roomName);
-      await ChatRedis.addUserToRoom(socketId, roomName, user);
+      await ChatRedis.addUserToRoom(roomName, socketId , user);
       const allUsersInRoom = await ChatRedis.getAllUsersInRoom(roomName);
       nsp.to(roomName).emit(chatNsps['wsEvents']['ALL_USERS_IN_ROOM'], finalObj(roomName, {
         allUsersInRoom,

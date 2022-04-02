@@ -50,6 +50,7 @@
     position: fixed;
     min-height: 90px;
     width: 80%;
-    
+    border-left: 1px solid $c-gray-80;
+    margin-left: -1px;
   }
 }

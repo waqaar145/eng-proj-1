@@ -34,15 +34,15 @@ app
       });
     });
 
-    server.get("/chat/editor", (req, res) => {
-      return app.render(req, res, "/chat/editor", {
-        groupId: null
-      });
-    });
-
     server.get("/chat/CLIENT/:groupId", (req, res) => {
       return app.render(req, res, "/chat/chat", {
         groupId: req.params.groupId
+      });
+    });
+
+    server.get("/conversation/:meetingId", (req, res) => {
+      return app.render(req, res, "/conversation/main", {
+        meetingId: req.params.meetingId
       });
     });
 

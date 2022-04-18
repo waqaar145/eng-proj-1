@@ -1,19 +1,15 @@
 const { isAuthenticated } = require("./../../utils/isAuthenticated");
-const { conferenceNsps } = require('./constants')
+const { conferenceNsps } = require('./constants');
+const { getRoomName } = require('./../../room/index');
+const UserRedis = require("./../../redis/Users");
 
 let nsp;
-
-const getRoomName = (room) => {
-  if (!room) return;
-  let nspTitle = conferenceNsps.prefix;
-  return `${nspTitle}:${room}`;
-};
 
 const onConnection = (socket) => {
   const user = socket.currentConnectedUser;
   const socketId = socket.id;
   const { meetingId } = socket.handshake.query;
-  let roomName = getRoomName(meetingId); // getting room name with discussion prefix
+  let roomName = getRoomName(meetingId, conferenceNsps); // getting room name with discussion prefix
   if (!roomName) return;
 
   let finalObj = (roomName, resObj) => {
@@ -25,14 +21,28 @@ const onConnection = (socket) => {
   socket.on(conferenceNsps['wsEvents']['JOIN_ROOM'], async () => {
     try {
       await socket.join(roomName);
-      
+      await UserRedis.addUserToRoom(roomName, socketId , user);
+      const allUsersInRoom = await UserRedis.getAllUsersInRoom(roomName);
+      nsp.to(roomName).emit(conferenceNsps['wsEvents']['ALL_USERS_IN_ROOM'], finalObj(roomName, {
+        allUsersInRoom,
+        newUser: user,
+      }));
     } catch (error) {
-      console.log(error);
+      console.log(`Socket.on Error - ${conferenceNsps["wsEvents"]["joinRoom"]} namespace `, error);
     }
   });
   
   socket.on("disconnect", async () => {
-    console.log('Socket Disconnected');
+    try {
+      await UserRedis.removeUserFromRoom(roomName, socketId);
+      let allUsersInRoom = await UserRedis.getAllUsersInRoom(roomName);
+      nsp.to(roomName).emit(conferenceNsps['wsEvents']['ALL_USERS_IN_ROOM'], finalObj(roomName, {
+        allUsersInRoom,
+        leftUser: user,
+      }));
+    } catch (error) {
+      console.log(`Socket.on Disconnect - ${discussionNsps["wsEvents"]["joinRoom"]} namespace `, error);
+    }
   });
 
   socket.onAny((event, ...args) => {

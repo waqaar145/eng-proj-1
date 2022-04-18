@@ -1,10 +1,10 @@
 const redis = require("redis");
 const bluebird = require("bluebird");
-const config = require("./../../../config/config");
+const config = require("./../../config/config");
 
 bluebird.promisifyAll(redis);
 
-class ChatRedis {
+class UserRedis {
   constructor() {
     this.client = redis.createClient({
       host: config.REDIS_HOST,
@@ -14,7 +14,7 @@ class ChatRedis {
 
   async addUserToRoom(roomName, socketId, userObj) {
     try {
-      let result =  await this.client.hsetAsync(roomName, socketId, JSON.stringify(userObj));
+      let result =  await this.client.hsetAsync(roomName, socketId, JSON.stringify({...userObj, socketId}));
       return result;
     } catch (error) {
       console.log("Error while adding new user to the room");
@@ -47,4 +47,4 @@ class ChatRedis {
   }
 }
 
-module.exports = new ChatRedis();
+module.exports = new UserRedis();

@@ -1,22 +1,16 @@
 const { isAuthenticated } = require("./../../utils/isAuthenticated");
 const { chatNsps } = require("./constants");
-const ChatRedis = require("./redis");
-const events = require('./events')
+const UserRedis = require("./../../redis/Users");
+const events = require('./events');
+const { getRoomName } = require('./../../room/index')
 
 let nsp;
-
-const getRoomName = (room) => {
-  if (!room) return;
-  let nspTitle = chatNsps.prefix;
-  return `${nspTitle}:${room}`;
-};
-
 
 const onConnection = (socket) => {
   const user = socket.currentConnectedUser;
   const socketId = socket.id;
   const { groupId } = socket.handshake.query;
-  let roomName = getRoomName(groupId); // getting room name with discussion prefix
+  let roomName = getRoomName(groupId, chatNsps); // getting room name with discussion prefix
   if (!roomName) return;
 
   let finalObj = (roomName, resObj) => {
@@ -28,8 +22,8 @@ const onConnection = (socket) => {
   socket.on(chatNsps['wsEvents']['JOIN_ROOM'], async () => {
     try {
       await socket.join(roomName);
-      await ChatRedis.addUserToRoom(roomName, socketId , user);
-      const allUsersInRoom = await ChatRedis.getAllUsersInRoom(roomName);
+      await UserRedis.addUserToRoom(roomName, socketId , user);
+      const allUsersInRoom = await UserRedis.getAllUsersInRoom(roomName);
       nsp.to(roomName).emit(chatNsps['wsEvents']['ALL_USERS_IN_ROOM'], finalObj(roomName, {
         allUsersInRoom,
         newUser: user,
@@ -48,8 +42,8 @@ const onConnection = (socket) => {
 
   socket.on("disconnect", async () => {
     try {
-      await ChatRedis.removeUserFromRoom(roomName, socketId);
-      let allUsersInRoom = await ChatRedis.getAllUsersInRoom(roomName);
+      await UserRedis.removeUserFromRoom(roomName, socketId);
+      let allUsersInRoom = await UserRedis.getAllUsersInRoom(roomName);
       nsp.to(roomName).emit(chatNsps['wsEvents']['ALL_USERS_IN_ROOM'], finalObj(roomName, {
         allUsersInRoom,
         leftUser: user,
@@ -59,9 +53,9 @@ const onConnection = (socket) => {
     }
   });
 
-  socket.onAny((event, ...args) => {
-    console.log(event, args);
-  });
+  // socket.onAny((event, ...args) => {
+  //   console.log(event, args);
+  // });
 };
 
 exports.createNamespace = (io) => {

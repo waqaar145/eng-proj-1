@@ -71,8 +71,6 @@ const Conversation = () => {
     }
   }, []);
 
-
-  console.log(usersInRoom);
   return (
     <div className={styles.wrapper}>
       <div className={styles.videoContainer}>

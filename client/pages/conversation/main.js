@@ -14,7 +14,7 @@ import {
 import { useRouter } from "next/router";
 import useMeeting from "./hooks/useMeeting";
 
-let socketObj = null;
+let socket = null;
 const ENDPOINT = `${process.env.NEXT_PUBLIC_API_URL}/${conferenceNsps.prefix}`;
 
 const Conversation = () => {
@@ -23,8 +23,29 @@ const Conversation = () => {
   const remoteVideoRef = useRef(null);
   const pc = useRef();
   const textRef = useRef(null);
+  // const candidates = useRef([]);
 
   const getUserMedia = () => {
+
+    socket = socketIOClient(ENDPOINT, {
+      transports: ["websocket"],
+      query: `uuid=123123123`,
+    });
+
+    socket.on('connection-success', success => {
+      console.log(success);
+    })
+
+    socket.on('sdp', ({sdp}) =>{
+      console.log(sdp)
+      pc.current.setRemoteDescription(new RTCSessionDescription(sdp))
+      textRef.current.value = JSON.stringify(sdp)
+    })
+
+    socket.on('candidate', candidate => {
+      pc.current.addIceCandidate(new RTCIceCandidate(candidate))
+    })
+    
     const constraints = {
       audio: false,
       video: true
@@ -46,6 +67,9 @@ const Conversation = () => {
     _pc.onicecandidate = (e) => {
       if (e.candidate) {
         console.log(JSON.stringify(e.candidate));
+        socket.emit('candidate', e.candidate);
+        
+
       }
     }
 
@@ -65,13 +89,28 @@ const Conversation = () => {
     getUserMedia()
   }, []);
 
+  const sendToPeer = (eventType, payload) => {
+    socket.emit(eventType, payload);
+  }
+
+  const processSDP = (sdp) => {
+    console.log(JSON.stringify(sdp))
+    pc.current.setLocalDescription(sdp)
+
+    sendToPeer('sdp', {
+      sdp
+    })
+  }
+
   const createOffer = () => {
     pc.current.createOffer({
       offerToReceiveAudo: 1,
       offerToReceiveVideo: 1,
     }).then(sdp => {
-      console.log(JSON.stringify(sdp))
-      pc.current.setLocalDescription(sdp)
+
+      // send sdp to server
+      processSDP(sdp)
+    
     }).catch(error => {
       console.log('Error in create offer - ', error);
     })
@@ -82,26 +121,14 @@ const Conversation = () => {
       offerToReceiveAudo: 1,
       offerToReceiveVideo: 1,
     }).then(sdp => {
-      console.log(JSON.stringify(sdp))
-      pc.current.setLocalDescription(sdp)
+      
+      // answer sdp to server
+      processSDP(sdp)
     }).catch(error => {
       console.log('Error in create offer - ', error);
     })
   }
 
-  const setRemoteDescription = () => {
-    const sdp = JSON.parse(textRef.current.value)
-    console.log(sdp);
-
-    pc.current.setRemoteDescription(new RTCSessionDescription(sdp));
-  }
-
-  const addCandidate = () => {
-    const candidate = JSON.parse(textRef.current.value)
-    console.log('Adding candidate...');
-
-    pc.current.addIceCandidate(new RTCIceCandidate(candidate));
-  }
 
   return (
     <div style={{
@@ -131,8 +158,6 @@ const Conversation = () => {
       <br />
       <textarea ref={textRef}></textarea>
       <br />
-      <button onClick={setRemoteDescription}>Set Remote Description</button>
-      <button onClick={addCandidate}>Add ICE Candidate</button>
     </div>
   );
 };

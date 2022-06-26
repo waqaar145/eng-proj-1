@@ -46,6 +46,12 @@ app
       });
     });
 
+    server.get("/group/:meetingId", (req, res) => {
+      return app.render(req, res, "/group/main", {
+        meetingId: req.params.meetingId
+      });
+    });
+
     server.get("*", (req, res) => {
       return handle(req, res);
     });

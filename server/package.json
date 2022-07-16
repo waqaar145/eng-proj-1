@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server/index.js"
+    "start": "DEBUG='mediasoup*' nodemon server/index.js"
   },
   "author": "",
   "license": "ISC",

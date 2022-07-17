@@ -2,6 +2,15 @@ const mediasoup = require("mediasoup")
 
 let nsp;
 
+/**
+ * Worker
+ * |-> Router(s)
+ *     |-> Producer Transport(s)
+ *         |-> Producer
+ *     |-> Consumer Transport(s)
+ *         |-> Consumer 
+ **/
+
 let worker;
 let router;
 let producerTransport;

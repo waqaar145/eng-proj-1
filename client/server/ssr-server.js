@@ -47,7 +47,7 @@ app
     });
 
     server.get("/group/:meetingId", (req, res) => {
-      return app.render(req, res, "/group/main", {
+      return app.render(req, res, "/group1/main", {
         meetingId: req.params.meetingId
       });
     });

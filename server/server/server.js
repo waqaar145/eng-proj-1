@@ -8,7 +8,7 @@ const morgan = require("morgan");
 const routes = require("./../routes/index");
 const { createNamespace: chatNamespace } = require("../socket/nsps/chat");
 const { conferenceNamespace } = require("../socket/nsps/conference");
-const { groupNamespace } = require("../socket/nsps/group");
+const { groupNamespace } = require("../socket/nsps/group1");
 
 const app = express();
 

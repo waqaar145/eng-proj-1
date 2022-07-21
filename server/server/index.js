@@ -1,12 +1,18 @@
 
-const http = require("http");
+const https = require("https");
 const redisAdapter = require("socket.io-redis");
+const fs = require('fs')
 
 const app = require("./server");
 const config = require("./../config/config");
 
 // Server
-const server = http.createServer(app);
+const httpsOptions = {
+  key: fs.readFileSync(__dirname + '/server.key'),
+  cert: fs.readFileSync(__dirname + '/server.cert'),
+}
+
+const server = https.createServer(httpsOptions, app);
 
 app.io.attach(server);
 

@@ -1,65 +1,87 @@
 const express = require("express");
 const next = require("next");
+const https = require("https");
+const fs = require("fs");
 
 const PORT = process.env.PORT || 4000;
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
+// app
+//   .prepare()
+//   .then(() => {})
+//   .catch((ex) => {
+//     console.error(ex.stack);
+//     process.exit(1);
+//   });
+
 app
   .prepare()
   .then(() => {
-    const server = express();
+    const httpsOptions = {
+      key: fs.readFileSync(__dirname + '/server.key'),
+      cert: fs.readFileSync(__dirname + '/server.cert'),
+    }
 
-    // ******************** PAGES ROUTES START
-    server.get("/", (req, res) => {
-      return app.render(req, res, "/index", req.query);
-    });
+    https
+      .createServer(httpsOptions, (req, res) => {
+        const server = express();
 
-    server.get("/signup", (req, res) => {
-      return app.render(req, res, "/auth/signup", req.query);
-    });
+        // ******************** PAGES ROUTES START
+        server.get("/", (req, res) => {
+          return app.render(req, res, "/index", req.query);
+        });
 
-    server.get("/signin", (req, res) => {
-      return app.render(req, res, "/auth/login", req.query);
-    });
+        server.get("/signup", (req, res) => {
+          return app.render(req, res, "/auth/signup", req.query);
+        });
 
-    server.get("/about", (req, res) => {
-      return app.render(req, res, "/about", req.query);
-    });
+        server.get("/signin", (req, res) => {
+          return app.render(req, res, "/auth/login", req.query);
+        });
 
-    server.get("/chat", (req, res) => {
-      return app.render(req, res, "/chat/chat", {
-        groupId: null
+        server.get("/about", (req, res) => {
+          return app.render(req, res, "/about", req.query);
+        });
+
+        server.get("/chat", (req, res) => {
+          return app.render(req, res, "/chat/chat", {
+            groupId: null,
+          });
+        });
+
+        server.get("/chat/CLIENT/:groupId", (req, res) => {
+          return app.render(req, res, "/chat/chat", {
+            groupId: req.params.groupId,
+          });
+        });
+
+        server.get("/conversation/:meetingId", (req, res) => {
+          return app.render(req, res, "/conversation/main", {
+            meetingId: req.params.meetingId,
+          });
+        });
+
+        server.get("/group/:meetingId", (req, res) => {
+          return app.render(req, res, "/group1/main", {
+            meetingId: req.params.meetingId,
+          });
+        });
+
+        server.get("*", (req, res) => {
+          return handle(req, res);
+        });
+
+        // server.listen(PORT, (err) => {
+        //   if (err) throw err;
+        //   console.log(`> Ready on http://localhost:${PORT}`);
+        // });
+      })
+      .listen(PORT, (err) => {
+        if (err) throw err;
+        console.log(`> Ready on localhost:${PORT}`);
       });
-    });
-
-    server.get("/chat/CLIENT/:groupId", (req, res) => {
-      return app.render(req, res, "/chat/chat", {
-        groupId: req.params.groupId
-      });
-    });
-
-    server.get("/conversation/:meetingId", (req, res) => {
-      return app.render(req, res, "/conversation/main", {
-        meetingId: req.params.meetingId
-      });
-    });
-
-    server.get("/group/:meetingId", (req, res) => {
-      return app.render(req, res, "/group1/main", {
-        meetingId: req.params.meetingId
-      });
-    });
-
-    server.get("*", (req, res) => {
-      return handle(req, res);
-    });
-
-    server.listen(PORT, (err) => {
-      if (err) throw err;
-      console.log(`> Ready on http://localhost:${PORT}`);
-    });
   })
   .catch((ex) => {
     console.error(ex.stack);

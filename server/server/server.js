@@ -34,6 +34,11 @@ conferenceNamespace(io);
 groupNamespace(io);
 
 // Routes registration
+
+app.get('/test', (req, res) => {
+  return res.send('testdone htttps')
+})
+
 routes(app);
 
 module.exports = app;

@@ -52,6 +52,12 @@ app
       });
     });
 
+    server.get("/event/:eventId", (req, res) => {
+      return app.render(req, res, "/room/main", {
+        eventId: req.params.eventId
+      });
+    });
+
     server.get("*", (req, res) => {
       return handle(req, res);
     });

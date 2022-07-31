@@ -9,13 +9,14 @@ const routes = require("./../routes/index");
 const { createNamespace: chatNamespace } = require("../socket/nsps/chat");
 const { conferenceNamespace } = require("../socket/nsps/conference");
 const { groupNamespace } = require("../socket/nsps/group1");
+const { eventNamespace } = require("../socket/nsps/event");
 
 const app = express();
 
-const allowedOrigins = ['http://localhost:4000'];
+const allowedOrigins = ["http://localhost:4000"];
 
 const options = {
-  origin: allowedOrigins
+  origin: allowedOrigins,
 };
 
 app.use(cors());
@@ -30,8 +31,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 chatNamespace(io);
-conferenceNamespace(io);
-groupNamespace(io);
+// conferenceNamespace(io);
+// groupNamespace(io);
+eventNamespace(io);
 
 // Routes registration
 routes(app);

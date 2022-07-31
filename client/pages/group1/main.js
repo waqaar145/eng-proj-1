@@ -30,13 +30,18 @@ let params = {
   }
 } // mediasoup parameters
 
-let device;
-let rtpCapabilities;
-let producerTransport;
-let consumerTransports = [];
-let producer;
-let consumer;
-let isProducer = false;
+let audioParams;
+let videoParams = {params};
+let consumingTransports = [];
+
+let device
+let rtpCapabilities
+let producerTransport
+let consumerTransports = []
+let audioProducer
+let videoProducer
+let consumer
+let isProducer = false
 
 const GroupCall = () => {
 
@@ -91,11 +96,10 @@ const GroupCall = () => {
     })
     .then(stream => {
       localVideoRef.current.srcObject = stream;
-      const track = stream.getVideoTracks()[0]
-      params = {
-        track,
-        ...params
-      }
+
+      audioParams = { track: stream.getAudioTracks()[0], ...audioParams };
+      videoParams = { track: stream.getVideoTracks()[0], ...videoParams };
+
       joinRoom()
     })
     .catch(error => {
@@ -110,15 +114,6 @@ const GroupCall = () => {
 
       createDevice()
     })
-  }
-
-  const goConnect = (producerOrConsumer) => {
-    isProducer = producerOrConsumer;
-    device === undefined ? getRtpCapabilities() : goCreateTransport();
-  }
-
-  const goCreateTransport = () => {
-    isProducer ? createSendTransport() : createRecvTransport() 
   }
 
   const createDevice = async () => { 
@@ -139,17 +134,6 @@ const GroupCall = () => {
       }
     }
   }
-
-  const getRtpCapabilities = () => {
-    socket.emit('createRoom', (data) => {
-      console.log(`Router RTP Capabilities... ${data.rtpCapabilities}`);
-      rtpCapabilities = data.rtpCapabilities
-
-      createDevice()
-    })
-  }
-
-
 
   const getProducers = () => {
     socket.emit('getProducers', (producerIds) => {
@@ -209,18 +193,31 @@ const GroupCall = () => {
   }
 
   const connectSendTransport = async () => {
-    producer = await producerTransport.produce(params);
+    audioProducer = await producerTransport.produce(audioParams);
+    videoProducer = await producerTransport.produce(videoParams);
     
-    producer.on('trackended', () => {
-      console.log('track ended');
-
-      // close video tack
+    audioProducer.on('trackended', () => {
+      console.log('audio track ended')
+  
+      // close audio track
     })
-
-    producer.on('transportclose', () => {
-      console.log('track ended');
-
-      // close video tack
+  
+    audioProducer.on('transportclose', () => {
+      console.log('audio transport ended')
+  
+      // close audio track
+    })
+    
+    videoProducer.on('trackended', () => {
+      console.log('video track ended')
+  
+      // close video track
+    })
+  
+    videoProducer.on('transportclose', () => {
+      console.log('video transport ended')
+  
+      // close video track
     })
   }
 
@@ -258,18 +255,24 @@ const GroupCall = () => {
 
       let videoContainer = document.getElementById('videoContainer') 
 
-        const newElem = document.createElement('div')
-        newElem.setAttribute('id', `td-${remoteProducerId}`)
-
+      const newElem = document.createElement('div')
+      newElem.setAttribute('id', `td-${remoteProducerId}`)
+  
+      if (params.kind == 'audio') {
+        //append to the audio container
+        newElem.innerHTML = '<audio id="' + remoteProducerId + '" autoplay></audio>'
+      } else {
+        //append to the video container
         newElem.setAttribute('class', 'remoteVideo')
         newElem.innerHTML = '<video id="' + remoteProducerId + '" autoplay class="video" ></video>'
-
-        videoContainer.appendChild(newElem)
-
-        // destructure and retrieve the video track from the producer
-        const { track } = consumer
-
-        document.getElementById(remoteProducerId).srcObject = new MediaStream([track])
+      }
+  
+      videoContainer.appendChild(newElem)
+  
+      // destructure and retrieve the video track from the producer
+      const { track } = consumer
+  
+      document.getElementById(remoteProducerId).srcObject = new MediaStream([track])
 
 
         socket.emit('consumer-resume', {serverConsumerId: params.serverConsumerId})
@@ -277,7 +280,11 @@ const GroupCall = () => {
   }
 
   const signalNewConsumerTransport = async (remoteProducerId) => {
-    console.log('single new consumer transport')
+    
+    //check if we are already consuming the remoteProducerId
+    if (consumingTransports.includes(remoteProducerId)) return;
+    consumingTransports.push(remoteProducerId);
+    
     socket.emit('createWebRtcTransport', {consumer: true}, ({params}) => {
       if (params.error) {
         console.log(params.error);

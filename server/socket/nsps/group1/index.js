@@ -127,20 +127,6 @@ const onConnection = async (socket) => {
     return router1;
   };
 
-  // socket.on('createRoom', async (callback) => {
-  //   if (router === undefined) {
-  //     router = await worker.createRouter({mediaCodecs});
-  //     console.log(`Router ID: ${router.id}`);
-  //   }
-
-  //   getRtpCapabilities(callback);
-  // })
-
-  // const getRtpCapabilities = async (callback) => {
-  //   const rtpCapabilities = router.rtpCapabilities;
-  //   callback({rtpCapabilities});
-  // }
-
   socket.on("createWebRtcTransport", async ({ consumer }, callback) => {
     const roomName = peers[socket.id].roomName;
 

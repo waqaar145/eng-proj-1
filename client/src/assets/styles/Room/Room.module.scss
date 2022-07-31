@@ -1,0 +1,19 @@
+.wrapper {
+  .container {
+    margin-top: 100px;
+    margin-left: 100px;
+    margin-right: 150px;
+    display: flex;
+    justify-content: space-around;
+
+    .videoContainer {
+      width: 100%;
+      padding: 10px 100px;
+    }
+
+    .contentContainer {
+      padding: 10px 0px;
+      width: 400px;
+    }
+  }
+}

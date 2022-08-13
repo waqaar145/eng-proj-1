@@ -338,7 +338,6 @@ const onConnection = async (socket) => {
   );
 
   socket.on("consumer-resume", async ({ serverConsumerId }) => {
-    console.log("consumer resume");
     const { consumer } = consumers.find(
       (consumerData) => consumerData.consumer.id === serverConsumerId
     );

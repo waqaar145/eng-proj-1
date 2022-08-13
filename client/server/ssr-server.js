@@ -58,6 +58,12 @@ app
       });
     });
 
+    server.get("/proto/:eventId", (req, res) => {
+      return app.render(req, res, "/proto/main", {
+        eventId: req.params.eventId
+      });
+    });
+
     server.get("*", (req, res) => {
       return handle(req, res);
     });

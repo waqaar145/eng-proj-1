@@ -1,0 +1,61 @@
+.eventWrapper {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+
+  .headerHeight {
+    height: 60px;
+    background-color: red;
+  }
+
+  .mainHeight {
+    height: calc(100vh - 120px);
+  }
+
+  .footerHeight {
+    height: 60px;
+    background-color: green;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+  }
+
+  .videoArea {
+    border-right: 1px solid green;
+    flex-basis: 70%;
+
+    .main {
+      overflow-y: hidden;
+
+      .videos {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 0;
+
+        .userVideoContainer {
+          flex: 1 1 30%;
+          font-size: 45px;
+          padding: 4px;
+          position: relative;
+          
+          .userInfo {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+          }
+        }
+      }
+    }
+  }
+
+  .chatArea {
+    border-right: 1px solid yellow;
+    flex-basis: 30%;
+  }
+}

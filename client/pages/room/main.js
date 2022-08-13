@@ -97,9 +97,9 @@ const Room = () => {
   };
 
   const createSendTransport = () => {
+    console.log('------------')
     socket.emit("createWebRtcTransport", { consumer: false }, ({ params }) => {
       producerTransport = device.createSendTransport(params);
-
       producerTransport.on(
         "connect",
         async ({ dtlsParameters }, callback, errback) => {
@@ -119,7 +119,7 @@ const Room = () => {
       );
 
       producerTransport.on("produce", async (parameters, callback, errback) => {
-        console.log(parameters);
+        console.log(parameters)
         try {
           await socket.emit(
             "transport-produce",
@@ -190,6 +190,7 @@ const Room = () => {
         const newElem = document.createElement("div");
         newElem.setAttribute("id", `td-${remoteProducerId}`);
 
+        console.log('Params - ', params);
         if (params.kind == "audio") {
           //append to the audio container
           newElem.innerHTML =

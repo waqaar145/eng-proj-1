@@ -3,10 +3,10 @@
   flex-direction: row;
   width: 100%;
   height: 100%;
+  background-color: #161c20;
 
   .headerHeight {
     height: 60px;
-    background-color: red;
   }
 
   .mainHeight {
@@ -15,7 +15,6 @@
 
   .footerHeight {
     height: 60px;
-    background-color: green;
   }
 
   .header {
@@ -23,39 +22,143 @@
     justify-content: space-between;
     align-items: center;
     padding: 0 10px;
+    // background-color: #13191C;
+  }
+
+  .footer {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    // background-color: #13191C;
+  }
+
+  .callTitle {
+    color: #c9cacb;
+  }
+
+  .callTimer {
+    border: 1px solid red;
+    border-radius: 15px;
+    padding: 3px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .dot {
+      height: 15px;
+      width: 15px;
+      background-color: red;
+      margin-right: 10px;
+      border-radius: 50%;
+    }
+
+    .timer {
+      color: #c9cacb;
+    }
   }
 
   .videoArea {
-    border-right: 1px solid green;
     flex-basis: 70%;
 
     .main {
       overflow-y: hidden;
+
+      .inviteUsers {
+        height: 60px;
+      }
 
       .videos {
         display: flex;
         flex-wrap: wrap;
         padding: 0;
 
+
+
         .userVideoContainer {
           flex: 1 1 30%;
-          font-size: 45px;
-          padding: 4px;
+          padding: 10px;
           position: relative;
+          border-radius: 5px;
+
+          .videoEl {
+            height: 100%;
+            width: 100%;
+            background-color: black;
+            border-radius: 15px;
+          }
           
-          .userInfo {
+          .userActions {
+            // display: none;
+            opacity: 0.3;
             position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
+            left: 6%;
+            top: 10%;
+            // left: 50%;
+            // top: 50%;
+            // transform: translate(-50%, -50%);
+            // font-size: 20px;
+
+            .actions {
+              background-color: #2D3236;
+              // padding: 5px;
+              border-radius: 15px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              height: 40px;
+              width: 80px;
+
+              .actionsButton {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 20px;
+                color: #8A8D8F;
+
+                .icon {
+                  cursor: pointer;
+                }
+              }
+            }
+          }
+
+          .userInfo {
+            background-color: #2D3236;
+            border-radius: 15px;
+            padding: 5px 10px;
+            position: absolute;
+            right: 6%;
+            bottom: 10%;
+            color: #c9cacb;
+            font-size: 14px;
+            opacity: 0.5;
           }
         }
+
+      }
+    }
+
+    .currentUserActions {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      gap: 30px;
+
+      .icon {
+        cursor: pointer;
+        background-color: #2D3236;
+        color: #c9cacb;
+        padding: 5px 10px;
+        border-radius: 8px;
+        font-size: 20px;
       }
     }
   }
 
   .chatArea {
-    border-right: 1px solid yellow;
     flex-basis: 30%;
+    background-color: #1f272f;
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
   }
 }

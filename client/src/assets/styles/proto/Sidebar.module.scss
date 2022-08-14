@@ -1,0 +1,25 @@
+.tabs {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  color: #c9cacb;
+  padding: 0 15px;
+
+  .tab {
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .activeTab {
+    color: red;
+  }
+}
+
+.container {
+    color: white;
+}
+
+.footerContainer {
+    color: white;
+}

@@ -66,7 +66,7 @@
               font-size: 0.75rem;
               border-radius: 2em;
               color: $font-color-5;
-              border: 1px solid $royal-blue transparent;
+              border: 1px solid $secondary-color transparent;
             }
           }
           .designation {
@@ -153,11 +153,11 @@
 
           &:hover {
             color: $c-gray-30;
-            border-bottom: 3px solid $persian-blue;
+            border-bottom: 3px solid $primary-color;
           }
           &.active {
             color: $c-gray-30;
-            border-bottom: 3px solid $persian-blue;
+            border-bottom: 3px solid $primary-color;
           }
           &.disabled {
             pointer-events: none;

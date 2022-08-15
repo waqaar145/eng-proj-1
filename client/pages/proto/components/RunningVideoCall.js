@@ -12,7 +12,6 @@ import { CgScreen } from "react-icons/cg";
 import Sidebar from "./Sidebar";
 
 const VideoCall = () => {
-
   const videoContainerRef = useRef(null);
   const calculateVideoHeight = ({ elHeight, elWidth }) => {
     let elmts = document.querySelectorAll(".user-video-container");
@@ -42,6 +41,7 @@ const VideoCall = () => {
     window.addEventListener("resize", debounce(handleResize, 100));
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
   return (
     <>
       <div className={styles.videoArea}>

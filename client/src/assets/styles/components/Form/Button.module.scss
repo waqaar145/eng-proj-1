@@ -2,7 +2,7 @@
 
 @mixin buttonStyle ($bgColor, $textColor, $hoverColor) {
   margin: 10px 0;
-  border: none;
+  border: 1px solid $primary-color;
   outline: none;
   background-color: $bgColor;
   border-radius: 3px;
@@ -17,6 +17,8 @@
     cursor: pointer;
     background-color: $hoverColor;
     transition-delay: 0.1s;
+    color: $font-color-4;
+    border: 1px solid $hoverColor;
   }
 
   &:disabled {
@@ -29,19 +31,23 @@
     border: none;
   }
 
+  &.round {
+    border-radius: 25px;
+  }
+
   .buttonIcon {
     font-size: 1.2rem;
-    margin-left: 5px;
+    margin-left: 15px;
     margin-top: -5px;
   }
 }
 
 button.primeButton {
-  @include buttonStyle($persian-blue, $font-color-4, $royal-blue)
+  @include buttonStyle($primary-color, $font-color-4, $secondary-color)
 }
 
 button.primeLigthButton {
-  @include buttonStyle($royal-blue, $font-color-4, $royal-blue)
+  @include buttonStyle($secondary-color, $font-color-4, $secondary-color)
 }
 
 button.dangerButton {
@@ -50,6 +56,10 @@ button.dangerButton {
 
 button.defaultButton {
   @include buttonStyle($c-gray-70, $bg-color-1, $c-gray-80)
+}
+
+button.transparentButton {
+  @include buttonStyle(none, $bastille, $primary-color)
 }
 
 .lg {

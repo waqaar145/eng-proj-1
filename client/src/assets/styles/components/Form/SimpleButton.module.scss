@@ -37,11 +37,11 @@
 }
 
 button.primeButton {
-  @include buttonStyle($persian-blue, $font-color-4, $royal-blue)
+  @include buttonStyle($primary-color, $font-color-4, $secondary-color)
 }
 
 button.primeLigthButton {
-  @include buttonStyle($royal-blue, $font-color-4, $royal-blue)
+  @include buttonStyle($secondary-color, $font-color-4, $secondary-color)
 }
 
 button.dangerButton {

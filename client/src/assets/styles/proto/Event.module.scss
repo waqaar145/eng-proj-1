@@ -1,3 +1,4 @@
+@import './../variable';
 .eventWrapper {
   .joinRoom {
     height: 100vh;
@@ -16,17 +17,84 @@
         margin-bottom: 10px;
       }
       .body {
-        video {
-          height: 400px;
-          width: 600px;
-          background-color: black;
-          border-radius: 15px;
+        .videoContainer {
+          position: relative;
+          video {
+            height: 395px;
+            width: 700px;
+            background-color: black;
+            border-radius: 15px;
+          }
+
+          .actions {
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+
+            .icon {
+              height: 50px;
+              width: 50px;
+              border-radius: 50%;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              background-color: none;
+              opacity: 0.9;
+              font-size: 20px;
+              cursor: pointer;
+              border: 1px solid white;
+              color: white;
+
+              &:hover {
+                background-color: white;
+                color: black;
+              }
+            }
+
+            .active {
+              color: white;
+              border: 1px solid $error-danger;
+              background-color: $error-danger;
+
+              &:hover {
+                background-color: $error-danger-secondary;
+                color: white;
+                border: 1px solid $error-danger-secondary;
+              }
+            }
+          }
         }
       }
       .footer {
         display: flex;
         justify-content: space-around;
         align-items: center;
+
+        .actions {
+          width: 300px;
+          .noOfLearners {
+            color: #c9cacb;
+            font-size: 14px;
+            opacity: 0.8;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-top: 10px;
+          }
+
+          .joinCall {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+          }
+        }
       }
     }
   }

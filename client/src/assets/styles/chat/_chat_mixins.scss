@@ -98,7 +98,7 @@
         &:hover {
           border-radius: 2px;
           padding: 3px;
-          background-color: $royal-blue;
+          background-color: $secondary-color;
           animation: 0.3 ease-in;
         }
       }
@@ -148,7 +148,7 @@
             &.dmActive {
               // margin-top: 5px;
               color: $font-color-2;
-              background-color: $royal-blue;
+              background-color: $secondary-color;
             }
 
             img {
@@ -167,7 +167,7 @@
             &:hover {
               // border-radius: 2px;
               color: $font-color-2;
-              background-color: $royal-blue;
+              background-color: $secondary-color;
             }
           }
 

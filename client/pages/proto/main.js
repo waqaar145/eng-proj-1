@@ -1,12 +1,14 @@
+import { useState } from "react";
 import styles from "./../../src/assets/styles/proto/Event.module.scss";
 import RunningVideoCall from "./components/RunningVideoCall";
-import WaitingForJoinCall from "./components/WaitingForJoinCall";
+import WaitingForJoinVideoCall from "./components/WaitingForJoinVideoCall";
 
 const Conversation = () => {
+  const [callJoined, setCallJoined] = useState(false)
   return (
     <div className={styles.eventWrapper}>
-      {false && <RunningVideoCall />}
-      <WaitingForJoinCall />
+      {callJoined && <RunningVideoCall />}
+      {!callJoined && <WaitingForJoinVideoCall setCallJoined={setCallJoined}/>}
     </div>
   );
 };

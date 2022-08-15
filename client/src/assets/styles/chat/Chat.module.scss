@@ -82,7 +82,7 @@
   .chatSidebar {
     z-index: 1;
     border-top: 1px solid $victoria;
-    background-color: $persian-blue;
+    background-color: $primary-color;
 
     @include respond-to('small') {
       grid-template-columns: 1fr;
@@ -145,7 +145,7 @@
 
   .header {
     padding: 8px;
-    background-color: $persian-blue;
+    background-color: $primary-color;
     height: 40px;
     color: white;
     display: flex;
@@ -264,7 +264,7 @@
           margin-right: 5px;
 
           &:hover {
-            color: $persian-blue;
+            color: $primary-color;
           }
         }
 
@@ -273,7 +273,7 @@
           cursor: pointer;
           font-size: 1.2rem;
           margin-right: 5px;
-          color: $persian-blue;
+          color: $primary-color;
         }
 
         .count {
@@ -299,7 +299,7 @@
         }
 
         .primary {
-          color: $persian-blue;
+          color: $primary-color;
           margin-right: 10px;
         }
 
@@ -331,7 +331,7 @@
           }
 
           .primary {
-            color: $persian-blue;
+            color: $primary-color;
           }
 
           .danger {

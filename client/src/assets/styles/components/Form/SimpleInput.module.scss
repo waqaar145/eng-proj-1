@@ -45,7 +45,7 @@
     transition: border-color 0.3s ease;
 
     &:focus{
-      border: 2px solid $persian-blue;
+      border: 2px solid $primary-color;
       outline: none;
       -webkit-outline: none;
       -moz-outline: none;
@@ -70,7 +70,7 @@
     }
 
     &:focus ~ .label {
-      color: $persian-blue;
+      color: $primary-color;
     }
   }
 }

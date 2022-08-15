@@ -1,4 +1,36 @@
 .eventWrapper {
+  .joinRoom {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .video {
+      .header {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        color: #c9cacb;
+        font-size: 20px;
+        margin-bottom: 10px;
+      }
+      .body {
+        video {
+          height: 400px;
+          width: 600px;
+          background-color: black;
+          border-radius: 15px;
+        }
+      }
+      .footer {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+      }
+    }
+  }
+
   display: flex;
   flex-direction: row;
   width: 100%;
@@ -72,8 +104,6 @@
         flex-wrap: wrap;
         padding: 0;
 
-
-
         .userVideoContainer {
           flex: 1 1 30%;
           padding: 10px;
@@ -86,7 +116,7 @@
             background-color: black;
             border-radius: 15px;
           }
-          
+
           .userActions {
             // display: none;
             opacity: 0.3;
@@ -99,7 +129,7 @@
             // font-size: 20px;
 
             .actions {
-              background-color: #2D3236;
+              background-color: #2d3236;
               // padding: 5px;
               border-radius: 15px;
               display: flex;
@@ -113,7 +143,7 @@
                 justify-content: space-between;
                 align-items: center;
                 gap: 20px;
-                color: #8A8D8F;
+                color: #8a8d8f;
 
                 .icon {
                   cursor: pointer;
@@ -123,7 +153,7 @@
           }
 
           .userInfo {
-            background-color: #2D3236;
+            background-color: #2d3236;
             border-radius: 15px;
             padding: 5px 10px;
             position: absolute;
@@ -134,7 +164,6 @@
             opacity: 0.5;
           }
         }
-
       }
     }
 
@@ -146,7 +175,7 @@
 
       .icon {
         cursor: pointer;
-        background-color: #2D3236;
+        background-color: #2d3236;
         color: #c9cacb;
         padding: 5px 10px;
         border-radius: 8px;
@@ -161,4 +190,8 @@
     border-top-left-radius: 30px;
     border-bottom-left-radius: 30px;
   }
+}
+
+.main {
+  overflow: scroll;
 }

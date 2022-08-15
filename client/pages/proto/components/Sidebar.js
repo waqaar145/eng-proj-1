@@ -1,12 +1,12 @@
 import { useState } from "react";
 import styles from "./../../../src/assets/styles/proto/Sidebar.module.scss";
 import Chat from "./Chat";
-import ActiveUsers from "./ActiveUsers";
+import Participants from "./Participants";
 import Management from "./Management";
 
 const tabs = {
   CHAT: "CHAT",
-  ACTIVE_USERS: "ACTIVE_USERS",
+  PARTICIPANTS: "PARTICIPANTS",
   MANAGEMENT: "MANAGEMENT",
 };
 
@@ -41,11 +41,11 @@ const Sidebar = ({ parentStyles }) => {
       <div className={`${parentStyles.main} ${parentStyles.mainHeight}`}>
         <div className={styles.container}>
           {activeTab === tabs.CHAT && <Chat />}
-          {activeTab === tabs.ACTIVE_USERS && <ActiveUsers />}
+          {activeTab === tabs.PARTICIPANTS && <Participants />}
           {activeTab === tabs.MANAGEMENT && <Management />}
         </div>
       </div>
-      <div className={`${parentStyles.footer} ${parentStyles.footerHeight}`}>
+      <div className={`${parentStyles.footer1} ${parentStyles.footerHeight}`}>
         <div className={styles.footerContainer}>Footer</div>
       </div>
     </div>

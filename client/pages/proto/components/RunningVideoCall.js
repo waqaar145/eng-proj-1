@@ -11,7 +11,7 @@ import {
 import { CgScreen } from "react-icons/cg";
 import Sidebar from "./Sidebar";
 
-const VideoCall = () => {
+const VideoCall = ({handleJoinCall}) => {
   const videoContainerRef = useRef(null);
   const calculateVideoHeight = ({ elHeight, elWidth }) => {
     let elmts = document.querySelectorAll(".user-video-container");
@@ -28,6 +28,7 @@ const VideoCall = () => {
       elmt.style.width = divWidth + "px";
     });
   };
+
   const handleResize = () => {
     const elHeight = videoContainerRef?.current?.clientHeight;
     const elWidth = videoContainerRef?.current?.clientWidth;
@@ -36,10 +37,22 @@ const VideoCall = () => {
       elWidth,
     });
   };
+
   useEffect(() => {
     handleResize();
     window.addEventListener("resize", debounce(handleResize, 100));
     return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const getLocalMedia = () => {
+
+  }
+
+  useEffect(() => {
+    // getLocalMedia()
+    setTimeout(() => {
+      handleJoinCall()
+    }, 2000)
   }, []);
 
   return (

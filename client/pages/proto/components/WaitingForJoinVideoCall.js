@@ -11,7 +11,7 @@ import {
 import Button from "../../../src/components/Form/Button";
 
 let stream = null;
-const WaitingForJoinCall = ({ setCallJoined }) => {
+const WaitingForJoinCall = ({ setJoining, setCallJoined, joining }) => {
   const [config, setConfig] = useState({ audio: true, video: true });
   const localVideoRef = useRef(null);
   const getUserMedia = async () => {
@@ -23,38 +23,36 @@ const WaitingForJoinCall = ({ setCallJoined }) => {
           height: { min: 576, ideal: 720, max: 1080 },
         },
       });
-      localVideoRef.current.srcObject = stream;
+      if (config.video) {
+        localVideoRef.current.srcObject = stream;
+      }
     } catch (err) {
-      /* handle the error */
-      console.log(err);
+      console.log("Error in - (navigator.mediaDevices.getUserMedia)", err);
     }
   };
 
   useEffect(() => {
-    getUserMedia();
-  }, []);
-
-  useEffect(() => {
     if (!config.video) {
-      stream.getVideoTracks()[0].stop();
+      stream?.getVideoTracks()[0].stop();
       localVideoRef.current.srcObject = null;
     } else {
       getUserMedia();
-      localVideoRef.current.srcObject = stream;
     }
   }, [config]);
 
   const handleConfig = (type) => {
-    setConfig({
-      ...config,
-      [type]: !config[type],
+    setConfig(() => {
+      return {
+        ...config,
+        [type]: !config[type],
+      };
     });
   };
 
   return (
     <div className={styles.joinRoom}>
       <div className={styles.video}>
-        <div className={styles.header}>Join call to start practicing</div>
+        <div className={styles.header}>Join The Call To Start Practicing</div>
         <div className={styles.body}>
           <div className={styles.videoContainer}>
             <video ref={localVideoRef} autoPlay></video>
@@ -90,12 +88,19 @@ const WaitingForJoinCall = ({ setCallJoined }) => {
             <div className={styles.joinCall}>
               <Button
                 text="Join Call"
-                onClick={() => setCallJoined(true)}
+                onClick={() => {
+                  setJoining(true);
+                  setTimeout(() => {
+                    setCallJoined(true);
+                  }, 3000)
+                }}
                 disabled={false}
                 size="lg"
                 buttonStyle="primeButton"
                 icon={<BsFillTelephoneFill />}
                 round={true}
+                loading={joining}
+                // loaderSize="sm"
               />
               <Button
                 text="Settings"

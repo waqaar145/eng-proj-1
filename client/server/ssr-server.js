@@ -58,9 +58,9 @@ app
       });
     });
 
-    server.get("/proto/:eventId", (req, res) => {
+    server.get("/proto/:callId", (req, res) => {
       return app.render(req, res, "/proto/main", {
-        eventId: req.params.eventId
+        callId: req.params.callId
       });
     });
 

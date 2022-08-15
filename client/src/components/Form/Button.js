@@ -1,6 +1,7 @@
 import styles from "./../../assets/styles/components/Form/Button.module.scss";
+import Spinner from "./../Extra/Spinner";
 
-const Button = ({ text, type, disabled, buttonStyle, size, round, onClick, icon, ...restProps }) => {
+const Button = ({ text, type, disabled, buttonStyle, size, round, onClick, icon, loading, loaderSize, ...restProps }) => {
   return (
     <button
       type={type}
@@ -9,7 +10,7 @@ const Button = ({ text, type, disabled, buttonStyle, size, round, onClick, icon,
       onClick={onClick}
       {...restProps}
     >
-      {text} {icon && <span className={styles.buttonIcon}>{icon}</span>}
+      {text} {(icon && !loading) && <span className={styles.buttonIcon}>{icon}</span>} {loading && <Spinner size="loaderSize" />}
     </button>
   );
 };

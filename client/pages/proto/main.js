@@ -16,7 +16,7 @@ const Conversation = () => {
   useEffect(() => {
     socket = socketIOClient(ENDPOINT, {
       transports: ["websocket"],
-      query: `uuid=${router.query.callId}`,
+      query: `callId=${router.query.callId}`,
     });
 
     socket.on("connection-success", ({ socketId }) => {

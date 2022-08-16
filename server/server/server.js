@@ -6,7 +6,7 @@ const passport = require("passport");
 const cors = require("cors");
 const morgan = require("morgan");
 const routes = require("./../routes/index");
-const { createNamespace: chatNamespace } = require("../socket/nsps/chat");
+const { chatNamespace } = require("../socket/nsps/chat");
 const { callNamespace } = require("../socket/nsps/call");
 
 const app = express();

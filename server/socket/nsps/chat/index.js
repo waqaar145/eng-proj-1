@@ -58,7 +58,7 @@ const onConnection = (socket) => {
   // });
 };
 
-exports.createNamespace = (io) => {
+exports.chatNamespace = (io) => {
   exports.io = io;
   nsp = io
     .of("/chat")

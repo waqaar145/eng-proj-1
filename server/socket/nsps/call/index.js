@@ -1,8 +1,10 @@
-const { isAuthenticated } = require("./../../utils/isAuthenticated");
+const { isAuthenticated } = require("../../utils/isAuthenticated");
 const { callNsps } = require("./constants");
-const UserRedis = require("./../../redis/Users");
+const UserRedis = require("../../redis/Users");
 const events = require("./events");
-const { getRoomName } = require("./../../room/index");
+const { getRoomName } = require("../../room/index");
+
+let nsp;
 
 const onConnection = async (socket) => {
   const user = socket.currentConnectedUser;
@@ -10,19 +12,49 @@ const onConnection = async (socket) => {
   const { callId } = socket.handshake.query;
 
   let roomName = getRoomName(callId, callNsps); // getting room name with discussion prefix
-  console.log(roomName)
   if (!roomName) return;
 
-  let finalObj = (roomName, resObj) => {
-    return {
-      [roomName]: resObj,
-    };
+  let finalObj = (resObj) => {
+    return resObj;
   };
 
-  console.log("FinalObj - ", finalObj(roomName, ));
+  socket.on(callNsps['wsEvents']['JOINING_ROOM'], async () => {
+    try {
+      await socket.join(roomName);
+      const allUsersInRoom = await UserRedis.getAllUsersInRoom(roomName);
+      nsp.to(roomName).emit(callNsps['wsEvents']['ALL_USERS_IN_ROOM'], finalObj({
+        allUsersInRoom,
+        newUser: user,
+      }));
+    } catch (error) {
+      console.log(`Socket.on Error - ${callNsps["wsEvents"]["JOINING_ROOM"]} namespace `, error);
+    }
+  });
 
-  socket.emit("connection-success", {
-    socketId: socket.id,
+  socket.on(callNsps['wsEvents']['ROOM_JOINED'], async () => {
+    try {
+      await UserRedis.addUserToRoom(roomName, socketId , user);
+      const allUsersInRoom = await UserRedis.getAllUsersInRoom(roomName);
+      nsp.to(roomName).emit(callNsps['wsEvents']['ALL_USERS_IN_ROOM'], finalObj({
+        allUsersInRoom,
+        newUser: user,
+      }));
+    } catch (error) {
+      console.log(`Socket.on Error - ${callNsps["wsEvents"]["ROOM_JOINED"]} namespace `, error);
+    }
+  });
+
+  socket.on("disconnect", async () => {
+    try {
+      await UserRedis.removeUserFromRoom(roomName, socketId);
+      let allUsersInRoom = await UserRedis.getAllUsersInRoom(roomName);
+      nsp.to(roomName).emit(callNsps['wsEvents']['ALL_USERS_IN_ROOM'], finalObj({
+        allUsersInRoom,
+        leftUser: user,
+      }));
+    } catch (error) {
+      console.log(`Socket.on Disconnect - callNsps namespace `, error);
+    }
   });
 };
 

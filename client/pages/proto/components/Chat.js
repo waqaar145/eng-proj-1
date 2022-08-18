@@ -11,7 +11,6 @@ const Chat = () => {
         <ul>
           {Array.from(Array(10), (e, i) => {
             let number = Math.ceil(getRandomArbitrary(1, 100));
-            console.log(number);
             return (
               <li key={i} className={Number(number) % 2 === 0 ? styles.sender : styles.reply}>
                 <p>hey man testing this function</p>

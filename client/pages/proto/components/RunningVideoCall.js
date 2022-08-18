@@ -13,6 +13,8 @@ import Sidebar from "./Sidebar";
 
 const VideoCall = ({handleJoinCall}) => {
   const videoContainerRef = useRef(null);
+
+  // Height and width adjustments starts
   const calculateVideoHeight = ({ elHeight, elWidth }) => {
     let elmts = document.querySelectorAll(".user-video-container");
     const perRow = elmts.length / 3; // always 3 videos per row on desktop
@@ -43,13 +45,17 @@ const VideoCall = ({handleJoinCall}) => {
     window.addEventListener("resize", debounce(handleResize, 100));
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+  // Height and width adjustments ends
 
   const getLocalMedia = () => {
-
+    console.log('getLocalMedia')
   }
 
   useEffect(() => {
-    // getLocalMedia()
+    getLocalMedia()
+
+    
+
     setTimeout(() => {
       handleJoinCall()
     }, 2000)

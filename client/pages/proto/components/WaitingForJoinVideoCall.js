@@ -11,7 +11,12 @@ import {
 import Button from "../../../src/components/Form/Button";
 
 let stream = null;
-const WaitingForJoinCall = ({ setJoining, setCallJoined, joining }) => {
+const WaitingForJoinCall = ({
+  setJoining,
+  setCallJoined,
+  joining,
+  usersInRoom,
+}) => {
   const [config, setConfig] = useState({ audio: true, video: true });
   const localVideoRef = useRef(null);
   const getUserMedia = async () => {
@@ -83,7 +88,7 @@ const WaitingForJoinCall = ({ setJoining, setCallJoined, joining }) => {
         <div className={styles.footer}>
           <div className={styles.actions}>
             <div className={styles.noOfLearners}>
-              There are 7 learners on this call
+              There are {usersInRoom} learners on this call
             </div>
             <div className={styles.joinCall}>
               <Button
@@ -92,7 +97,7 @@ const WaitingForJoinCall = ({ setJoining, setCallJoined, joining }) => {
                   setJoining(true);
                   setTimeout(() => {
                     setCallJoined(true);
-                  }, 3000)
+                  }, 3000);
                 }}
                 disabled={false}
                 size="lg"

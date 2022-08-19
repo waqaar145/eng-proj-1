@@ -12,10 +12,10 @@ import Button from "../../../src/components/Form/Button";
 
 let stream = null;
 const WaitingForJoinCall = ({
-  setJoining,
-  setCallJoined,
+  handleJoinCall,
   joining,
   usersInRoom,
+  preCallSocket
 }) => {
   const [config, setConfig] = useState({ audio: true, video: true });
   const localVideoRef = useRef(null);
@@ -94,10 +94,7 @@ const WaitingForJoinCall = ({
               <Button
                 text="Join Call"
                 onClick={() => {
-                  setJoining(true);
-                  setTimeout(() => {
-                    setCallJoined(true);
-                  }, 3000);
+                  handleJoinCall(config)
                 }}
                 disabled={false}
                 size="lg"

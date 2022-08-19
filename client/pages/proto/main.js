@@ -13,7 +13,11 @@ const Conversation = () => {
   const router = useRouter();
   const [callJoined, setCallJoined] = useState(false);
   const [joining, setJoining] = useState(false);
-  const [usersInRoom, setUsersInRoom] = useState(false);
+  const [usersInRoom, setUsersInRoom] = useState([]);
+  const [initialConfig, setInitialConfig] = useState({
+    audio: false,
+    video: false,
+  });
 
   useEffect(() => {
     socket = socketIOClient(ENDPOINT, {
@@ -30,23 +34,33 @@ const Conversation = () => {
     return () => socket.disconnect();
   }, []);
 
-  const joinCall = () => {
+  const handleJoinCall = (newConfig) => {
+    setJoining(true);
+    setInitialConfig({ ...initialConfig, ...newConfig });
     socket.emit(callNsps.wsEvents.ROOM_JOINED);
+    setTimeout(() => {
+      setCallJoined(true);
+    }, 2000)
   };
 
-  const handleJoinCall = () => {
-    joinCall();
+  const handleStartCall = () => {
     setJoining(false);
   };
+
   return (
     <div className={styles.eventWrapper}>
-      {callJoined && <RunningVideoCall handleJoinCall={handleJoinCall} />}
+      {callJoined && (
+        <RunningVideoCall
+          initialConfig={initialConfig}
+          handleStartCall={handleStartCall}
+        />
+      )}
       {!callJoined && (
         <WaitingForJoinVideoCall
-          setJoining={setJoining}
-          setCallJoined={setCallJoined}
+          handleJoinCall={handleJoinCall}
           joining={joining}
           usersInRoom={usersInRoom.length}
+          preCallSocket={socket}
         />
       )}
     </div>

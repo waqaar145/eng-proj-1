@@ -11,7 +11,7 @@ import {
 import { CgScreen } from "react-icons/cg";
 import Sidebar from "./Sidebar";
 
-const VideoCall = ({handleJoinCall}) => {
+const VideoCall = ({handleStartCall, initialConfig}) => {
   const videoContainerRef = useRef(null);
 
   // Height and width adjustments starts
@@ -53,11 +53,8 @@ const VideoCall = ({handleJoinCall}) => {
 
   useEffect(() => {
     getLocalMedia()
-
-    
-
     setTimeout(() => {
-      handleJoinCall()
+      handleStartCall()
     }, 2000)
   }, []);
 

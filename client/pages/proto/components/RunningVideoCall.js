@@ -11,7 +11,8 @@ import {
 import { CgScreen } from "react-icons/cg";
 import Sidebar from "./Sidebar";
 
-const VideoCall = ({handleStartCall, initialConfig}) => {
+let stream = null;
+const VideoCall = ({ handleStartCall, initialConfig }) => {
   const videoContainerRef = useRef(null);
 
   // Height and width adjustments starts
@@ -26,7 +27,7 @@ const VideoCall = ({handleStartCall, initialConfig}) => {
     const divWidth = elWidth / divNumberOnPage;
 
     elmts.forEach((elmt) => {
-      elmt.style.height = divHeight + "px"; 
+      elmt.style.height = divHeight + "px";
       elmt.style.width = divWidth + "px";
     });
   };
@@ -47,15 +48,26 @@ const VideoCall = ({handleStartCall, initialConfig}) => {
   }, []);
   // Height and width adjustments ends
 
-  const getLocalMedia = () => {
-    console.log('getLocalMedia')
-  }
+  const localVideoRef = useRef(null);
+  const getUserMedia = async () => {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        ...initialConfig,
+        audio: false,
+      });
+      if (initialConfig.video) {
+        localVideoRef.current.srcObject = stream;
+      }
+    } catch (err) {
+      console.log("Error in - (navigator.mediaDevices.getUserMedia)", err);
+    }
+  };
 
   useEffect(() => {
-    getLocalMedia()
+    getUserMedia();
     setTimeout(() => {
-      handleStartCall()
-    }, 2000)
+      handleStartCall();
+    }, 2000);
   }, []);
 
   return (
@@ -73,12 +85,35 @@ const VideoCall = ({handleStartCall, initialConfig}) => {
           ref={videoContainerRef}
         >
           <div className={styles.videos}>
-            {Array.from(Array(6), (e, i) => {
+            <div
+              className={`user-video-container ${styles.userVideoContainer}`}
+            >
+              <video
+                ref={localVideoRef}
+                autoPlay
+                className={styles.videoEl}
+              ></video>
+              <div className={styles.userActions}>
+                <div className={styles.actions}>
+                  <div className={styles.actionsButton}>
+                    <div className={styles.icon}>
+                      <BsMicMuteFill />
+                    </div>
+                    <div className={styles.icon}>
+                      <BsFillXCircleFill />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className={styles.userInfo}>Waqaar Aslam</div>
+            </div>
+            {Array.from(Array(5), (e, i) => {
               return (
                 <div
                   key={i}
                   className={`user-video-container ${styles.userVideoContainer}`}
                 >
+                  <video className={styles.videoEl}></video>
                   <div className={styles.userActions}>
                     <div className={styles.actions}>
                       <div className={styles.actionsButton}>
@@ -92,7 +127,6 @@ const VideoCall = ({handleStartCall, initialConfig}) => {
                     </div>
                   </div>
                   <div className={styles.userInfo}>Waqaar Aslam</div>
-                  <video className={styles.videoEl}></video>
                 </div>
               );
             })}

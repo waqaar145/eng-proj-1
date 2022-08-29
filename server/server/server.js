@@ -8,6 +8,8 @@ const morgan = require("morgan");
 const routes = require("./../routes/index");
 const { chatNamespace } = require("../socket/nsps/chat");
 const { callNamespace } = require("../socket/nsps/call");
+const { groupNamespace } = require("../socket/nsps/group1");
+const { callJoinedNamespace } = require("../socket/nsps/call/joined");
 
 const app = express();
 
@@ -29,7 +31,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 chatNamespace(io);
+groupNamespace(io);
 callNamespace(io);
+callJoinedNamespace(io);
 
 // Routes registration
 routes(app);

@@ -4,7 +4,7 @@ import styles from "./../../src/assets/styles/proto/Event.module.scss";
 import RunningVideoCall from "./components/RunningVideoCall";
 import WaitingForJoinVideoCall from "./components/WaitingForJoinVideoCall";
 import socketIOClient from "socket.io-client";
-import { callNsps } from "../../src/socket/nsps/call/constants";
+import { callNsps } from "./constants/socketPreCallConstants";
 
 let socket = null;
 const ENDPOINT = `${process.env.NEXT_PUBLIC_API_URL}/call`;

@@ -10,8 +10,9 @@ import {
 } from "react-icons/bs";
 import { CgScreen } from "react-icons/cg";
 import Sidebar from "./Sidebar";
+import useVideoCall from "./hooks/useVideoCall"
 
-let stream = null;
+
 const VideoCall = ({ handleStartCall, initialConfig }) => {
   const videoContainerRef = useRef(null);
 
@@ -48,23 +49,11 @@ const VideoCall = ({ handleStartCall, initialConfig }) => {
   }, []);
   // Height and width adjustments ends
 
-  const localVideoRef = useRef(null);
-  const getUserMedia = async () => {
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({
-        ...initialConfig,
-        audio: false,
-      });
-      if (initialConfig.video) {
-        localVideoRef.current.srcObject = stream;
-      }
-    } catch (err) {
-      console.log("Error in - (navigator.mediaDevices.getUserMedia)", err);
-    }
-  };
+  const {
+    localVideoRef,
+  } = useVideoCall();
 
   useEffect(() => {
-    getUserMedia();
     setTimeout(() => {
       handleStartCall();
     }, 2000);

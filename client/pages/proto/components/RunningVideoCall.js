@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import styles from "./../../../src/assets/styles/proto/Event.module.scss";
 import debounce from "lodash.debounce";
 import {
@@ -50,7 +50,10 @@ const VideoCall = ({ handleStartCall, initialConfig }) => {
   // Height and width adjustments ends
 
   const {
+    socketRef,
     localVideoRef,
+    remoteAudios,
+    remoteVideos
   } = useVideoCall();
 
   useEffect(() => {
@@ -58,6 +61,50 @@ const VideoCall = ({ handleStartCall, initialConfig }) => {
       handleStartCall();
     }, 2000);
   }, []);
+
+  const MemoizedRemoteVideo = memo((props) => {
+    const remoteVideoRef = useRef(null);
+    const {
+      track,
+      serverConsumerId
+    } = props;
+  
+  
+    useEffect(() => {
+      if (remoteVideoRef.current.srcObject) {
+        console.warn('element ALREADY playing');
+        return;
+      }
+      console.log(track);
+      remoteVideoRef.current.srcObject = new MediaStream([track]);
+      remoteVideoRef.current.play();
+      console.log(serverConsumerId)
+      socketRef.current.emit('consumer-resume', {serverConsumerId: serverConsumerId})
+    }, []);
+  
+    return (
+      <div
+        className={`user-video-container ${styles.userVideoContainer}`}
+      >
+        <video className={styles.videoEl} ref={remoteVideoRef}></video>
+        <div className={styles.userActions}>
+          <div className={styles.actions}>
+            <div className={styles.actionsButton}>
+              <div className={styles.icon}>
+                <BsMicMuteFill />
+              </div>
+              <div className={styles.icon}>
+                <BsFillXCircleFill />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className={styles.userInfo}>Waqaar Aslam</div>
+      </div>
+    )
+  })
+
+  console.log(remoteVideos)
 
   return (
     <>
@@ -81,6 +128,7 @@ const VideoCall = ({ handleStartCall, initialConfig }) => {
                 ref={localVideoRef}
                 autoPlay
                 className={styles.videoEl}
+                muted="muted"
               ></video>
               <div className={styles.userActions}>
                 <div className={styles.actions}>
@@ -96,7 +144,18 @@ const VideoCall = ({ handleStartCall, initialConfig }) => {
               </div>
               <div className={styles.userInfo}>Waqaar Aslam</div>
             </div>
-            {Array.from(Array(5), (e, i) => {
+            {
+              Object.keys(remoteVideos).map((remoteVideo) => {
+                return (
+                  <MemoizedRemoteVideo 
+                    key={remoteVideo}
+                    serverConsumerId={remoteVideo}
+                    track={remoteVideos[remoteVideo].track}
+                    />
+                )
+              })
+            }
+            {/* {Array.from(Array(5), (e, i) => {
               return (
                 <div
                   key={i}
@@ -118,7 +177,7 @@ const VideoCall = ({ handleStartCall, initialConfig }) => {
                   <div className={styles.userInfo}>Waqaar Aslam</div>
                 </div>
               );
-            })}
+            })} */}
           </div>
         </div>
         <div className={`${styles.footer} ${styles.footerHeight}`}>

@@ -15,6 +15,7 @@ let peers = new Map();
 //   [socket-id]: {
 //     roomId: 'room-id',
 //     producerTransports: [],
+//     consumerTransports: [],
 //     producers: [],
 //     consumers: [],
 //     user: 'user-object'
@@ -57,12 +58,12 @@ const onConnection = async (socket) => {
 
   socket.on(
     callJoinedNsps["wsEvents"]["CREATE_WEB_RTC_TRANSPORT"],
-    async (callback) => {
+    async ({ producer }, callback) => {
       let router = await getRouter(socket);
       const transport = await router.createWebRtcTransport(
         mediasoupOptions.webRtcTransport
       );
-      addProducerTransport(socket, transport);
+      addProducerTransport(socket, transport, producer);
       transport.on("dtlsstatechange", (dtlsState) => {
         if (dtlsState === "closed") {
           transport.close();
@@ -96,7 +97,6 @@ const onConnection = async (socket) => {
     async ({ kind, rtpParameters }, callback) => {
       const transport = getProducerTransport(socket);
       const producer = await transport.produce({ kind, rtpParameters });
-      console.log('transport-produce');
       addProducer(socket, producer);
       sendToConsumers(socket, producer);
       producer.on("transportclose", () => {
@@ -106,6 +106,68 @@ const onConnection = async (socket) => {
       callback({ id: producer.id });
     }
   );
+
+  socket.on(
+    callJoinedNsps["wsEvents"]["TRANSPORT_RECV_CONNECT"],
+    async ({ dtlsParameters, serverConsumerTransportId }) => {
+      let consumerTransport = getConsumerTransport(socket, serverConsumerTransportId);
+      await consumerTransport.connect({ dtlsParameters });
+    }
+  );
+
+  socket.on(
+    callJoinedNsps["wsEvents"]["CONSUME"],
+    async (
+      { rtpCapabilities, remoteProducerId, serverConsumerTransportId },
+      callback
+    ) => {
+      let consumerTransport = getConsumerTransport(socket, serverConsumerTransportId);
+      let router = await getRouter(socket);
+      if (
+        router.canConsume({
+          producerId: remoteProducerId,
+          rtpCapabilities,
+        })
+      ) {
+        const consumer = await consumerTransport.consume({
+          producerId: remoteProducerId,
+          rtpCapabilities,
+          paused: true,
+        });
+
+        consumer.on("transportclose", () => {
+          console.log("transport close from consumer");
+        });
+
+        consumer.on("producerclose", () => {
+          // socket.emit('producer-closed', { remoteProducerId }) // todo
+          consumerTransport.close([]);
+          transports = transports.filter(
+            (transportData) =>
+              transportData.transport.id !== consumerTransport.id
+          );
+          consumer.close();
+        });
+
+        addConsumer(socket, consumer);
+        const params = {
+          id: consumer.id,
+          producerId: remoteProducerId,
+          kind: consumer.kind,
+          rtpParameters: consumer.rtpParameters,
+          serverConsumerId: consumer.id,
+        };
+        callback({ params });
+      }
+    }
+  );
+
+  socket.on('consumer-resume', async ({serverConsumerId}) => {
+    console.log('consumer resume')
+    const consumer = getConsumer(socket, serverConsumerId);
+    console.log('------', consumer)
+    await consumer.resume()
+  });
 
   socket.on("disconnect", async () => {
     try {
@@ -135,9 +197,13 @@ async function createRoom(socket) {
   return router;
 }
 
-function addProducerTransport(socket, transport) {
+function addProducerTransport(socket, transport, producer) {
   const peer = getPeerBasedOnSocket(socket);
-  peer.producerTransports = [...peer.producerTransports, transport];
+  if (producer) {
+    peer.producerTransports = [...peer.producerTransports, transport];
+  } else {
+    peer.consumerTransports = [...peer.consumerTransports, transport];
+  }
 }
 
 function getProducerTransport(socket) {
@@ -146,9 +212,29 @@ function getProducerTransport(socket) {
   return transport;
 }
 
+function getConsumerTransport(socket, transportId) {
+  const peer = getPeerBasedOnSocket(socket);
+  let transports = peer.consumerTransports;
+  let consumerTransport = transports.find(
+    (transport) => transport.id === transportId
+  );
+  return consumerTransport;
+}
+
 function addProducer(socket, producer) {
   const peer = getPeerBasedOnSocket(socket);
   peer.producers = [...peer.producers, producer];
+}
+
+function addConsumer(socket, consumer) {
+  const peer = getPeerBasedOnSocket(socket);
+  peer.consumers = [...peer.consumers, consumer];
+}
+
+function getConsumer(socket, consumerId) {
+  const peer = getPeerBasedOnSocket(socket);
+  const [consumer] = peer.consumers.filter(consumer => consumer.id === consumerId);
+  return consumer;
 }
 
 function sendToConsumers(socket, producer) {
@@ -171,6 +257,7 @@ function addPeer(socket, roomId) {
   let peerObj = {
     roomId,
     producerTransports: [],
+    consumerTransports: [],
     producers: [],
     consumers: [],
     user: socket.currentConnectedUser,

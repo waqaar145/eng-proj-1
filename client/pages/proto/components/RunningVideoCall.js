@@ -11,6 +11,7 @@ import {
 import { CgScreen } from "react-icons/cg";
 import Sidebar from "./Sidebar";
 import useVideoCall from "./hooks/useVideoCall"
+import { callJoinedNsps} from "../constants/socketCallJoinedConstants";
 
 
 const VideoCall = ({ handleStartCall, initialConfig }) => {
@@ -75,11 +76,9 @@ const VideoCall = ({ handleStartCall, initialConfig }) => {
         console.warn('element ALREADY playing');
         return;
       }
-      console.log(track);
       remoteVideoRef.current.srcObject = new MediaStream([track]);
       remoteVideoRef.current.play();
-      console.log(serverConsumerId)
-      socketRef.current.emit('consumer-resume', {serverConsumerId: serverConsumerId})
+      socketRef.current.emit(callJoinedNsps.wsEvents.CONSUMER_RESUME, {serverConsumerId: serverConsumerId})
     }, []);
   
     return (
@@ -103,8 +102,6 @@ const VideoCall = ({ handleStartCall, initialConfig }) => {
       </div>
     )
   })
-
-  console.log(remoteVideos)
 
   return (
     <>
@@ -155,29 +152,6 @@ const VideoCall = ({ handleStartCall, initialConfig }) => {
                 )
               })
             }
-            {/* {Array.from(Array(5), (e, i) => {
-              return (
-                <div
-                  key={i}
-                  className={`user-video-container ${styles.userVideoContainer}`}
-                >
-                  <video className={styles.videoEl}></video>
-                  <div className={styles.userActions}>
-                    <div className={styles.actions}>
-                      <div className={styles.actionsButton}>
-                        <div className={styles.icon}>
-                          <BsMicMuteFill />
-                        </div>
-                        <div className={styles.icon}>
-                          <BsFillXCircleFill />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className={styles.userInfo}>Waqaar Aslam</div>
-                </div>
-              );
-            })} */}
           </div>
         </div>
         <div className={`${styles.footer} ${styles.footerHeight}`}>

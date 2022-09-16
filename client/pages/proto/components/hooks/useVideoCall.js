@@ -1,7 +1,7 @@
 import { Device } from "mediasoup-client";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import { callJoinedNsps } from "./../../constants/socketCallJoinedConstatns";
+import { callJoinedNsps } from "../../constants/socketCallJoinedConstants";
 import socketIOClient from "socket.io-client";
 import { mediasoupConfig } from "./../../constants/mediasoupConfig";
 
@@ -43,6 +43,11 @@ const useVideoCall = () => {
         consumeNewProducer(producerId);
       }
     );
+
+    socketRef.current.on(callJoinedNsps.wsEvents.PRODUCER_CLOSED, (data) => {
+      console.log('PRODUCER_CLOSED', data);
+    })
+    
     return () => socketRef.current.disconnect();
   }, []);
 
@@ -84,6 +89,12 @@ const useVideoCall = () => {
     }
   };
 
+  const getProducers = async () => {
+    socketRef.current.emit(callJoinedNsps.wsEvents.GET_PRODUCERS, (producers) => {
+      producers.forEach(producer => consumeNewProducer(producer));
+    })
+  }
+
   const createProducerTransport = () => {
     socketRef.current.emit(
       callJoinedNsps.wsEvents.CREATE_WEB_RTC_TRANSPORT,
@@ -114,6 +125,7 @@ const useVideoCall = () => {
                 }
               );
               callback();
+              getProducers()
             } catch (err) {
               console.log(err);
               errback(err);
@@ -224,7 +236,6 @@ const useVideoCall = () => {
         serverConsumerTransportId,
       },
       async ({ params }) => {
-        console.log("Consume - ", params);
         if (params.error) {
           console.log("Cannot consume");
           return;

@@ -140,12 +140,12 @@ const onConnection = async (socket) => {
         });
 
         consumer.on("producerclose", () => {
-          // socket.emit('producer-closed', { remoteProducerId }) // todo
+          socket.emit(callJoinedNsps.wsEvents.PRODUCER_CLOSED, { remoteProducerId }) // todo
           consumerTransport.close([]);
-          transports = transports.filter(
-            (transportData) =>
-              transportData.transport.id !== consumerTransport.id
-          );
+          // transports = transports.filter(
+          //   (transportData) =>
+          //     transportData.transport.id !== consumerTransport.id
+          // );
           consumer.close();
         });
 
@@ -162,15 +162,39 @@ const onConnection = async (socket) => {
     }
   );
 
-  socket.on('consumer-resume', async ({serverConsumerId}) => {
+  socket.on(callJoinedNsps.wsEvents.CONSUMER_RESUME, async ({serverConsumerId}) => {
     console.log('consumer resume')
     const consumer = getConsumer(socket, serverConsumerId);
-    console.log('------', consumer)
-    await consumer.resume()
+    await consumer.resume();
   });
+
+  socket.on(callJoinedNsps.wsEvents.GET_PRODUCERS, (callback) => {
+    let peer = getPeerBasedOnSocket(socket);
+    if (!peer) {
+      callback([]);
+      return;
+    }
+    let roomId = peer.roomId;
+    let room = getRoomBasedOnRoomId(roomId);
+    let peerIds = room.peerIds;
+    let producerIds = [];
+    for (let socketId of peerIds) {
+      let peer = peers.get(socketId);
+      if (peer) {
+        let producers = peer.producers;
+        producers.forEach(producer => producerIds.push(producer.id))
+      }
+    }
+    callback(producerIds)
+  })
 
   socket.on("disconnect", async () => {
     try {
+      let peer = getPeerBasedOnSocket(socket);
+      if (!peer) {
+        return;
+      }
+      peer.producers.forEach(producer => producer.close());
       removePeer(socket);
     } catch (error) {
       console.log(`Socket.on Disconnect - callJoinedNsps namespace `, error);

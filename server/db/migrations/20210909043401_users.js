@@ -24,7 +24,8 @@ exports.up = function (knex, Promise) {
       return knex.schema.createTable("groups", function (table) {
         table.increments("g_id").unsigned().primary();
         table.uuid("g_uuid").unique().defaultTo(knex.raw("uuid_generate_v4()"));
-        table.string("g_group_name").default("");
+        table.string("g_group_name").default(null);
+        table.string("g_description").default(null);
         table.boolean("g_group_type"); // Private -> True, Group -> False, Public -> NULL
         table.integer("g_members").default(0);
         table.integer("g_created_by").references('u_id').inTable('users');
@@ -38,6 +39,7 @@ exports.up = function (knex, Promise) {
         table.increments("p_id").unsigned().primary();
         table.integer("p_user_id").references('u_id').inTable('users');
         table.integer("p_group_id").references('g_id').inTable('groups');
+        table.integer("p_admin").default(0); // 1 -> Admin, 0 -> Normal user
         table.boolean("p_is_active").defaultTo(true);
         table.timestamp("p_created_at").defaultTo(knex.fn.now());
         table.timestamp("p_updated_at").defaultTo(knex.fn.now());
@@ -48,7 +50,7 @@ exports.up = function (knex, Promise) {
         table.integer("m_user_id").references('u_id').inTable('users');
         table.integer("m_group_id").references('g_id').inTable('groups');
         table.integer('m_parent_id').default(null);
-        table.string("m_message", 5000).notNullable();
+        table.json("m_message");
         table.json('m_reactions');
         table.json('m_profile_replies');
         table.integer('m_total_replies').defaultTo(0);

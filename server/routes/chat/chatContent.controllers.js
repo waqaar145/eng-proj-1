@@ -3,6 +3,7 @@ const { okResponse, errorResponse } = require("./../../helpers/message");
 const { getPaginationValues } = require("./../../helpers/pagination");
 const { validationResult } = require("express-validator");
 const { expValidatorMsg } = require("./../../helpers/validation");
+const { getUserIDBasedOnUUID } = require("./../../helpers/user");
 
 const getChats = async (userId, groupRes, parentId, offset, limit) => {
   try {
@@ -14,6 +15,7 @@ const getChats = async (userId, groupRes, parentId, offset, limit) => {
 
         "messages.m_reactions as reactions",
         "messages.m_total_replies as totalReplies",
+        "messages.m_profile_replies as profileReplies",
         "messages.m_created_at as createdAt",
         "messages.m_updated_at as updatedAt",
 
@@ -32,35 +34,175 @@ const getChats = async (userId, groupRes, parentId, offset, limit) => {
       .offset(offset)
       .limit(limit);
 
-    let resultWithReactions = []
+    let resultWithReactions = [];
     for (let message of result) {
       if (message.reactions) {
-        let reactionsArray = {}
-        for (const [key, value] of Object.entries(message.reactions)) { 
+        let reactionsArray = {};
+        for (const [key, value] of Object.entries(message.reactions)) {
           let reactionObj = {
             me: value[userId] ? true : false,
-            count: value.count || 0
-          }
+            count: value.count || 0,
+          };
           reactionsArray = {
             ...reactionsArray,
-            [key]: reactionObj
-          }
+            [key]: reactionObj,
+          };
         }
         resultWithReactions.push({
           ...message,
-          reactions: reactionsArray
-        })
+          reactions: reactionsArray,
+        });
       } else {
         resultWithReactions.push({
           ...message,
-          reactions: null
-        })
+          reactions: null,
+        });
       }
     }
     return resultWithReactions;
   } catch (error) {
     console.log(error);
     return [];
+  }
+};
+
+const addUserToDM = async (req, res) => {
+  try {
+    let {id: userID, firstName, lastName, dp} = await getUserIDBasedOnUUID(req.body.userId);
+    if (userID === null) {
+      return res.status(422).send(errorResponse({}, "User does not exists!"));
+    }
+
+    let checkCurrentUsersGroupIDs = await knex("participants")
+      .select("p_user_id as userId", "p_group_id as groupId")
+      .innerJoin("groups", "groups.g_id", "participants.p_group_id")
+      .where("participants.p_user_id", req.user.id)
+      .where("groups.g_group_type", true);
+
+    let ids = [];
+    for (let group of checkCurrentUsersGroupIDs) {
+      ids.push(group.groupId);
+    }
+
+    let check = await knex("participants")
+      .select("p_user_id as userId", "p_group_id as groupId")
+      .innerJoin("groups", "groups.g_id", "participants.p_group_id")
+      .whereIn("participants.p_group_id", ids)
+      .where("participants.p_user_id", userID)
+      .where("groups.g_group_type", true);
+
+    if (check.length > 0) {
+      return res
+        .status(422)
+        .send(
+          errorResponse(
+            {},
+            "You have already added this user to your DMs list!"
+          )
+        );
+    }
+
+    let groupObj = {
+      g_group_type: true,
+      g_created_by: req.user.id,
+      g_members: 2,
+    };
+
+    const groupResult = await knex("groups").insert(groupObj).returning("*");
+    const group = groupResult[0];
+
+    const arrayToInsert = [];
+    const userIdsObj = {
+      0: req.user.id,
+      1: userID,
+    };
+    for (let i = 0; i < 2; i++) {
+      arrayToInsert.push({
+        p_group_id: group.g_id,
+        p_user_id: userIdsObj[i],
+        p_admin: 0,
+      });
+    }
+
+    await knex("participants").insert(arrayToInsert).returning("*");
+
+    const userObj = {
+      createdAt: group.u_created_at,
+      dp: dp,
+      id: group.g_id,
+      members: group.g_members,
+      name: `${firstName} ${lastName}`,
+      uuid: group.g_uuid
+    }
+
+    const groupResponse = {
+      name: 'Direct Messages',
+      chatList: {
+        data: [userObj],
+        totalEnteries: 0
+      },
+    };
+
+    return res.status(200).send(okResponse(groupResponse, "OK"));
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send(errorResponse({}, "Something went wrong!"));
+  }
+};
+
+const searchUsersForDM = async (req, res) => {
+  const { offset, limit, sort, q } = getPaginationValues(req.query);
+
+  try {
+    let result = await knex
+      .table("participants as p1")
+      .distinct("p1.p_user_id")
+      .innerJoin("participants as p2", "p2.p_group_id", "p1.p_group_id")
+      .innerJoin("groups", "groups.g_id", "p1.p_group_id")
+      .where("p2.p_user_id", req.user.id)
+      .whereNot("p1.p_user_id", req.user.id)
+      .where("groups.g_group_type", true);
+
+    let userIdsToExclude = [];
+    for (let user of result) {
+      userIdsToExclude.push(user.p_user_id);
+    }
+
+    let duplicateIds = [...userIdsToExclude, req.user.id];
+
+    let query = q.toLowerCase() + "%";
+    let users = await knex("users")
+      .select(
+        "u_id as id",
+        "u_uuid as uuid",
+        "u_first_name as firstName",
+        "u_last_name as lastName",
+        "u_username as username",
+        "u_username as username",
+        "u_dp as dp",
+        "u_designation as designation"
+      )
+      .where("u_username", "like", query)
+      .whereNotIn("u_id", duplicateIds)
+      .orderBy("u_username", sort)
+      .offset(offset)
+      .limit(limit);
+
+    let totalEnteries = await knex("users")
+      .count("u_id as count")
+      .where("u_username", "like", query)
+      .whereNotIn("u_id", duplicateIds);
+
+    let userResponse = {
+      data: users,
+      totalEnteries: +totalEnteries[0].count,
+    };
+    return res
+      .status(200)
+      .send(okResponse(userResponse, "Search result is fetched."));
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send(errorResponse({}, "Something went wrong!"));
   }
 };
 
@@ -86,14 +228,46 @@ const getGroupChats = async (req, res) => {
         "g_group_name as groupName",
         "g_group_type as groupType",
         "g_members as members",
-        "g_created_at as createdAt"
+        "g_created_at as createdAt",
+        "participants.p_admin as admin"
       )
       .where({ g_uuid: groupId })
       .andWhere({ g_is_active: true })
+      .leftJoin("participants", function (builder) {
+        builder
+          .on("participants.p_group_id", "groups.g_id")
+          .on("participants.p_user_id", req.user.id);
+      })
       .first();
 
     if (!groupRes) {
       return res.status(422).send(errorResponse({}, "Group does not exists!"));
+    }
+
+    // p_admin column will always have value of 0 or 1 in participants table in case of group or private chat,
+    // if null that means public group, and give the result without this below if condition
+    // fetching group and private chat with this if condition ensures that user has access to private or chat group...
+    if (groupRes.groupType !== null && groupRes.admin === null) {
+      return res
+        .status(404)
+        .send(errorResponse({}, "You don't have access to this chat/group."));
+    }
+
+    let currentUser = {};
+    if (groupRes.groupType === true) {
+      currentUser = await knex("participants")
+        .select(
+          "users.u_uuid as userId",
+          "users.u_first_name as firstName",
+          "users.u_last_name as lastName",
+          "users.u_dp as dp",
+          "users.u_designation as designation"
+        )
+        .innerJoin("users", "users.u_id", "participants.p_user_id")
+        .where("participants.p_group_id", groupRes.id)
+        .whereNot("p_user_id", req.user.id);
+
+      currentUser = currentUser[0];
     }
 
     if (pageNo === 1) {
@@ -112,6 +286,7 @@ const getGroupChats = async (req, res) => {
           : groupRes.groupType === false
           ? "group"
           : "private",
+      ...(groupRes.groupType === true && { currentUser }),
     };
 
     let chatRes = await getChats(req.user.id, groupRes, null, offset, limit);
@@ -132,15 +307,63 @@ const getGroupChats = async (req, res) => {
   }
 };
 
+const addToMessageReplies = async (parentMessage, user) => {
+  try {
+    const { m_id, m_profile_replies } = parentMessage;
+    const { id, first_name, last_name, dp } = user;
+    let obj = {
+      id,
+      name: first_name + " " + last_name,
+      dp,
+    };
+
+    let dataInColumn = m_profile_replies;
+    let profileRepliesArray = [];
+    if (dataInColumn === null) {
+      profileRepliesArray = [obj];
+    } else {
+      let userFound = false;
+      for (let u of dataInColumn) {
+        if (u.id === user.id) {
+          userFound = true;
+        }
+      }
+      if (userFound) {
+        profileRepliesArray = [
+          ...dataInColumn.filter((u) => u.id !== user.id),
+          obj,
+        ];
+      } else {
+        profileRepliesArray = [...dataInColumn, obj];
+      }
+    }
+
+    let slicedArray = [];
+    if (profileRepliesArray.length > 3) {
+      slicedArray = profileRepliesArray.slice(1);
+    } else {
+      slicedArray = profileRepliesArray;
+    }
+
+    await knex("messages")
+      .where({ m_id: m_id })
+      .update({ m_profile_replies: JSON.stringify(slicedArray) })
+      .returning("*");
+  } catch (error) {
+    console.log(error);
+    return JSON.stringify([]);
+  }
+};
+
 const addChat = async (req, res) => {
   // Form Validation *******
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).send({
-      message: "Error!",
-      data: expValidatorMsg(errors.array()),
-    });
-  }
+  // const errors = validationResult(req);
+  // if (!errors.isEmpty()) {
+  //   return res.status(422).send({
+  //     message: "Error!",
+  //     data: expValidatorMsg(errors.array()),
+  //   });
+  // }
 
   try {
     const { groupId, message, parentId } = req.body;
@@ -157,15 +380,20 @@ const addChat = async (req, res) => {
       m_message: message,
     };
 
+    let parentMessage = null;
     if (parentId) {
-      let message = await knex("messages").where({ m_id: parentId }).first();
-      if (message) {
-        messageObj.m_parent_id = message.m_id;
+      parentMessage = await knex("messages").where({ m_id: parentId }).first();
+      if (parentMessage) {
+        messageObj.m_parent_id = parentMessage.m_id;
       }
     }
 
     let messageRes = await knex("messages").insert(messageObj).returning("*");
     let messageResObj = messageRes[0];
+
+    if (parentId) {
+      addToMessageReplies(parentMessage, req.user);
+    }
 
     if (messageResObj && parentId) {
       await knex("messages").where({ m_id: parentId }).increment({
@@ -376,13 +604,13 @@ const addEmojiReaction = async (req, res) => {
 
   try {
     let result = await knex("messages")
-      .select("m_reactions as reactions")
+      .select("m_reactions as reactions", "m_parent_id as parentId")
       .where({ m_id: messageId })
       .returning("*");
 
-    let { reactions } = result[0];
+    let { reactions, parentId } = result[0];
 
-    let skinTone = skin ? String(skin) : "0"; 
+    let skinTone = skin ? String(skin) : "0";
     let emojiIdToneString = emojiId + "-" + skinTone;
     let parsedReactions = reactions;
     let added = false;
@@ -390,16 +618,18 @@ const addEmojiReaction = async (req, res) => {
     if (reactions) {
       if (parsedReactions[emojiIdToneString]) {
         if (parsedReactions[emojiIdToneString][req.user.id]) {
-          parsedReactions[emojiIdToneString].count = parsedReactions[emojiIdToneString].count - 1;
+          parsedReactions[emojiIdToneString].count =
+            parsedReactions[emojiIdToneString].count - 1;
           added = false;
           count = parsedReactions[emojiIdToneString].count;
           if (parsedReactions[emojiIdToneString].count === 0) {
-            delete parsedReactions[emojiIdToneString]
+            delete parsedReactions[emojiIdToneString];
           } else {
-            delete parsedReactions[emojiIdToneString][req.user.id];  
+            delete parsedReactions[emojiIdToneString][req.user.id];
           }
         } else {
-          parsedReactions[emojiIdToneString].count = parsedReactions[emojiIdToneString].count + 1;
+          parsedReactions[emojiIdToneString].count =
+            parsedReactions[emojiIdToneString].count + 1;
           added = true;
           count = parsedReactions[emojiIdToneString].count;
           parsedReactions[emojiIdToneString][req.user.id] = new Date();
@@ -423,7 +653,7 @@ const addEmojiReaction = async (req, res) => {
         },
       };
       added = true;
-      count = 1
+      count = 1;
     }
 
     let stringifiedParsedReactions =
@@ -442,11 +672,13 @@ const addEmojiReaction = async (req, res) => {
       messageId: +messageId,
       emoji: {
         id: emojiId,
-        skin: skin
+        skin: skin,
       },
       me: added,
-      count: count
-    }
+      count: count,
+      userId: req.user.id,
+      parentId: parentId || null,
+    };
 
     return res.status(200).send(okResponse(reactionResObj, "OK"));
   } catch (error) {
@@ -456,6 +688,8 @@ const addEmojiReaction = async (req, res) => {
 };
 
 module.exports = {
+  addUserToDM,
+  searchUsersForDM,
   getGroupChats,
   addChat,
   updateChat,

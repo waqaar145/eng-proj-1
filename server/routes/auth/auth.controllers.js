@@ -55,7 +55,7 @@ const signup = async (req, res) => {
     const user = userResult[0];
     
     let payload = {
-      id: user.u_id,
+      id: user.uuid,
       email: user.u_email,
     };
   
@@ -107,7 +107,7 @@ const signin = async (req, res) => {
     }
   
     let payload = {
-      id: user.u_id,
+      id: user.u_uuid,
       email: user.u_email,
     };
   

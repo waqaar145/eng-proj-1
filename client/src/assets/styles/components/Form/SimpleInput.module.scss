@@ -1,15 +1,31 @@
 @import './../../variable';
 
+@mixin getFontColor ($color) {
+  margin-bottom: 3px;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: $color;
+}
+
 .inputWrapper {
 
   margin-top: 10px;
   margin-bottom: 10px;
 
   .inputBoxLabel {
-    margin-bottom: 3px;
-    font-size: 0.9rem;
-    color: $c-gray-50;
-    font-weight: 400;
+    @include getFontColor($c-gray-30);
+    & + .notRequired {
+      color: $c-gray-30;
+    }
+
+    .requiredField {
+      color: $error-danger;
+      font-size: 1.2rem;
+    }
+  }
+
+  .notRequired {
+    @include getFontColor($c-gray-30);
   }
 
   .inputBox {
@@ -29,7 +45,7 @@
     transition: border-color 0.3s ease;
 
     &:focus{
-      border: 2px solid $persian-blue;
+      border: 2px solid $primary-color;
       outline: none;
       -webkit-outline: none;
       -moz-outline: none;
@@ -54,21 +70,21 @@
     }
 
     &:focus ~ .label {
-      color: $persian-blue;
+      color: $primary-color;
     }
   }
 }
 
 .error {
-  .inputBoxLabel {
-    font-size: 0.9rem;
-    color: $c-gray-75;
-    font-weight: 400;
-  }
+  // .inputBoxLabel {
+  //   font-size: 0.9rem;
+  //   color: $c-gray-75;
+  //   font-weight: 400;
+  // }
 
-  .inputBox {
-    width: 100%;
-  }
+  // .inputBox {
+  //   width: 100%;
+  // }
 
   input {
     border: 2px solid $error-danger;

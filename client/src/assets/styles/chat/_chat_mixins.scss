@@ -38,10 +38,11 @@
 
   .groupuserContainer {
     // padding: 8px;
+    height: calc(100vh - 40px - 70px);
     overflow-y: scroll;
-    height: calc(100vh - 40px - 40px - 50px);
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    overflow-x: hidden;
 
     &::-webkit-scrollbar {
       width: 0;
@@ -97,7 +98,7 @@
         &:hover {
           border-radius: 2px;
           padding: 3px;
-          background-color: $royal-blue;
+          background-color: $secondary-color;
           animation: 0.3 ease-in;
         }
       }
@@ -121,10 +122,33 @@
             color: $font-color-3;
             font-size: 0.9rem;
 
+            &.text {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding-right: 10px;
+
+              .extraChatCountPublic {
+                font-size: 0.75rem;
+                background-color: $bg-color-1;
+                color: $c-gray-30;
+                padding: 3px 8px;
+                border-radius: 2em;
+              }
+
+              .extraChatCountPrivate {
+                font-size: 0.75rem;
+                background-color: $error-danger;
+                color: $font-color-4;
+                padding: 3px 8px;
+                border-radius: 2em;
+              }
+            }
+
             &.dmActive {
               // margin-top: 5px;
               color: $font-color-2;
-              background-color: $royal-blue;
+              background-color: $secondary-color;
             }
 
             img {
@@ -143,7 +167,7 @@
             &:hover {
               // border-radius: 2px;
               color: $font-color-2;
-              background-color: $royal-blue;
+              background-color: $secondary-color;
             }
           }
 

@@ -1,0 +1,85 @@
+@import './../variable';
+
+.wrapper {
+  height: 100vh;
+  background-color: $c-gray-15;
+
+  .videoContainer {
+
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-wrap: wrap;
+
+    .innerContainer {
+      margin-top: 5%;
+      position: relative;
+
+      .video {
+        border-radius: 10px;
+        height: 400px;
+        width: 100%;
+        box-shadow: $box-shadow-1;
+        position: relative;
+        z-index: 0;
+      }
+
+      .videoLive {
+        border-radius: 10px;
+        height: 200px;
+        width: 100%;
+        box-shadow: $box-shadow-1;
+        position: relative;
+        z-index: 0;
+      }
+  
+      .controls {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translate(-50%);
+        z-index: 1;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        gap: 30px;
+
+        .controlStyle {
+          height: 60px;
+          width: 60px;
+          border-radius: 50%;
+          border: 1px solid $c-gray-95;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 1.8rem;
+          cursor: pointer;
+          color: $c-gray-95;
+        }
+      }
+    }
+
+    .users {
+      color: $font-color-2;
+
+      .header {
+        text-align: center;
+        font-size: 1.7rem;
+      }
+
+      .usersInRoom {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+      }
+
+      .action {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+  }
+}

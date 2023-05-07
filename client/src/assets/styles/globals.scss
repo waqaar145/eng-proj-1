@@ -18,13 +18,13 @@ body {
 
 .Toastify__toast-theme--colored.Toastify__toast--default, .Toastify__toast-theme--light {
   font-size: 0.9rem;
-  background: $persian-blue !important;
+  background: $primary-color !important;
   color: $c-gray-75 !important;
 }
 
 .Toastify__toast--success {
   font-size: 0.9rem;
-  background: $persian-blue !important;
+  background: $primary-color !important;
   color: $c-gray-75 !important;
 }
 
@@ -41,7 +41,7 @@ body {
 }
 
 .spinner-main-color {
-  color: $persian-blue;
+  color: $primary-color;
 }
 
 .spinner-secondary-color {
@@ -51,4 +51,35 @@ body {
 // when user open the emoji editor, showing backeground and quick actions
 .activeMessage {
   background-color: $c-gray-98;
+}
+
+
+.RichEditor-hidePlaceholder .public-DraftEditorPlaceholder-root {
+  display: none;
+}
+
+.toolbar-button-selected {
+  background-color: green;
+}
+
+.DraftEditor-root {
+  font-size: 15px;
+  font-weight: normal;
+}
+
+.userBlockImages{
+  margin-left: 10px;
+  margin-right: 20px;
+  img{
+    border-radius: 5px;
+    height: 30px;
+    width: 30px;
+    margin-left: -5px;
+    box-shadow: $box-shadow-1;
+    border: 2px solid white;
+  }
+}
+
+.SFU button {
+  margin-right: 10px;
 }

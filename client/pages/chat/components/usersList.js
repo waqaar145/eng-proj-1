@@ -5,6 +5,8 @@ import { FaPlus } from "@react-icons/all-files/fa/FaPlus";
 import Loader from "./Loader";
 import Button from "./../../../src/components/Form/Button";
 import EngTooltip from "../../../src/components/Tooltip";
+import { useDispatch } from "react-redux";
+import { chatActionTypes } from "../../../src/store/chat/chat.actiontype";
 
 const UsersList = ({
   styles,
@@ -15,12 +17,19 @@ const UsersList = ({
   handleAddUserOrGroupModal,
   handlePagination,
   groupId,
+  extraChatCount,
 }) => {
   if (list.loading) return <Loader color="spinner-secondary-color" />;
 
   const { name, chatList, totalEnteries, currentPage } = list;
 
   const [toggle, setToggle] = useState(false);
+
+  const dispatch = useDispatch();
+
+  const handleButtonClick = () => {
+    dispatch({ type: chatActionTypes.THREAD_MESSAGE_ID, data: null });
+  };
 
   return (
     <>
@@ -59,17 +68,29 @@ const UsersList = ({
                         passHref={true}
                       >
                         <a
-                          className={`${
+                          className={`${styles.text} ${
                             l.uuid === groupId ? styles.dmActive : ""
                           }`}
+                          onClick={() => handleButtonClick()}
                         >
-                          {dm ? (
-                            <img src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500" />
-                          ) : (
-                            "#"
-                          )}
                           <span className={`${dm ? "" : styles.name}`}>
+                            {dm ? <img src={l.dp} alt={l.name} /> : "#"}{" "}
                             {l.name}
+                          </span>
+                          <span>
+                            {l.uuid !== groupId && extraChatCount && extraChatCount[l.uuid] && (
+                              <span
+                                className={
+                                  general
+                                    ? styles.extraChatCountPublic
+                                    : styles.extraChatCountPrivate
+                                }
+                              >
+                                {extraChatCount[l.uuid]
+                                  ? extraChatCount[l.uuid]
+                                  : ""}
+                              </span>
+                            )}
                           </span>
                         </a>
                       </Link>
@@ -80,8 +101,8 @@ const UsersList = ({
             ) : (
               <div className={styles.noData}>
                 <div className={styles.message}>
-                  {`You haven't ${dm ? "added" : "created"} any ${
-                    dm ? "DMs" : "groups"
+                  {`You haven't ${dm ? "added" : "created/part of"} any ${
+                    dm ? "DMs" : "group"
                   }`}
                 </div>
                 <div className={styles.action}>

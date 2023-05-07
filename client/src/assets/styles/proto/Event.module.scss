@@ -1,0 +1,265 @@
+@import './../variable';
+.eventWrapper {
+  .joinRoom {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .video {
+      .header {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        color: #c9cacb;
+        font-size: 25px;
+        margin-bottom: 10px;
+      }
+      .body {
+        .videoContainer {
+          position: relative;
+          video {
+            height: 395px;
+            width: 700px;
+            background-color: black;
+            border-radius: 15px;
+          }
+
+          .actions {
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+
+            .icon {
+              height: 50px;
+              width: 50px;
+              border-radius: 50%;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              background-color: none;
+              opacity: 0.9;
+              font-size: 20px;
+              cursor: pointer;
+              border: 1px solid white;
+              color: white;
+
+              &:hover {
+                background-color: white;
+                color: black;
+              }
+            }
+
+            .active {
+              color: white;
+              border: 1px solid $error-danger;
+              background-color: $error-danger;
+
+              &:hover {
+                background-color: $error-danger-secondary;
+                color: white;
+                border: 1px solid $error-danger-secondary;
+              }
+            }
+          }
+        }
+      }
+      .footer {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+
+        .actions {
+          width: 300px;
+          .noOfLearners {
+            color: #c9cacb;
+            font-size: 14px;
+            opacity: 0.8;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-top: 10px;
+          }
+
+          .joinCall {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+          }
+        }
+      }
+    }
+  }
+
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  background-color: #161c20;
+
+  .headerHeight {
+    height: 60px;
+  }
+
+  .mainHeight {
+    height: calc(100vh - 120px);
+  }
+
+  .footerHeight {
+    height: 60px;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    // background-color: #13191C;
+  }
+
+  .footer {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    // background-color: #13191C;
+  }
+
+  .callTitle {
+    color: #c9cacb;
+  }
+
+  .callTimer {
+    border: 1px solid red;
+    border-radius: 15px;
+    padding: 3px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .dot {
+      height: 15px;
+      width: 15px;
+      background-color: red;
+      margin-right: 10px;
+      border-radius: 50%;
+    }
+
+    .timer {
+      color: #c9cacb;
+    }
+  }
+
+  .videoArea {
+    flex-basis: 70%;
+
+    .main {
+      overflow-y: hidden;
+
+      .inviteUsers {
+        height: 60px;
+      }
+
+      .videos {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 0;
+
+        .userVideoContainer {
+          flex: 1 1 30%;
+          padding: 10px;
+          position: relative;
+          border-radius: 5px;
+
+          .videoEl {
+            height: 100%;
+            width: 100%;
+            background-color: black;
+            border-radius: 15px;
+          }
+
+          .userActions {
+            // display: none;
+            opacity: 0.3;
+            position: absolute;
+            left: 6%;
+            top: 10%;
+            // left: 50%;
+            // top: 50%;
+            // transform: translate(-50%, -50%);
+            // font-size: 20px;
+
+            .actions {
+              background-color: #2d3236;
+              // padding: 5px;
+              border-radius: 15px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              height: 40px;
+              width: 80px;
+
+              .actionsButton {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 20px;
+                color: #8a8d8f;
+
+                .icon {
+                  cursor: pointer;
+                }
+              }
+            }
+          }
+
+          .userInfo {
+            background-color: #2d3236;
+            border-radius: 15px;
+            padding: 5px 10px;
+            position: absolute;
+            right: 6%;
+            bottom: 10%;
+            color: #c9cacb;
+            font-size: 14px;
+            opacity: 0.5;
+          }
+        }
+      }
+    }
+
+    .currentUserActions {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      gap: 30px;
+
+      .icon {
+        cursor: pointer;
+        background-color: #2d3236;
+        color: #c9cacb;
+        padding: 5px 10px;
+        border-radius: 8px;
+        font-size: 20px;
+      }
+    }
+  }
+
+  .chatArea {
+    flex-basis: 30%;
+    background-color: #1f272f;
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
+  }
+}
+
+.main {
+  overflow: scroll;
+}

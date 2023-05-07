@@ -39,10 +39,21 @@
     }
   }
 
+  .currentChatActiveDiv {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
   .loggedinUserDetails {
     .loggedinUserName {
       font-size: 0.9rem;
       color: $titleColor;
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .loggedinUserDesig {
@@ -52,11 +63,89 @@
   }
 }
 
+.showMembers {
+  background-color: $c-gray-95;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  color: $c-gray-20;
+  cursor: pointer;
+}
+
+@mixin chat_container {
+  display: grid;
+
+  @include respond-to('small') {
+    grid-template-columns: 1fr;
+  }
+
+  .chatSidebar {
+    z-index: 1;
+    border-top: 1px solid $victoria;
+    background-color: $primary-color;
+
+    @include respond-to('small') {
+      grid-template-columns: 1fr;
+      display: none;
+    }
+
+    @include chat_sidebar;
+  }
+
+  .chatContent {
+    z-index: 1;
+    background-color: $bg-color-1;
+    position: relative;
+
+    .chatContentHeader {
+      height: 70px;
+      border-bottom: 1px solid $c-gray-80;
+      font-weight: 500;
+      @include chatProfileUser($c-gray-20, $c-gray-30);
+    }
+
+    .chatContentBody {
+      overflow-y: scroll;
+      display: flex;
+      flex-direction: column-reverse;
+      height: calc(100vh - 45px - 70px);
+
+      .messageWrapperContainer {
+        justify-content: flex-end;
+
+        .childMessages {
+          order: -1;
+          position: relative;
+          border-top: 1px solid $athens-gray;
+        }
+
+        .noMessageFound {
+          padding: 10px;
+        }
+      }
+    }
+
+    .chatContentTextArea {
+      z-index: 12;
+      background-color: $bg-color-1;
+      padding: 15px 10px;
+      position: fixed;
+      // bottom: 5px;
+      min-height: 90px;
+      width: 80%;
+
+      @include respond-to('small') {
+        width: 100%;
+      }
+    }
+  }
+}
+
 .chatWrapper {
-  
+
   .header {
     padding: 8px;
-    background-color: $persian-blue;
+    background-color: $primary-color;
     height: 40px;
     color: white;
     display: flex;
@@ -90,67 +179,21 @@
 
   .chatContainer {
     height: calc(100vh - 40px);
-    display: grid;
     grid-template-columns: 2fr 8fr;
 
-    @include respond-to('small') {
-      grid-template-columns: 1fr;
+    @include chat_container;
+  }
+
+  .chatContainerWithThread {
+    height: calc(100vh - 40px);
+    grid-template-columns: 2fr 5fr 3fr;
+    animation: 0.3s ease-in;
+
+    .threadWrapper {
+      // background-color: red;
     }
 
-    .chatSidebar {
-      height: 100%;
-      z-index: 1;
-      border-top: 1px solid $victoria;
-      background-color: $persian-blue;
-
-      @include respond-to('small') {
-        grid-template-columns: 1fr;
-        display: none;
-      }
-
-      @include chat_sidebar;
-    }
-
-    .chatContent {
-      z-index: 1;
-      background-color: $bg-color-1;
-      position: relative;
-      height: calc(100vh - 40px);
-
-      .chatContentHeader {
-        height: 70px;
-        border-bottom: 1px solid $c-gray-80;
-        font-weight: 500;
-        @include chatProfileUser($c-gray-20, $c-gray-30);
-      }
-
-      .chatContentBody {
-        overflow-y: scroll;
-        display: flex;
-        flex-direction: column-reverse;
-        height: calc(100vh - 50px - 40px - 105px);
-
-        .messageWrapperContainer {
-          justify-content: flex-end;
-  
-          .childMessages {
-            order: -1;
-            position: relative;
-            border-top: 1px solid $athens-gray;
-          }
-        }
-      }
-
-      .chatContentTextArea {
-        background-color: $bg-color-1;
-        padding: 0px 5px;
-        position: absolute;
-        // bottom: 0;
-        width: 100%;
-        min-height: 50px;
-        box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
-      }
-    }
+    @include chat_container;
   }
 }
 
@@ -221,7 +264,7 @@
           margin-right: 5px;
 
           &:hover {
-            color: $persian-blue;
+            color: $primary-color;
           }
         }
 
@@ -230,7 +273,7 @@
           cursor: pointer;
           font-size: 1.2rem;
           margin-right: 5px;
-          color: $persian-blue;
+          color: $primary-color;
         }
 
         .count {
@@ -256,7 +299,7 @@
         }
 
         .primary {
-          color: $persian-blue;
+          color: $primary-color;
           margin-right: 10px;
         }
 
@@ -288,7 +331,7 @@
           }
 
           .primary {
-            color: $persian-blue;
+            color: $primary-color;
           }
 
           .danger {
@@ -320,7 +363,7 @@
       width: 130px;
       background-color: $c-gray-95;
       border-top: 1px solid $athens-gray;
-      border-radius: 2px;
+      border: 2px;
       display: flex;
       justify-content: space-between;
       align-items: center;

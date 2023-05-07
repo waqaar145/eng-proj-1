@@ -5,8 +5,6 @@ const useDropdown = () => {
   const [show, setShow] = useState(false);
 
   function toggle (messageId) {
-    
-    console.log(messageId, data)
             
     if (!show) {
       setData(messageId);

@@ -5,12 +5,17 @@ const config = require('./config')
 const { loggedinUserObject } = require('./../helpers/auth')
 
 module.exports = function(passport) {
-  var opts = {};
-  opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-  opts.secretOrKey = config.SECRET_KEY;
-  passport.use(new JwtStrategy(opts, async function(token, done) {
-    const user = await loggedinUserObject(token.id)
-    if (!user) done(null, false)
-    done(null, user)
-  }));
+  try {
+    var opts = {};
+    opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+    opts.secretOrKey = config.SECRET_KEY;
+    passport.use(new JwtStrategy(opts, async function(token, done) {
+      const user = await loggedinUserObject(token.id)
+      if (!user) done(null, false)
+      done(null, user)
+    }));
+  } catch (err) {
+    console.log(err)
+    done(null, false)
+  }
 };

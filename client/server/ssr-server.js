@@ -40,30 +40,6 @@ app
       });
     });
 
-    server.get("/conversation/:meetingId", (req, res) => {
-      return app.render(req, res, "/conversation/main", {
-        meetingId: req.params.meetingId
-      });
-    });
-
-    server.get("/group/:meetingId", (req, res) => {
-      return app.render(req, res, "/group1/main", {
-        meetingId: req.params.meetingId
-      });
-    });
-
-    server.get("/event/:eventId", (req, res) => {
-      return app.render(req, res, "/room/main", {
-        eventId: req.params.eventId
-      });
-    });
-
-    server.get("/proto/:callId", (req, res) => {
-      return app.render(req, res, "/proto/main", {
-        callId: req.params.callId
-      });
-    });
-
     server.get("*", (req, res) => {
       return handle(req, res);
     });
@@ -77,3 +53,9 @@ app
     console.error(ex.stack);
     process.exit(1);
   });
+
+
+
+
+
+  
